@@ -86,7 +86,6 @@
     const patterns = ["RBR", "RBD", "DBR", "DBD"];
     const zones = ["Demand", "Supply"];
 
-    // Precise Category Master Pool
     const largeCaps = ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK", "ITC", "SBIN", "BHARTIARTL", "LTIM", "AXISBANK", "KOTAKBANK", "LT", "ASIANPAINT", "MARUTI", "SUNPHARMA", "TITAN", "BAJFINANCE", "ULTRACEMCO", "WIPRO", "HCLTECH"];
     const midCaps = ["TATAMOTORS", "ADANIENT", "NTPC", "POWERGRID", "TATASTEEL", "ONGC", "M&M", "COALINDIA", "BAJAJ-AUTO", "GRASIM", "SBILIFE", "TECHM", "DIVISLAB", "BRITANNIA", "CIPLA", "APOLLOHOSP"];
     const smallCaps = ["EICHERMOT", "TATACONSUM", "HEROMOTOCO", "BPCL", "SHRIRAMFIN", "INDUSINDBK", "HDFCLIFE", "SBICARD", "PIDILITIND", "HINDUNILVR", "HINDALCO", "VEDL"];
@@ -94,29 +93,27 @@
 
     let stocksData = [];
     
-    // Auto-generating precisely 314 structured items maintaining correct categories
     for (let i = 1; i <= 314; i++) {
         let symName, mCapCategory;
         
         if (i % 4 === 0) {
-            let idx = (i / 4) % largeCaps.length;
+            let idx = Math.floor(i / 4) % largeCaps.length;
             symName = largeCaps[idx];
             mCapCategory = "Large Cap";
         } else if (i % 4 === 1) {
-            let idx = (i / 4) % midCaps.length;
+            let idx = Math.floor(i / 4) % midCaps.length;
             symName = midCaps[idx];
             mCapCategory = "Mid Cap";
         } else if (i % 4 === 2) {
-            let idx = (i / 4) % smallCaps.length;
+            let idx = Math.floor(i / 4) % smallCaps.length;
             symName = smallCaps[idx];
             mCapCategory = "Small Cap";
         } else {
-            let idx = (i / 4) % microCaps.length;
+            let idx = Math.floor(i / 4) % microCaps.length;
             symName = microCaps[idx];
             mCapCategory = "Micro Cap";
         }
 
-        // Handle unique suffixes cleanly if index exceeds pool sizes
         let multiplier = Math.floor(i / 120);
         if (multiplier > 0) {
             symName = symName + (multiplier + 1);
@@ -180,9 +177,10 @@
         renderTable(filtered);
     }
 
-    // Initial load
+    // Initial load call
     renderTable(stocksData);
 </script>
 
 </body>
 </html>
+
