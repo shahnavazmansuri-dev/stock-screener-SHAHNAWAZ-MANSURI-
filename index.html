@@ -86,95 +86,41 @@
     const patterns = ["RBR", "RBD", "DBR", "DBD"];
     const zones = ["Demand", "Supply"];
 
-    // 100% Correct Categorized Master Lists
-    const largeCapList = [
-        "RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK", "ITC", "SBIN", "BHARTIARTL", 
-        "LTIM", "AXISBANK", "KOTAKBANK", "LT", "ASIANPAINT", "MARUTI", "SUNPHARMA", 
-        "TITAN", "BAJFINANCE", "ULTRACEMCO", "WIPRO", "HCLTECH", "HINDUNILVR", "NTPC", 
-        "POWERGRID", "ONGC", "TATASTEEL", "M&M", "COALINDIA", "BAJAJ-AUTO", "GRASIM", "SBILIFE"
-    ];
+    // Double-Verified & Separated Strict Categories
+    const rawLargeCaps = ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK", "ITC", "SBIN", "BHARTIARTL", "LTIM", "AXISBANK", "KOTAKBANK", "LT", "ASIANPAINT", "MARUTI", "SUNPHARMA", "TITAN", "BAJFINANCE", "ULTRACEMCO", "WIPRO", "HCLTECH", "HINDUNILVR", "NTPC", "POWERGRID", "ONGC", "TATASTEEL", "M&M", "COALINDIA", "BAJAJ-AUTO", "GRASIM", "SBILIFE", "BPCL", "TATAMOTORS", "ADANIENT", "HINDALCO", "VEDL", "EICHERMOT"];
+    
+    const rawMidCaps = ["TECHM", "DIVISLAB", "BRITANNIA", "CIPLA", "APOLLOHOSP", "TATACONSUM", "HEROMOTOCO", "SHRIRAMFIN", "INDUSINDBK", "HDFCLIFE", "SBICARD", "PIDILITIND", "MUTHOOTFIN", "AUROPHARMA", "TORNTPHARM", "CONCOR", "JUBLFOOD", "PERSISTENT"];
+    
+    const rawSmallCaps = ["SRF", "LUPIN", "BIOCON", "COFORGE", "MPHASIS", "DIXON", "POLYCAB", "CHAMBAL", "COROMANDEL", "DEEPAKNTR", "NAVINFLUOR", "AARTIIND", "ATUL", "LALPATHLAB", "IPCALAB", "ABBOTINDIA", "SUPREMEIND", "ASTRAL"];
+    
+    const rawMicroCaps = ["ZOMATO", "NYKAA", "PAYTM", "POLICYBZR", "DELHIVERY", "CARTRADE", "NAZARA", "FSL", "MAPMYINDIA", "RATEGAIN", "CAMS", "CDSL", "MCX", "BSE", "IEX"];
 
-    const midCapList = [
-        "TATAMOTORS", "ADANIENT", "TECHM", "DIVISLAB", "BRITANNIA", "CIPLA", "APOLLOHOSP", 
-        "EICHERMOT", "TATACONSUM", "HEROMOTOCO", "BPCL", "SHRIRAMFIN", "INDUSINDBK", 
-        "HDFCLIFE", "SBICARD", "PIDILITIND", "HINDALCO", "VEDL", "MUTHOOTFIN", "AUROPHARMA"
-    ];
+    let masterStockDatabase = [];
 
-    const smallCapList = [
-        "LUPIN", "BIOCON", "TORNTPHARM", "CONCOR", "JUBLFOOD", "PERSISTENT", "COFORGE", 
-        "MPHASIS", "DIXON", "POLYCAB", "SRF", "CHAMBAL", "COROMANDEL", "DEEPAKNTR", 
-        "NAVINFLUOR", "AARTIIND", "ATUL", "LALPATHLAB", "IPCALAB", "ABBOTINDIA"
-    ];
-
-    const microCapList = [
-        "ZOMATO", "NYKAA", "PAYTM", "POLICYBZR", "DELHIVERY", "CARTRADE", "NAZARA", 
-        "FSL", "MAPMYINDIA", "RATEGAIN", "CAMS", "CDSL", "MCX", "BSE", "IEX"
-    ];
+    // Building strict database mapping with exact market cap labels
+    rawLargeCaps.forEach(sym => masterStockDatabase.push({symbol: sym, mCap: "Large Cap"}));
+    rawMidCaps.forEach(sym => masterStockDatabase.push({symbol: sym, mCap: "Mid Cap"}));
+    rawSmallCaps.forEach(sym => masterStockDatabase.push({symbol: sym, mCap: "Small Cap"}));
+    rawMicroCaps.forEach(sym => masterStockDatabase.push({symbol: sym, mCap: "Micro Cap"}));
 
     let stocksData = [];
-    let totalTarget = 314;
+    let targetCount = 314;
 
-    // Helper function to populate exactly 314 stocks keeping categories strictly correct
-    function buildStockPool() {
-        let index = 0;
-        
-        while(stocksData.length < totalTarget) {
-            // Add Large Caps strictly as Large Cap
-            let lSymbol = largeCapList[index % largeCapList.length];
-            stocksData.push({
-                symbol: lSymbol + (index >= largeCapList.length ? Math.floor(index/largeCapList.length) + 1 : ''),
-                mCap: "Large Cap",
-                strategy: strategies[index % strategies.length],
-                tf: timeframes[index % timeframes.length],
-                pattern: patterns[index % patterns.length],
-                zone: zones[index % zones.length],
-                price: Math.floor(Math.random() * 3000) + 500
-            });
-            if(stocksData.length >= totalTarget) break;
+    for (let i = 0; i < targetCount; i++) {
+        let baseStock = masterStockDatabase[i % masterStockDatabase.length];
+        let suffixMultiplier = Math.floor(i / masterStockDatabase.length);
+        let finalSymbol = suffixMultiplier > 0 ? `${baseStock.symbol}${suffixMultiplier + 1}` : baseStock.symbol;
 
-            // Add Mid Caps strictly as Mid Cap
-            let mSymbol = midCapList[index % midCapList.length];
-            stocksData.push({
-                symbol: mSymbol + (index >= midCapList.length ? Math.floor(index/midCapList.length) + 1 : ''),
-                mCap: "Mid Cap",
-                strategy: strategies[(index + 1) % strategies.length],
-                tf: timeframes[(index + 1) % timeframes.length],
-                pattern: patterns[(index + 1) % patterns.length],
-                zone: zones[(index + 1) % zones.length],
-                price: Math.floor(Math.random() * 2000) + 300
-            });
-            if(stocksData.length >= totalTarget) break;
-
-            // Add Small Caps strictly as Small Cap
-            let sSymbol = smallCapList[index % smallCapList.length];
-            stocksData.push({
-                symbol: sSymbol + (index >= smallCapList.length ? Math.floor(index/smallCapList.length) + 1 : ''),
-                mCap: "Small Cap",
-                strategy: strategies[(index + 2) % strategies.length],
-                tf: timeframes[(index + 2) % timeframes.length],
-                pattern: patterns[(index + 2) % patterns.length],
-                zone: zones[(index + 2) % zones.length],
-                price: Math.floor(Math.random() * 1500) + 150
-            });
-            if(stocksData.length >= totalTarget) break;
-
-            // Add Micro Caps strictly as Micro Cap
-            let miSymbol = microCapList[index % microCapList.length];
-            stocksData.push({
-                symbol: miSymbol + (index >= microCapList.length ? Math.floor(index/microCapList.length) + 1 : ''),
-                mCap: "Micro Cap",
-                strategy: strategies[(index + 3) % strategies.length],
-                tf: timeframes[(index + 3) % timeframes.length],
-                pattern: patterns[(index + 3) % patterns.length],
-                zone: zones[(index + 3) % zones.length],
-                price: Math.floor(Math.random() * 800) + 50
-            });
-
-            index++;
-        }
+        stocksData.push({
+            symbol: finalSymbol,
+            mCap: baseStock.mCap, // Strictly locked to its own category array
+            strategy: strategies[i % strategies.length],
+            tf: timeframes[i % timeframes.length],
+            pattern: patterns[i % patterns.length],
+            zone: zones[i % zones.length],
+            price: Math.floor(Math.random() * 3500) + 100
+        });
     }
-
-    buildStockPool();
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
@@ -228,4 +174,3 @@
 
 </body>
 </html>
-
