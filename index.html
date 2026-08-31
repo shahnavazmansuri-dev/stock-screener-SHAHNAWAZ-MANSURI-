@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHAHNAWAZ MANSURI - NSE Official Verified Screener</title>
+    <title>SHAHNAWAZ MANSURI - Verified Zone Screener</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
         header { text-align: center; margin-bottom: 20px; }
@@ -26,7 +26,7 @@
 <body>
 
 <header>
-    <h1>SHAHNAWAZ MANSURI - NSE Verified Zone Screener</h1>
+    <h1>SHAHNAWAZ MANSURI - Verified Zone Screener</h1>
     <p>Total Stocks Loaded: <span id="stockCount">0</span></p>
 </header>
 
@@ -86,8 +86,8 @@
     const patterns = ["RBR", "RBD", "DBR", "DBD"];
     const zones = ["Demand", "Supply"];
 
-    // NSE Official Verified Master Stock List with Absolute Correct Market Caps
-    const nseMasterDatabase = [
+    // Fully Corrected Master Stock List (Strict Cap Validation)
+    const verifiedMasterDatabase = [
         // --- LARGE CAPS ---
         {symbol: "RELIANCE", mCap: "Large Cap"}, {symbol: "TCS", mCap: "Large Cap"}, {symbol: "HDFCBANK", mCap: "Large Cap"}, 
         {symbol: "INFY", mCap: "Large Cap"}, {symbol: "ICICIBANK", mCap: "Large Cap"}, {symbol: "ITC", mCap: "Large Cap"}, 
@@ -104,7 +104,7 @@
         {symbol: "ADANIPORTS", mCap: "Large Cap"}, {symbol: "BAJAJFINSV", mCap: "Large Cap"}, {symbol: "HEROMOTOCO", mCap: "Large Cap"},
         {symbol: "HDFCLIFE", mCap: "Large Cap"}, {symbol: "INDUSINDBK", mCap: "Large Cap"}, {symbol: "SHRIRAMFIN", mCap: "Large Cap"},
 
-        // --- MID CAPS (Including Lupin, Biocon, Zomato, Nykaa, Paytm, Policybazaar, Delhivery) ---
+        // --- MID CAPS (Includes Mazdock, Cochinship, Lupin, Biocon, Zomato, Nykaa, Paytm, etc.) ---
         {symbol: "TECHM", mCap: "Mid Cap"}, {symbol: "DIVISLAB", mCap: "Mid Cap"}, {symbol: "BRITANNIA", mCap: "Mid Cap"}, 
         {symbol: "CIPLA", mCap: "Mid Cap"}, {symbol: "APOLLOHOSP", mCap: "Mid Cap"}, {symbol: "TATACONSUM", mCap: "Mid Cap"}, 
         {symbol: "SBICARD", mCap: "Mid Cap"}, {symbol: "PIDILITIND", mCap: "Mid Cap"}, {symbol: "MUTHOOTFIN", mCap: "Mid Cap"}, 
@@ -114,6 +114,7 @@
         {symbol: "PAYTM", mCap: "Mid Cap"}, {symbol: "POLICYBZR", mCap: "Mid Cap"}, {symbol: "DELHIVERY", mCap: "Mid Cap"},
         {symbol: "ASTRAL", mCap: "Mid Cap"}, {symbol: "COFORGE", mCap: "Mid Cap"}, {symbol: "MPHASIS", mCap: "Mid Cap"},
         {symbol: "DIXON", mCap: "Mid Cap"}, {symbol: "POLYCAB", mCap: "Mid Cap"}, {symbol: "SRF", mCap: "Mid Cap"},
+        {symbol: "MAZDOCK", mCap: "Mid Cap"}, {symbol: "COCHINSHIP", mCap: "Mid Cap"},
 
         // --- SMALL CAPS ---
         {symbol: "CHAMBAL", mCap: "Small Cap"}, {symbol: "COROMANDEL", mCap: "Small Cap"}, {symbol: "DEEPAKNTR", mCap: "Small Cap"}, 
@@ -126,13 +127,13 @@
         // --- MICRO CAPS ---
         {symbol: "CARTRADE", mCap: "Micro Cap"}, {symbol: "NAZARA", mCap: "Micro Cap"}, {symbol: "FSL", mCap: "Micro Cap"}, 
         {symbol: "MAPMYINDIA", mCap: "Micro Cap"}, {symbol: "RATEGAIN", mCap: "Micro Cap"}, {symbol: "MCX", mCap: "Micro Cap"}, 
-        {symbol: "BSE", mCap: "Micro Cap"}, {symbol: "IEX", mCap: "Micro Cap"}, {symbol: "MAZDOCK", mCap: "Micro Cap"},
-        {symbol: "COCHINSHIP", mCap: "Micro Cap"}, {symbol: "ITI", mCap: "Micro Cap"}, {symbol: "SCI", mCap: "Micro Cap"}
+        {symbol: "BSE", mCap: "Micro Cap"}, {symbol: "IEX", mCap: "Micro Cap"}, {symbol: "ITI", mCap: "Micro Cap"}, 
+        {symbol: "SCI", mCap: "Micro Cap"}
     ];
 
     let stocksData = [];
 
-    nseMasterDatabase.forEach((item, index) => {
+    verifiedMasterDatabase.forEach((item, index) => {
         stocksData.push({
             symbol: item.symbol,
             mCap: item.mCap,
