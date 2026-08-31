@@ -3,172 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Screener - Demand & Supply Zones</title>
+    <title>SHAHNAWAZ MANSURI - Advanced Multi-Strategy Screener</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --primary: #3b82f6;
-            --success: #22c55e;
-            --danger: #ef4444;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 16px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        .controls {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-        input, select {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            flex: 1;
-            min-width: 150px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th {
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        .badge-buy { background-color: rgba(34, 197, 94, 0.2); color: var(--success); }
-        .badge-sell { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        header { text-align: center; margin-bottom: 20px; }
+        header h1 { color: #00ffcc; margin: 0; font-size: 24px; }
+        .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        select, button { padding: 10px; background-color: #1e1e1e; color: #fff; border: 1px solid #333; border-radius: 5px; cursor: pointer; }
+        button:hover, select:hover { background-color: #333; }
+        .table-container { max-height: 550px; overflow-y: auto; border: 1px solid #333; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; background-color: #1a1a1a; }
+        th, td { padding: 12px; border-bottom: 1px solid #333; }
+        th { background-color: #222; color: #00ffcc; position: sticky; top: 0; z-index: 10; }
+        tr:hover { background-color: #2a2a2a; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-demand { background-color: #004d00; color: #66ff66; }
+        .badge-supply { background-color: #4d0000; color: #ff6666; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Stock Screener - Demand & Supply Zones</h1>
+
+<header>
+    <h1>SHAHNAWAZ MANSURI - Multi-Strategy Zone Screener</h1>
+    <p>Total Stocks Loaded: <span id="stockCount">314</span></p>
+</header>
+
+<div class="controls">
+    <!-- Market Cap Filter -->
+    <select id="marketCapFilter" onchange="filterTable()">
+        <option value="All">All Market Caps</option>
+        <option value="Large Cap">Large Cap</option>
+        <option value="Mid Cap">Mid Cap</option>
+        <option value="Small Cap">Small Cap</option>
+        <option value="Micro Cap">Micro Cap</option>
+    </select>
+
+    <!-- Strategy Filter Tab -->
+    <select id="strategyFilter" onchange="filterTable()">
+        <option value="All">All Strategies</option>
+        <option value="Nifty Sharia 500">Nifty Sharia 500</option>
+        <option value="9/20 EMA Cross">9/20 EMA Cross</option>
+        <option value="Bollinger Bands">Bollinger Bands</option>
+        <option value="Breakout">Breakout</option> <!-- Fixed Breakout Tab -->
+    </select>
+
+    <!-- Timeframe Filter (Added Quarterly, Six Months, Yearly) -->
+    <select id="timeframeFilter" onchange="filterTable()">
+        <option value="All">All Timeframes</option>
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Six Months">Six Months</option>
+        <option value="Yearly">Yearly</option>
+    </select>
+</div>
+
+<div class="table-container">
+    <table id="screenerTable">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Market Cap</th>
+                <th>Strategy</th>
+                <th>Timeframe</th>
+                <th>Pattern</th>
+                <th>Zone Type</th>
+                <th>Close (₹)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Dynamic Rows will load here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Sample data structure for your 314 stocks (Aap yahan apne saare 314 stocks ka data array add kar sakte hain)
+    const stocksData = [
+        { symbol: "RELIANCE", mCap: "Large Cap", strategy: "Nifty Sharia 500", tf: "Daily", pattern: "RBR", zone: "Demand", price: 2850 },
+        { symbol: "TCS", mCap: "Large Cap", strategy: "Breakout", tf: "Weekly", pattern: "RBD", zone: "Supply", price: 3900 },
+        { symbol: "INFY", mCap: "Large Cap", strategy: "9/20 EMA Cross", tf: "Quarterly", pattern: "DBR", zone: "Demand", price: 1600 },
+        { symbol: "TATAMOTORS", mCap: "Mid Cap", strategy: "Breakout", tf: "Six Months", pattern: "DBD", zone: "Supply", price: 950 },
+        { symbol: "SBIN", mCap: "Large Cap", strategy: "Bollinger Bands", tf: "Yearly", pattern: "RBR", zone: "Demand", price: 800 },
+        { symbol: "ITC", mCap: "Large Cap", strategy: "Nifty Sharia 500", tf: "Monthly", pattern: "RBD", zone: "Supply", price: 440 }
+        // Aap apne baaki 314 stocks is array me paste kar sakte hain
+    ];
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = "";
         
-        <div class="card">
-            <div class="controls">
-                <input type="text" id="searchInput" placeholder="Search stock symbol..." onkeyup="applyFilters()">
-                <select id="zoneFilter" onchange="applyFilters()">
-                    <option value="">All Zones</option>
-                    <option value="Demand">Demand Zone</option>
-                    <option value="Supply">Supply Zone</option>
-                </select>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table id="stockTable">
-                    <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>LTP (₹)</th>
-                            <th>Zone Type</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><b>CHAMBLFERT</b></td>
-                            <td>465.50</td>
-                            <td><span class="badge badge-buy">Demand</span></td>
-                            <td>Hold / GTT Set</td>
-                        </tr>
-                        <tr>
-                            <td><b>LT</b></td>
-                            <td>3550.00</td>
-                            <td><span class="badge badge-buy">Demand</span></td>
-                            <td>Long-term</td>
-                        </tr>
-                        <tr>
-                            <td><b>GSPC</b></td>
-                            <td>445.00</td>
-                            <td><span class="badge badge-sell">Supply</span></td>
-                            <td>Exit Watch</td>
-                        </tr>
-                        <tr>
-                            <td><b>SAKAR</b></td>
-                            <td>940.00</td>
-                            <td><span class="badge badge-sell">Supply</span></td>
-                            <td>Review</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div style="margin-top: 12px; color: var(--text-muted); font-size: 0.85rem;">
-                Showing <span id="countDisplay">4</span> stocks
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function applyFilters() {
-            let input = document.getElementById('searchInput').value.toUpperCase();
-            let filter = document.getElementById('zoneFilter').value;
-            let table = document.getElementById('stockTable');
-            let tr = table.getElementsByTagName('tr');
-            let visibleCount = 0;
-
-            for (let i = 1; i < tr.length; i++) {
-                let tdSymbol = tr[i].getElementsByTagName('td')[0];
-                let tdZone = tr[i].getElementsByTagName('td')[2];
-                if (tdSymbol && tdZone) {
-                    let txtValue = tdSymbol.textContent || tdSymbol.innerText;
-                    let zoneValue = tdZone.textContent || tdZone.innerText;
-                    
-                    let matchesSearch = txtValue.toUpperCase().indexOf(input) > -1;
-                    let matchesZone = filter === "" || zoneValue.indexOf(filter) > -1;
-
-                    if (matchesSearch && matchesZone) {
-                        tr[i].style.display = "";
-                        visibleCount++;
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-            document.getElementById('countDisplay').innerText = visibleCount;
+        if(data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">No stocks found matching the criteria.</td></tr>`;
+            return;
         }
 
-        window.onload = function() {
-            applyFilters();
-        };
-    </script>
+        data.forEach(stock => {
+            const row = document.createElement('tr');
+            const badgeClass = stock.zone === 'Demand' ? 'badge-demand' : 'badge-supply';
+            row.innerHTML = `
+                <td><b>${stock.symbol}</b></td>
+                <td>${stock.mCap}</td>
+                <td>${stock.strategy}</td>
+                <td>${stock.tf}</td>
+                <td>${stock.pattern}</td>
+                <td><span class="badge ${badgeClass}">${stock.zone} Zone</span></td>
+                <td>₹${stock.price}</td>
+            `;
+            tbody.appendChild(row);
+        });
+        document.getElementById('stockCount').innerText = data.length;
+    }
+
+    function filterTable() {
+        const mCapVal = document.getElementById('marketCapFilter').value;
+        const strategyVal = document.getElementById('strategyFilter').value;
+        const tfVal = document.getElementById('timeframeFilter').value;
+
+        const filtered = stocksData.data ? stocksData : stocksData.filter(stock => {
+            const matchMCap = (mCapVal === 'All' || stock.mCap === mCapVal);
+            const matchStrategy = (strategyVal === 'All' || stock.strategy === strategyVal);
+            const matchTf = (tfVal === 'All' || stock.tf === tfVal);
+            return matchMCap && matchStrategy && matchTf;
+        });
+
+        renderTable(filtered);
+    }
+
+    // Initial load
+    renderTable(stocksData);
+</script>
+
 </body>
 </html>
-<!-- update -->
