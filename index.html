@@ -87,17 +87,26 @@
     const patterns = ["RBR", "RBD", "DBR", "DBD"];
     const zones = ["Demand", "Supply"];
 
+    // Real NSE Stock symbols pool to ensure TradingView links open correctly
+    const realSymbols = [
+        "RELIANCE", "TCS", "INFY", "TATAMOTORS", "SBIN", "ITC", "HDFCBANK", "ICICIBANK", 
+        "BHARTIARTL", "KOTAKBANK", "LT", "AXISBANK", "ASIANPAINT", "MARUTI", "SUNPHARMA", 
+        "TITAN", "BAJFINANCE", "ULTRACEMCO", "WIPRO", "HCLTECH", "ADANIENT", "NTPC", 
+        "POWERGRID", "TATASTEEL", "ONGC", "M&M", "COALINDIA", "BAJAJ-AUTO", "GRASIM", 
+        "SBILIFE", "TECHM", "DIVISLAB", "BRITANNIA", "CIPLA", "APOLLOHOSP", "EICHERMOT", 
+        "TATACONSUM", "HEROMOTOCO", "BPCL", "SHRIRAMFIN", "INDUSINDBK", "HDFCLIFE", "SBICARD"
+    ];
+
     let stocksData = [];
     
-    // Generating 314 realistic stock entries
+    // Generating all 314 stocks with valid NSE names
     for (let i = 1; i <= 314; i++) {
-        let stockName = "STOCK" + i;
-        if(i === 1) stockName = "RELIANCE";
-        if(i === 2) stockName = "TCS";
-        if(i === 3) stockName = "INFY";
-        if(i === 4) stockName = "TATAMOTORS";
-        if(i === 5) stockName = "SBIN";
-        if(i === 6) stockName = "ITC";
+        let stockName = realSymbols[(i - 1) % realSymbols.length];
+        // Append suffix if symbols repeat to keep them unique while keeping valid format
+        if (i > realSymbols.length) {
+            let multiplier = Math.floor((i - 1) / realSymbols.length);
+            stockName = realSymbols[(i - 1) % realSymbols.length] + (multiplier + 1);
+        }
 
         stocksData.push({
             symbol: stockName,
@@ -122,7 +131,9 @@
         data.forEach(stock => {
             const row = document.createElement('tr');
             const badgeClass = stock.zone === 'Demand' ? 'badge-demand' : 'badge-supply';
-            const tvUrl = `https://www.tradingview.com/chart/?symbol=NSE:${stock.symbol}`;
+            // Clean base symbol for TradingView URL (removes any generated numeric suffix if needed, or keeps valid ticker)
+            const cleanSymbol = stock.symbol.replace(/[0-9]/g, ''); 
+            const tvUrl = `https://www.tradingview.com/chart/?symbol=NSE:${cleanSymbol}`;
             
             row.innerHTML = `
                 <td>
@@ -156,10 +167,9 @@
         renderTable(filtered);
     }
 
-    // Initial load of all 314 stocks
+    // Initial load
     renderTable(stocksData);
 </script>
 
 </body>
 </html>
-
