@@ -114,11 +114,6 @@
             mCapCategory = "Micro Cap";
         }
 
-        let multiplier = Math.floor(i / 120);
-        if (multiplier > 0) {
-            symName = symName + (multiplier + 1);
-        }
-
         stocksData.push({
             symbol: symName,
             mCap: mCapCategory,
@@ -142,8 +137,7 @@
         data.forEach(stock => {
             const row = document.createElement('tr');
             const badgeClass = stock.zone === 'Demand' ? 'badge-demand' : 'badge-supply';
-            const cleanSymbol = stock.symbol.replace(/[0-9]/g, '');
-            const tvUrl = `https://www.tradingview.com/chart/?symbol=NSE:${cleanSymbol}`;
+            const tvUrl = `https://www.tradingview.com/chart/?symbol=NSE:${stock.symbol}`;
             
             row.innerHTML = `
                 <td>
@@ -177,10 +171,8 @@
         renderTable(filtered);
     }
 
-    // Initial load call
     renderTable(stocksData);
 </script>
 
 </body>
 </html>
-
