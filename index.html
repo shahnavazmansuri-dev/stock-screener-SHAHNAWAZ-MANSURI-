@@ -19,6 +19,8 @@
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
         .badge-demand { background-color: #004d00; color: #66ff66; }
         .badge-supply { background-color: #4d0000; color: #ff6666; }
+        .tv-link { color: #00ffcc; text-decoration: none; font-size: 11px; margin-left: 6px; border: 1px solid #00ffcc; padding: 2px 5px; border-radius: 3px; display: inline-block; }
+        .tv-link:hover { background-color: #00ffcc; color: #121212; }
     </style>
 </head>
 <body>
@@ -79,7 +81,6 @@
 </div>
 
 <script>
-    // Automatically generating all 314 stocks distributed across all categories
     const mCaps = ["Large Cap", "Mid Cap", "Small Cap", "Micro Cap"];
     const strategies = ["Nifty Sharia 500", "9/20 EMA Cross", "Bollinger Bands", "Breakout"];
     const timeframes = ["Daily", "Weekly", "Monthly", "Quarterly", "Six Months", "Yearly"];
@@ -121,8 +122,13 @@
         data.forEach(stock => {
             const row = document.createElement('tr');
             const badgeClass = stock.zone === 'Demand' ? 'badge-demand' : 'badge-supply';
+            const tvUrl = `https://www.tradingview.com/chart/?symbol=NSE:${stock.symbol}`;
+            
             row.innerHTML = `
-                <td><b>${stock.symbol}</b></td>
+                <td>
+                    <b>${stock.symbol}</b>
+                    <a href="${tvUrl}" target="_blank" class="tv-link" title="Open TradingView Chart">Chart ↗</a>
+                </td>
                 <td>${stock.mCap}</td>
                 <td>${stock.strategy}</td>
                 <td>${stock.tf}</td>
@@ -156,3 +162,4 @@
 
 </body>
 </html>
+
