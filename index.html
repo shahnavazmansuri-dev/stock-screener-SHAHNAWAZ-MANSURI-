@@ -86,60 +86,45 @@
     const patterns = ["RBR", "RBD", "DBR", "DBD"];
     const zones = ["Demand", "Supply"];
 
-    // Properly categorized stock pool with accurate market caps
-    const stockMasterList = [
-        // Large Caps
-        { symbol: "RELIANCE", mCap: "Large Cap" }, { symbol: "TCS", mCap: "Large Cap" },
-        { symbol: "HDFCBANK", mCap: "Large Cap" }, { symbol: "INFY", mCap: "Large Cap" },
-        { symbol: "ICICIBANK", mCap: "Large Cap" }, { symbol: "ITC", mCap: "Large Cap" },
-        { symbol: "SBIN", mCap: "Large Cap" }, { symbol: "BHARTIARTL", mCap: "Large Cap" },
-        { symbol: "LTIM", mCap: "Large Cap" }, { symbol: "AXISBANK", mCap: "Large Cap" },
-        { symbol: "KOTAKBANK", mCap: "Large Cap" }, { symbol: "LT", mCap: "Large Cap" },
-        { symbol: "ASIANPAINT", mCap: "Large Cap" }, { symbol: "MARUTI", mCap: "Large Cap" },
-        { symbol: "SUNPHARMA", mCap: "Large Cap" }, { symbol: "TITAN", mCap: "Large Cap" },
-        { symbol: "BAJFINANCE", mCap: "Large Cap" }, { symbol: "ULTRACEMCO", mCap: "Large Cap" },
-        { symbol: "WIPRO", mCap: "Large Cap" }, { symbol: "HCLTECH", mCap: "Large Cap" },
-        
-        // Mid Caps
-        { symbol: "TATAMOTORS", mCap: "Mid Cap" }, { symbol: "ADANIENT", mCap: "Mid Cap" },
-        { symbol: "NTPC", mCap: "Mid Cap" }, { symbol: "POWERGRID", mCap: "Mid Cap" },
-        { symbol: "TATASTEEL", mCap: "Mid Cap" }, { symbol: "ONGC", mCap: "Mid Cap" },
-        { symbol: "M&M", mCap: "Mid Cap" }, { symbol: "COALINDIA", mCap: "Mid Cap" },
-        { symbol: "BAJAJ-AUTO", mCap: "Mid Cap" }, { symbol: "GRASIM", mCap: "Mid Cap" },
-        { symbol: "SBILIFE", mCap: "Mid Cap" }, { symbol: "TECHM", mCap: "Mid Cap" },
-        { symbol: "DIVISLAB", mCap: "Mid Cap" }, { symbol: "BRITANNIA", mCap: "Mid Cap" },
-        { symbol: "CIPLA", mCap: "Mid Cap" }, { symbol: "APOLLOHOSP", mCap: "Mid Cap" },
-        
-        // Small Caps
-        { symbol: "EICHERMOT", mCap: "Small Cap" }, { symbol: "TATACONSUM", mCap: "Small Cap" },
-        { symbol: "HEROMOTOCO", mCap: "Small Cap" }, { symbol: "BPCL", mCap: "Small Cap" },
-        { symbol: "SHRIRAMFIN", mCap: "Small Cap" }, { symbol: "INDUSINDBK", mCap: "Small Cap" },
-        { symbol: "HDFCLIFE", mCap: "Small Cap" }, { symbol: "SBICARD", mCap: "Small Cap" },
-        { symbol: "PIDILITIND", mCap: "Small Cap" }, { symbol: "HINDUNILVR", mCap: "Small Cap" },
-        { symbol: "HINDALCO", mCap: "Small Cap" }, { symbol: "VEDL", mCap: "Small Cap" },
-        
-        // Micro Caps
-        { symbol: "ZOMATO", mCap: "Micro Cap" }, { symbol: "NYKAA", mCap: "Micro Cap" },
-        { symbol: "PAYTM", mCap: "Micro Cap" }, { symbol: "POLICYBZR", mCap: "Micro Cap" },
-        { symbol: "DELHIVERY", mCap: "Micro Cap" }, { symbol: "CARTRADE", mCap: "Micro Cap" }
-    ];
+    // Precise Category Master Pool
+    const largeCaps = ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK", "ITC", "SBIN", "BHARTIARTL", "LTIM", "AXISBANK", "KOTAKBANK", "LT", "ASIANPAINT", "MARUTI", "SUNPHARMA", "TITAN", "BAJFINANCE", "ULTRACEMCO", "WIPRO", "HCLTECH"];
+    const midCaps = ["TATAMOTORS", "ADANIENT", "NTPC", "POWERGRID", "TATASTEEL", "ONGC", "M&M", "COALINDIA", "BAJAJ-AUTO", "GRASIM", "SBILIFE", "TECHM", "DIVISLAB", "BRITANNIA", "CIPLA", "APOLLOHOSP"];
+    const smallCaps = ["EICHERMOT", "TATACONSUM", "HEROMOTOCO", "BPCL", "SHRIRAMFIN", "INDUSINDBK", "HDFCLIFE", "SBICARD", "PIDILITIND", "HINDUNILVR", "HINDALCO", "VEDL"];
+    const microCaps = ["ZOMATO", "NYKAA", "PAYTM", "POLICYBZR", "DELHIVERY", "CARTRADE"];
 
     let stocksData = [];
     
-    // Generating exactly 314 stocks cleanly mapped to correct categories without messy suffixes
+    // Auto-generating precisely 314 structured items maintaining correct categories
     for (let i = 1; i <= 314; i++) {
-        let baseStock = stockMasterList[(i - 1) % stockMasterList.length];
-        let symName = baseStock.symbol;
+        let symName, mCapCategory;
         
-        // If index exceeds master list, add clean numbered differentiation (e.g., RELIANCE2)
-        if (i > stockMasterList.length) {
-            let multiplier = Math.floor((i - 1) / stockMasterList.length);
-            symName = baseStock.symbol + (multiplier + 1);
+        if (i % 4 === 0) {
+            let idx = (i / 4) % largeCaps.length;
+            symName = largeCaps[idx];
+            mCapCategory = "Large Cap";
+        } else if (i % 4 === 1) {
+            let idx = (i / 4) % midCaps.length;
+            symName = midCaps[idx];
+            mCapCategory = "Mid Cap";
+        } else if (i % 4 === 2) {
+            let idx = (i / 4) % smallCaps.length;
+            symName = smallCaps[idx];
+            mCapCategory = "Small Cap";
+        } else {
+            let idx = (i / 4) % microCaps.length;
+            symName = microCaps[idx];
+            mCapCategory = "Micro Cap";
+        }
+
+        // Handle unique suffixes cleanly if index exceeds pool sizes
+        let multiplier = Math.floor(i / 120);
+        if (multiplier > 0) {
+            symName = symName + (multiplier + 1);
         }
 
         stocksData.push({
             symbol: symName,
-            mCap: baseStock.mCap,
+            mCap: mCapCategory,
             strategy: strategies[i % strategies.length],
             tf: timeframes[i % timeframes.length],
             pattern: patterns[i % patterns.length],
@@ -160,7 +145,6 @@
         data.forEach(stock => {
             const row = document.createElement('tr');
             const badgeClass = stock.zone === 'Demand' ? 'badge-demand' : 'badge-supply';
-            // Clean symbol for TradingView link by stripping any numbers at the end
             const cleanSymbol = stock.symbol.replace(/[0-9]/g, '');
             const tvUrl = `https://www.tradingview.com/chart/?symbol=NSE:${cleanSymbol}`;
             
@@ -202,4 +186,3 @@
 
 </body>
 </html>
-
