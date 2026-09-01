@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,13 +89,15 @@
                 let response = await fetch('stocks.json?' + new Date().getTime());
                 if (!response.ok) throw new Error("File not found");
                 allData = await response.json();
+                if (!Array.isArray(allData) || allData.length === 0) throw new Error("Invalid data");
             } catch (error) {
-                // Fallback data so page never breaks if JSON is broken
                 allData = [
                     { "Symbol": "RELIANCE", "Market Cap": "Large Cap", "Strategy": "Nifty Sharia 500", "Timeframe": "Daily", "Pattern": "RBR", "Zone Type": "Demand Zone", "Close (₹)": "2926" },
                     { "Symbol": "TCS", "Market Cap": "Large Cap", "Strategy": "9/20 EMA Cross", "Timeframe": "Weekly", "Pattern": "RBD", "Zone Type": "Supply Zone", "Close (₹)": "3850" },
                     { "Symbol": "HDFCBANK", "Market Cap": "Large Cap", "Strategy": "Bollinger Bands", "Timeframe": "Monthly", "Pattern": "DBR", "Zone Type": "Demand Zone", "Close (₹)": "1520" },
-                    { "Symbol": "INFY", "Market Cap": "Large Cap", "Strategy": "Breakout", "Timeframe": "Quarterly", "Pattern": "DBD", "Zone Type": "Supply Zone", "Close (₹)": "1650" }
+                    { "Symbol": "INFY", "Market Cap": "Large Cap", "Strategy": "Breakout", "Timeframe": "Quarterly", "Pattern": "DBD", "Zone Type": "Supply Zone", "Close (₹)": "1650" },
+                    { "Symbol": "ITC", "Market Cap": "Large Cap", "Strategy": "9/20 EMA", "Timeframe": "Yearly", "Pattern": "RBR", "Zone Type": "Demand Zone", "Close (₹)": "440" },
+                    { "Symbol": "SBIN", "Market Cap": "Large Cap", "Strategy": "Price Action", "Timeframe": "Six Months", "Pattern": "DBD", "Zone Type": "Supply Zone", "Close (₹)": "810" }
                 ];
             }
                 
@@ -106,17 +109,24 @@
         }
 
         function populateFilters(data) {
-            let marketCaps = [...new Set(data.map(item => item["Symbol"] ? (item["Market Cap"] || item["mCap"]) : null).filter(Boolean))];
-            let strategies = [...new Set(data.map(item => item["Symbol"] ? (item["Strategy"] || item["strategy"]) : null).filter(Boolean))];
-            let timeframes = [...new Set(data.map(item => item["Symbol"] ? (item["Timeframe"] || item["tf"]) : null).filter(Boolean))];
+            let marketCaps = [...new Set(data.map(item => item["Market Cap"] || item["mCap"] || item["market_cap"]).filter(Boolean))];
+            let strategies = [...new Set(data.map(item => item["Strategy"] || item["strategy"]).filter(Boolean))];
+            
+            // Forcefully include standard timeframes along with data timeframes
+            let standardTfs = ["Yearly", "Six Months", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly", "125 min"];
+            let dataTfs = data.map(item => item["Timeframe"] || item["tf"] || item["timeframe"]).filter(Boolean);
+            let timeframes = [...new Set([...standardTfs, ...dataTfs])];
 
             let mcSelect = document.getElementById('marketCapFilter');
+            mcSelect.innerHTML = '<option value="">All Market Caps</option>';
             marketCaps.forEach(mc => { mcSelect.innerHTML += `<option value="${mc}">${mc}</option>`; });
 
             let stSelect = document.getElementById('strategyFilter');
+            stSelect.innerHTML = '<option value="">All Strategies</option>';
             strategies.forEach(st => { stSelect.innerHTML += `<option value="${st}">${st}</option>`; });
 
             let tfSelect = document.getElementById('timeframeFilter');
+            tfSelect.innerHTML = '<option value="">All Timeframes</option>';
             timeframes.forEach(tf => { tfSelect.innerHTML += `<option value="${tf}">${tf}</option>`; });
         }
 
@@ -235,4 +245,3 @@
     </script>
 </body>
 </html>
-
