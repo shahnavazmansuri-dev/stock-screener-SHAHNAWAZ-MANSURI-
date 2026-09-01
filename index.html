@@ -25,6 +25,8 @@
         th { background: #1a1a1a; color: #00ffcc; }
         .chart-btn { background: #0055ff; color: #fff; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; display: inline-block; }
         .calc-btn { background: #ffaa00; color: #121212; padding: 5px 8px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 4px; }
+        .add-watchlist-btn { background: #10b981; color: #fff; padding: 5px 8px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 4px; }
+        .remove-watchlist-btn { background: #ef4444; color: #fff; padding: 5px 8px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 4px; }
         .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
         .modal-content { background: #1e1e1e; padding: 20px; border-radius: 8px; width: 90%; max-width: 350px; border: 1px solid #333; }
         .modal-content h3 { color: #00ffcc; margin-top: 0; font-size: 16px; }
@@ -38,10 +40,10 @@
     <div class="update-time" id="lastUpdated">Last Updated: Loading...</div>
     <div class="stats" id="totalStocks">Total Stocks Loaded: 0</div>
 
-    <!-- Watchlist & All Stocks Tabs -->
+    <!-- Tabs for Switching -->
     <div class="tabs">
         <button id="btn-all" class="tab-btn tab-active" onclick="switchTab('all')">All Stocks (15m)</button>
-        <button id="btn-watchlist" class="tab-btn tab-inactive" onclick="switchTab('watchlist')">⭐ Watchlist (5m)</button>
+        <button id="btn-watchlist" class="tab-btn tab-inactive" onclick="switchTab('watchlist')">⭐ Watchlist (Live)</button>
     </div>
 
     <div class="controls">
@@ -97,42 +99,39 @@
         let allData = [];
         let currentMode = 'all';
 
+        function getSavedWatchlist() {
+            let saved = localStorage.getItem('my_custom_watchlist');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        let watchlistSymbols = getSavedWatchlist();
+
         function switchTab(mode) {
             currentMode = mode;
             document.getElementById('btn-all').className = mode === 'all' ? 'tab-btn tab-active' : 'tab-btn tab-inactive';
             document.getElementById('btn-watchlist').className = mode === 'watchlist' ? 'tab-btn tab-active' : 'tab-btn tab-inactive';
-            loadData();
+            
+            if (currentMode === 'watchlist') {
+                loadWatchlistMode();
+            } else {
+                loadData();
+            }
         }
 
         async function loadData() {
-            let jsonFile = currentMode === 'watchlist' ? 'watchlist.json' : 'stocks.json';
             let tbody = document.getElementById('tableBody');
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading ${currentMode} data...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading stocks...</td></tr>`;
 
             try {
-                let response = await fetch(jsonFile + '?' + new Date().getTime());
+                let response = await fetch('stocks.json?' + new Date().getTime());
                 if (!response.ok) throw new Error("File not found");
                 allData = await response.json();
-                
-                // Handle both array format (stocks.json) and object format with nested stocks array (watchlist.json)
-                if (!Array.isArray(allData)) {
-                    if (allData.stocks && Array.isArray(allData.stocks)) {
-                        allData = allData.stocks;
-                    } else {
-                        throw new Error("Invalid data format");
-                    }
-                }
-                
-                if (allData.length === 0) throw new Error("Empty data");
+                if (!Array.isArray(allData) || allData.length === 0) throw new Error("Invalid data");
             } catch (error) {
-                if (currentMode === 'all') {
-                    allData = [
-                        { "Symbol": "RELIANCE", "Market Cap": "Large Cap", "Strategy": "Nifty Sharia 500", "Timeframe": "Daily", "Pattern": "RBR", "Zone Type": "Demand Zone", "Close (₹)": "2926" },
-                        { "Symbol": "TCS", "Market Cap": "Large Cap", "Strategy": "9/20 EMA Cross", "Timeframe": "Weekly", "Pattern": "RBD", "Zone Type": "Supply Zone", "Close (₹)": "3850" }
-                    ];
-                } else {
-                    allData = [];
-                }
+                allData = [
+                    { "Symbol": "RELIANCE", "Market Cap": "Large Cap", "Strategy": "Nifty Sharia 500", "Timeframe": "Daily", "Pattern": "RBR", "Zone Type": "Demand Zone", "Close (₹)": "2926" },
+                    { "Symbol": "TCS", "Market Cap": "Large Cap", "Strategy": "9/20 EMA Cross", "Timeframe": "Weekly", "Pattern": "RBD", "Zone Type": "Supply Zone", "Close (₹)": "3850" }
+                ];
             }
                 
             let now = new Date();
@@ -142,11 +141,57 @@
             displayTable(allData);
         }
 
+        async function loadWatchlistMode() {
+            let tbody = document.getElementById('tableBody');
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading Watchlist...</td></tr>`;
+
+            // Ensure allData is loaded so we can filter from it
+            if (allData.length === 0) {
+                try {
+                    let response = await fetch('stocks.json?' + new Date().getTime());
+                    if (response.ok) allData = await response.json();
+                } catch(e) {}
+            }
+
+            watchlistSymbols = getSavedWatchlist();
+            let watchlistData = allData.filter(item => {
+                let sym = item["Symbol"] || item["symbol"] || "";
+                return watchlistSymbols.includes(sym);
+            });
+
+            document.getElementById('lastUpdated').innerText = "Watchlist Mode (Saved Stocks)";
+            displayTable(watchlistData);
+        }
+
+        function addToWatchlist(symbol) {
+            if (!watchlistSymbols.includes(symbol)) {
+                watchlistSymbols.push(symbol);
+                localStorage.setItem('my_custom_watchlist', JSON.stringify(watchlistSymbols));
+                alert(symbol + " added to your Watchlist!");
+                if (currentMode === 'watchlist') {
+                    loadWatchlistMode();
+                } else {
+                    filterTable();
+                }
+            }
+        }
+
+        function removeFromWatchlist(symbol) {
+            watchlistSymbols = watchlistSymbols.filter(s => s !== symbol);
+            localStorage.setItem('my_custom_watchlist', JSON.stringify(watchlistSymbols));
+            alert(symbol + " removed from your Watchlist!");
+            if (currentMode === 'watchlist') {
+                loadWatchlistMode();
+            } else {
+                filterTable();
+            }
+        }
+
         function populateFilters(data) {
             let marketCaps = [...new Set(data.map(item => item["Market Cap"] || item["mCap"] || item["market_cap"]).filter(Boolean))];
             let strategies = [...new Set(data.map(item => item["Strategy"] || item["strategy"]).filter(Boolean))];
             
-            let standardTfs = ["Yearly", "Six Months", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly", "125 min", "5m"];
+            let standardTfs = ["Yearly", "Six Months", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly", "125 min"];
             let dataTfs = data.map(item => item["Timeframe"] || item["tf"] || item["timeframe"]).filter(Boolean);
             let timeframes = [...new Set([...standardTfs, ...dataTfs])];
 
@@ -168,20 +213,25 @@
             document.getElementById('totalStocks').innerText = "Total Stocks Loaded: " + data.length;
             
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No matching stocks found in ${currentMode}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No stocks found. (Tip: Click "⭐ Add" on any stock from All Stocks tab to build your Watchlist)</td></tr>`;
                 return;
             }
 
             let html = '';
             data.forEach((item) => {
-                let symbol = item["Symbol"] || item["symbol"] || item["symbol_clean"] || "-";
-                let mCap = item["Market Cap"] || item["mCap"] || "Watchlist (5m)";
-                let strategy = item["Strategy"] || item["strategy"] || "EMA Crossover / Live";
-                let tf = item["Timeframe"] || item["tf"] || "5m";
-                let pattern = item["Pattern"] ? (item["Pattern"] + " (" + (item["Zone Type"] || "") + ")") : (item["pattern"] || "Live Data");
-                let close = item["Close (₹)"] || item["close"] || item["price"] || "-";
+                let symbol = item["Symbol"] || item["symbol"] || "-";
+                let mCap = item["Market Cap"] || item["mCap"] || "-";
+                let strategy = item["Strategy"] || item["strategy"] || "-";
+                let tf = item["Timeframe"] || item["tf"] || "-";
+                let pattern = (item["Pattern"] || item["pattern"] || "") + " (" + (item["Zone Type"] || item["zone"] || "") + ")";
+                let close = item["Close (₹)"] || item["close"] || "-";
 
                 let tvLink = `https://in.tradingview.com/chart/?symbol=NSE:${symbol}`;
+                let isAdded = watchlistSymbols.includes(symbol);
+
+                let actionButton = isAdded 
+                    ? `<button class="remove-watchlist-btn" onclick="removeFromWatchlist('${symbol}')">Remove ⭐</button>` 
+                    : `<button class="add-watchlist-btn" onclick="addToWatchlist('${symbol}')">⭐ Add</button>`;
 
                 html += `<tr>
                     <td><strong>${symbol}</strong><br><a href="${tvLink}" target="_blank" class="chart-btn">Chart ↗</a></td>
@@ -190,7 +240,10 @@
                     <td>${tf}</td>
                     <td>${pattern}</td>
                     <td>₹${close}</td>
-                    <td><button class="calc-btn" onclick="openModal('${symbol}', ${close})">R:R Calc</button></td>
+                    <td>
+                        <button class="calc-btn" onclick="openModal('${symbol}', ${close})">R:R Calc</button>
+                        ${actionButton}
+                    </td>
                 </tr>`;
             });
             tbody.innerHTML = html;
@@ -202,7 +255,11 @@
             let stVal = document.getElementById('strategyFilter').value;
             let tfVal = document.getElementById('timeframeFilter').value;
 
-            let filtered = allData.filter(item => {
+            let sourceData = (currentMode === 'watchlist') 
+                ? allData.filter(item => watchlistSymbols.includes(item["Symbol"] || item["symbol"])) 
+                : allData;
+
+            let filtered = sourceData.filter(item => {
                 let symbol = (item["Symbol"] || item["symbol"] || "").toLowerCase();
                 let mCap = item["Market Cap"] || item["mCap"] || "";
                 let strategy = item["Strategy"] || item["strategy"] || "";
@@ -221,13 +278,17 @@
 
         function exportToCSV() {
             let csv = 'Symbol,Market Cap,Strategy,Timeframe,Pattern,Close\n';
-            allData.forEach(row => {
+            let activeData = (currentMode === 'watchlist') 
+                ? allData.filter(item => watchlistSymbols.includes(item["Symbol"] || item["symbol"])) 
+                : allData;
+
+            activeData.forEach(row => {
                 let symbol = row["Symbol"] || row["symbol"] || "";
                 let mCap = row["Market Cap"] || row["mCap"] || "";
                 let strategy = row["Strategy"] || row["strategy"] || "";
                 let tf = row["Timeframe"] || row["tf"] || "";
                 let pattern = (row["Pattern"] || row["pattern"] || "") + " - " + (row["Zone Type"] || row["zone"] || "");
-                let close = row["Close (₹)"] || row["close"] || row["price"] || "";
+                let close = row["Close (₹)"] || row["close"] || "";
                 csv += `"${symbol}","${mCap}","${strategy}","${tf}","${pattern}","${close}"\n`;
             });
 
@@ -274,13 +335,7 @@
             document.getElementById('rrResult').innerText = `Risk: ₹${risk.toFixed(2)} | Reward: ₹${reward.toFixed(2)} | R:R = 1 : ${ratio}`;
         }
 
-        // Initial Load
         loadData();
-
-        // Auto-refresh interval (Watchlist gets polled every 5 minutes, All Stocks every 15 minutes)
-        setInterval(() => {
-            loadData();
-        }, currentMode === 'watchlist' ? 300000 : 900000);
     </script>
 </body>
 </html>
