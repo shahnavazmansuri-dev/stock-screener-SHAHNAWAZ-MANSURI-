@@ -2,23 +2,38 @@ name: Watchlist 5m Sync
 
 on:
   schedule:
-    - cron: '*/5 4-10 * * 1-5'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: pip install yfinance pandas
-      - run: python update_watchlist.py
-      - run: |
-          git config --global user.name "Watchlist Bot"
-          git config --global user.email "bot@github.com"
-          git add watchlist.json
-          git commit -m "Auto-update 5m watchlist" || exit 0
+
+      - name: Install dependencies
+        run: |
+          pip install requests yfinance pandas
+
+      - name: Run script
+        run: python update_watchlist.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add watchlist.json stocks.json
+          git commit -m "Auto-update 5m watchlist [skip ci]" || exit 0
           git push
           
