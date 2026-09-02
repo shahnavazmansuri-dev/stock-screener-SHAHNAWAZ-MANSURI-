@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE Demand & Supply Screener - Shahnawaz Mansuri</title>
+    <title>NSE Multi-Timeframe Demand Zone Screener - Shahnawaz Mansuri</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 10px; }
         .header { text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 8px; margin-bottom: 10px; }
         h2 { color: #58a6ff; margin: 0 0 4px 0; font-size: 16px; }
         .admin-badge { color: #f0883e; font-size: 11px; font-weight: bold; }
+        .stats { font-size: 11px; color: #8b949e; margin-top: 4px; }
+        
+        /* Timeframe Tabs Styling */
+        .tf-container { display: flex; gap: 4px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+        .tf-btn { background: #161b22; color: #8b949e; border: 1px solid #30363d; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .tf-btn.active { background: #238636; color: #fff; border-color: #238636; }
+
         .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; }
         .tab-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
         .tab-btn.active { background: #1f6feb; color: #fff; border-color: #1f6feb; font-weight: bold; }
+        
         .controls { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; }
         select, input { padding: 6px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; font-size: 11px; }
-        .table-container { max-height: 70vh; overflow-y: auto; border: 1px solid #30363d; border-radius: 6px; }
+        
+        .table-container { max-height: 65vh; overflow-y: auto; border: 1px solid #30363d; border-radius: 6px; }
         table { width: 100%; border-collapse: collapse; background: #161b22; white-space: nowrap; }
         th, td { padding: 8px; text-align: center; border-bottom: 1px solid #30363d; font-size: 11px; }
         th { background-color: #21262d; color: #58a6ff; position: sticky; top: 0; z-index: 5; }
         tr:hover { background-color: #21262d; }
+        
         .badge-demand { color: #3fb950; background: rgba(63,185,80,0.1); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
         .badge-supply { color: #f85149; background: rgba(248,81,73,0.1); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
         .chart-btn { background: #238636; color: #fff; text-decoration: none; padding: 3px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; }
@@ -29,8 +39,19 @@
 <body>
 
     <div class="header">
-        <h2>NSE Demand & Supply Zone Screener</h2>
+        <h2>NSE Multi-Timeframe Demand Zone Screener</h2>
         <div class="admin-badge">Developer & Admin: SHAHNAWAZ MANSURI</div>
+        <div class="stats" id="statsText">Loading...</div>
+    </div>
+
+    <!-- Timeframe Selection Tabs -->
+    <div class="tf-container" id="tfContainer">
+        <button class="tf-btn active" onclick="changeTf('Daily')">Daily</button>
+        <button class="tf-btn" onclick="changeTf('Weekly')">Weekly</button>
+        <button class="tf-btn" onclick="changeTf('Monthly')">Monthly</button>
+        <button class="tf-btn" onclick="changeTf('Quarterly')">Quarterly</button>
+        <button class="tf-btn" onclick="changeTf('Half-Yearly')">Half-Yearly</button>
+        <button class="tf-btn" onclick="changeTf('Yearly')">Yearly</button>
     </div>
 
     <div class="tabs">
@@ -60,6 +81,8 @@
                 <tr>
                     <th>⭐</th>
                     <th>Symbol</th>
+                    <th>Market Cap</th>
+                    <th>Timeframe</th>
                     <th>Pattern</th>
                     <th>Zone</th>
                     <th>Price</th>
@@ -67,23 +90,39 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="6">Loading screener...</td></tr>
+                <tr><td colspan="8">Loading data...</td></tr>
             </tbody>
         </table>
     </div>
 
     <script>
         let currentTab = 'ALL';
+        let currentTf = 'Daily';
         let watchlist = JSON.parse(localStorage.getItem('shahnawaz_watchlist')) || [];
-        
-        const sampleStocks = [
-            { symbol: "RELIANCE", pattern: "RBR", zone: "Demand", price: 2940.50 },
-            { symbol: "TCS", pattern: "RBD", zone: "Supply", price: 4120.00 },
-            { symbol: "INFY", pattern: "DBR", zone: "Demand", price: 1850.25 },
-            { symbol: "HDFCBANK", pattern: "DBD", zone: "Supply", price: 1630.10 },
-            { symbol: "SBIN", pattern: "RBR", zone: "Demand", price: 790.80 },
-            { symbol: "TATAMOTORS", pattern: "DBR", zone: "Demand", price: 1045.60 }
+
+        // Sample multi-timeframe stock database
+        const stockDatabase = [
+            { symbol: "RELIANCE", mCap: "Large Cap", price: 2940.50, tfData: { Daily: {zone:"Demand", pattern:"RBR"}, Weekly: {zone:"Demand", pattern:"DBR"}, Monthly: {zone:"Supply", pattern:"RBD"}, Quarterly: {zone:"Demand", pattern:"RBR"}, "Half-Yearly": {zone:"Supply", pattern:"DBD"}, Yearly: {zone:"Demand", pattern:"RBR"} } },
+            { symbol: "TCS", mCap: "Large Cap", price: 4120.00, tfData: { Daily: {zone:"Supply", pattern:"RBD"}, Weekly: {zone:"Supply", pattern:"DBD"}, Monthly: {zone:"Demand", pattern:"RBR"}, Quarterly: {zone:"Supply", pattern:"RBD"}, "Half-Yearly": {zone:"Demand", pattern:"DBR"}, Yearly: {zone:"Supply", pattern:"DBD"} } },
+            { symbol: "INFY", mCap: "Large Cap", price: 1850.25, tfData: { Daily: {zone:"Demand", pattern:"DBR"}, Weekly: {zone:"Demand", pattern:"RBR"}, Monthly: {zone:"Demand", pattern:"DBR"}, Quarterly: {zone:"Supply", pattern:"DBD"}, "Half-Yearly": {zone:"Demand", pattern:"RBR"}, Yearly: {zone:"Supply", pattern:"RBD"} } },
+            { symbol: "HDFCBANK", mCap: "Large Cap", price: 1630.10, tfData: { Daily: {zone:"Supply", pattern:"DBD"}, Weekly: {zone:"Demand", pattern:"RBR"}, Monthly: {zone:"Supply", pattern:"RBD"}, Quarterly: {zone:"Demand", pattern:"DBR"}, "Half-Yearly": {zone:"Supply", pattern:"DBD"}, Yearly: {zone:"Demand", pattern:"RBR"} } },
+            { symbol: "ICICIBANK", mCap: "Large Cap", price: 1150.40, tfData: { Daily: {zone:"Demand", pattern:"RBR"}, Weekly: {zone:"Supply", pattern:"RBD"}, Monthly: {zone:"Demand", pattern:"DBR"}, Quarterly: {zone:"Demand", pattern:"RBR"}, "Half-Yearly": {zone:"Supply", pattern:"RBD"}, Yearly: {zone:"Demand", pattern:"DBR"} } },
+            { symbol: "SBIN", mCap: "Large Cap", price: 790.80, tfData: { Daily: {zone:"Demand", pattern:"RBR"}, Weekly: {zone:"Demand", pattern:"DBR"}, Monthly: {zone:"Demand", pattern:"RBR"}, Quarterly: {zone:"Supply", pattern:"DBD"}, "Half-Yearly": {zone:"Demand", pattern:"RBR"}, Yearly: {zone:"Supply", pattern:"RBD"} } },
+            { symbol: "BHARTIARTL", mCap: "Large Cap", price: 1420.00, tfData: { Daily: {zone:"Demand", pattern:"DBR"}, Weekly: {zone:"Supply", pattern:"RBD"}, Monthly: {zone:"Demand", pattern:"RBR"}, Quarterly: {zone:"Demand", pattern:"DBR"}, "Half-Yearly": {zone:"Supply", pattern:"DBD"}, Yearly: {zone:"Demand", pattern:"RBR"} } },
+            { symbol: "ITC", mCap: "Large Cap", price: 450.30, tfData: { Daily: {zone:"Supply", pattern:"RBD"}, Weekly: {zone:"Demand", pattern:"DBR"}, Monthly: {zone:"Supply", pattern:"DBD"}, Quarterly: {zone:"Supply", pattern:"RBD"}, "Half-Yearly": {zone:"Demand", pattern:"RBR"}, Yearly: {zone:"Supply", pattern:"DBD"} } },
+            { symbol: "ZOMATO", mCap: "Mid Cap", price: 215.30, tfData: { Daily: {zone:"Demand", pattern:"RBR"}, Weekly: {zone:"Demand", pattern:"RBR"}, Monthly: {zone:"Demand", pattern:"DBR"}, Quarterly: {zone:"Demand", pattern:"RBR"}, "Half-Yearly": {zone:"Demand", pattern:"RBR"}, Yearly: {zone:"Demand", pattern:"DBR"} } },
+            { symbol: "SUZLON", mCap: "Small Cap", price: 72.50, tfData: { Daily: {zone:"Demand", pattern:"RBR"}, Weekly: {zone:"Demand", pattern:"DBR"}, Monthly: {zone:"Demand", pattern:"RBR"}, Quarterly: {zone:"Supply", pattern:"RBD"}, "Half-Yearly": {zone:"Demand", pattern:"RBR"}, Yearly: {zone:"Demand", pattern:"RBR"} } }
         ];
+
+        function changeTf(tf) {
+            currentTf = tf;
+            let buttons = document.querySelectorAll('.tf-btn');
+            buttons.forEach(btn => {
+                if(btn.innerText === tf) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            renderTable();
+        }
 
         function switchTab(tab) {
             currentTab = tab;
@@ -109,25 +148,29 @@
             
             document.getElementById('wlCount').innerText = watchlist.length;
 
-            let filtered = sampleStocks.filter(item => {
+            let filtered = stockDatabase.filter(item => {
+                let tfInfo = item.tfData[currentTf];
                 let matchesTab = (currentTab === 'ALL' || watchlist.includes(item.symbol));
-                let matchesZone = (zoneVal === 'ALL' || item.zone === zoneVal);
-                let matchesPattern = (patternVal === 'ALL' || item.pattern === patternVal);
+                let matchesZone = (zoneVal === 'ALL' || tfInfo.zone === zoneVal);
+                let matchesPattern = (patternVal === 'ALL' || tfInfo.pattern === patternVal);
                 let matchesSearch = item.symbol.includes(searchVal);
                 return matchesTab && matchesZone && matchesPattern && matchesSearch;
             });
+
+            document.getElementById('statsText').innerText = `Timeframe: ${currentTf} | Showing: ${filtered.length} stocks`;
 
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6">No stocks found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8">No stocks found for ${currentTf} matching filters</td></tr>`;
                 return;
             }
 
             filtered.forEach(item => {
+                let tfInfo = item.tfData[currentTf];
                 let isStarred = watchlist.includes(item.symbol);
-                let zoneBadge = item.zone === 'Demand' 
+                let zoneBadge = tfInfo.zone === 'Demand' 
                     ? `<span class="badge-demand">Demand</span>` 
                     : `<span class="badge-supply">Supply</span>`;
                 let tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${item.symbol}`;
@@ -136,7 +179,9 @@
                 tr.innerHTML = `
                     <td><button class="star ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${item.symbol}')">${isStarred ? '★' : '☆'}</button></td>
                     <td><strong>${item.symbol}</strong></td>
-                    <td style="color: #e3b341; font-weight: bold;">${item.pattern}</td>
+                    <td>${item.mCap}</td>
+                    <td style="color: #f0883e; font-weight: bold;">${currentTf}</td>
+                    <td style="color: #e3b341; font-weight: bold;">${tfInfo.pattern}</td>
                     <td>${zoneBadge}</td>
                     <td style="color: #58a6ff; font-weight: bold;">₹${item.price}</td>
                     <td><a href="${tvUrl}" target="_blank" class="chart-btn">Chart ↗</a></td>
