@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NSE Master Screener - Shahnawaz Mansuri</title>
+    <!-- SheetJS Library for Excel & CSV reading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 6px; }
         .header { text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin-bottom: 6px; }
@@ -15,11 +17,12 @@
         .tf-btn.active, .strat-btn.active { background: #238636; color: #fff; border-color: #238636; }
         .strat-btn { background: #1f6feb; border-color: #1f6feb; color: #fff; }
         .strat-btn.active { background: #f0883e; border-color: #f0883e; }
-        .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 6px; }
+        .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 6px; align-items: center; flex-wrap: wrap; }
         .tab-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
         .tab-btn.active { background: #1f6feb; color: #fff; border-color: #1f6feb; font-weight: bold; }
+        .upload-btn-label { background: #238636; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; display: inline-block; }
         .controls { display: flex; gap: 4px; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; }
-        select, input { padding: 5px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; font-size: 10px; flex: 1; min-width: 95px; }
+        select, input[type="text"] { padding: 5px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; font-size: 10px; flex: 1; min-width: 95px; }
         .table-container { max-height: 50vh; overflow-y: auto; border: 1px solid #30363d; border-radius: 6px; }
         table { width: 100%; border-collapse: collapse; background: #161b22; white-space: nowrap; }
         th, td { padding: 6px; text-align: center; border-bottom: 1px solid #30363d; font-size: 10px; }
@@ -35,7 +38,7 @@
 <body>
 
     <div class="header">
-        <h2>NSE Master 700+ Multi-Strategy Screener</h2>
+        <h2>NSE Master Multi-Strategy Screener</h2>
         <div class="admin-badge">Developer & Admin: SHAHNAWAZ MANSURI</div>
         <div class="stats-box" id="totalStatsText">Loading Database...</div>
     </div>
@@ -62,6 +65,10 @@
     <div class="tabs">
         <button class="tab-btn active" id="btnAll" onclick="switchTab('ALL')">All Stocks</button>
         <button class="tab-btn" id="btnWl" onclick="switchTab('WL')">⭐ Watchlist (<span id="wlCount">0</span>)</button>
+        <!-- Excel / CSV Upload Tab -->
+        <label class="upload-btn-label">
+            📁 Import Excel/CSV <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleExcelUpload(event)">
+        </label>
     </div>
 
     <div class="controls">
@@ -84,7 +91,7 @@
             <option value="DBR">DBR</option>
             <option value="DBD">DBD</option>
         </select>
-        <input type="text" id="searchInput" placeholder="Search symbol (e.g. Railtel)..." onkeyup="renderTable()">
+        <input type="text" id="searchInput" placeholder="Search symbol..." onkeyup="renderTable()">
     </div>
 
     <div class="table-container">
@@ -117,21 +124,21 @@
         let currentStrategy = 'ALL';
         let watchlist = JSON.parse(localStorage.getItem('shahnawaz_watchlist')) || [];
 
-        const baseNames = [
-            "RAILTEL","RELIANCE","TCS","HDFCBANK","ICICIBANK","INFY","SBIN","BHARTIARTL","ITC","LT","SUNPHARMA","AXISBANK","KOTAKBANK","WIPRO","TITAN","BAJFINANCE","MARUTI","ULTRACEMCO","POWERGRID","NTPC","ASIANPAINT",
-            "TATAMOTORS","TATASTEEL","JSWSTEEL","GRASIM","HCLTECH","TECHM","ADANIENT","ADANIPORTS","COALINDIA","ONGC","BPCL","IOC","HINDPETRO","SBILIFE","HDFCLIFE","BAJAJFINSV","CIPLA","DRREDDY","BRITANNIA","NESTLEIND",
-            "TATACONSUM","HEROMOTOCO","EICHERMOT","BAJAJ-AUTO","HINDALCO","VEDL","SHRIRAMFIN","CHOLAFIN","M&M","ABFRL","PIDILITIND","SHREECEM","SRF","MUTHOOTFIN","INDUSINDBK","BANDHANBNK","BANKBARODA","CANBK","PNB","IDBI",
-            "ZOMATO","PAYTM","HAL","BEL","TVSMOTOR","PIIND","OFSS","PERSISTENT","LUPIN","MPHASIS","ASTRAL","AUROPHARMA","BHEL","CONCOR","CUMMINSIND","DIVISLAB","POLYCAB","TATACOMM","UPL","PAGEIND",
-            "OBEROIRLTY","LALPATHLAB","IPCALAB","JBCHEPHARM","GRANULES","JKCEMENT","RAMCOCEM","DALBHARAT","AMBUJACEM","ACC","GODRECPCP","MARICO","DABUR","COLPAL","GODREJPROP","LODHA","DLF","PHOENIXLTD","PRESTIGE","SYNGENE",
-            "LAURUSLABS","NAVINFLUOR","AARTIIND","DEEPAKNTRT","ATUL","DIXON","APOLLOHOSP","ALKEM","TRENT","COFORGE","LTIM","SCHAEFFLER","SKFINDIA","THERMAX","VOLTAS","WHIRLPOOL","CROMPTON","HAVELLS","SUZLON","RVNL",
-            "IRFC","NHPC","COCHINSHIP","MAZDOCK","MRF","HUDCO","IRB","NCC","IDFCFIRSTB","RBLBANK","YESBANK","GRSE","BDL","SOLARINDS","ITI","RAINBOW","ASTERDM","KIMS","MEDANTA","FSL",
-            "TANLA","HAPPYESTM","ZENSARTECH","CYIENT","BSOFT","INTELLECT","REDINGTON","CEATLTD","APOLLOTYRE","JKTYRE","BALRAMCHIN","TRIDENT","EIDPARRY","RENUKA","CHAMBLFERT","GNFC","GSFC","COROMANDEL","FACT","RCF",
-            "NAM-INDIA","CAMS","KPRMILL","WELSPUNLIV","RADICO","JYOTHYLAB","BAJAJCON","EMAMILTD","GILLETTE","PROCTER","HONAUT","3MINDIA","KAJARIACER","HSCL","BORORENEW","DIAMOND","CAMPUS","BATAINDIA","EASEMYTRIP","BCG"
+        // Master Stocks Database including Railtel
+        let rawStocks = [
+            {s: "RAILTEL", c: "Small Cap", p: 455, vol: 1500000},
+            {s: "RELIANCE", c: "Large Cap", p: 2950, vol: 5400000},
+            {s: "TCS", c: "Large Cap", p: 3850, vol: 2100000},
+            {s: "HDFCBANK", c: "Large Cap", p: 1650, vol: 4200000},
+            {s: "ICICIBANK", c: "Large Cap", p: 1100, vol: 3900000},
+            {s: "INFY", c: "Large Cap", p: 1550, vol: 3100000},
+            {s: "SBIN", c: "Large Cap", p: 820, vol: 6100000}
         ];
 
-        let rawStocks = [];
+        const baseNames = ["BHARTIARTL","ITC","LT","SUNPHARMA","AXISBANK","KOTAKBANK","WIPRO","TITAN","BAJFINANCE","MARUTI","ULTRACEMCO","POWERGRID","NTPC","ASIANPAINT","TATAMOTORS","TATASTEEL","JSWSTEEL","GRASIM","HCLTECH","TECHM","ADANIENT","ADANIPORTS","COALINDIA","ONGC","BPCL","IOC","HINDPETRO","SBILIFE","HDFCLIFE","BAJAJFINSV","CIPLA","DRREDDY","BRITANNIA","NESTLEIND","TATACONSUM","HEROMOTOCO","EICHERMOT","BAJAJ-AUTO","HINDALCO","VEDL","SHRIRAMFIN","CHOLAFIN","M&M","ABFRL","PIDILITIND","SHREECEM","SRF","MUTHOOTFIN","INDUSINDBK","BANDHANBNK","BANKBARODA","CANBK","PNB","IDBI","ZOMATO","PAYTM","HAL","BEL","TVSMOTOR","PIIND","OFSS","PERSISTENT","LUPIN","MPHASIS","ASTRAL","AUROPHARMA","BHEL","CONCOR","CUMMINSIND","DIVISLAB","POLYCAB","TATACOMM","UPL","PAGEIND","OBEROIRLTY","LALPATHLAB","IPCALAB","JBCHEPHARM","GRANULES","JKCEMENT","RAMCOCEM","DALBHARAT","AMBUJACEM","ACC","GODRECPCP","MARICO","DABUR","COLPAL","GODREJPROP","LODHA","DLF","PHOENIXLTD","PRESTIGE","SYNGENE","LAURUSLABS","NAVINFLUOR","AARTIIND","DEEPAKNTRT","ATUL","DIXON","APOLLOHOSP","ALKEM","TRENT","COFORGE","LTIM","SCHAEFFLER","SKFINDIA","THERMAX","VOLTAS","WHIRLPOOL","CROMPTON","HAVELLS","SUZLON","RVNL","IRFC","NHPC","COCHINSHIP","MAZDOCK","MRF","HUDCO","IRB","NCC","IDFCFIRSTB","RBLBANK","YESBANK","GRSE","BDL","SOLARINDS","ITI","RAINBOW","ASTERDM","KIMS","MEDANTA","FSL","TANLA","HAPPYESTM","ZENSARTECH","CYIENT","BSOFT","INTELLECT","REDINGTON","CEATLTD","APOLLOTYRE","JKTYRE","BALRAMCHIN","TRIDENT","EIDPARRY","RENUKA","CHAMBLFERT","GNFC","GSFC","COROMANDEL","FACT","RCF","NAM-INDIA","CAMS","KPRMILL","WELSPUNLIV","RADICO","JYOTHYLAB","BAJAJCON","EMAMILTD","GILLETTE","PROCTER","HONAUT","3MINDIA","KAJARIACER","HSCL","BORORENEW","DIAMOND","CAMPUS","BATAINDIA","EASEMYTRIP","BCG"];
+        
         let cats = ["Large Cap", "Mid Cap", "Small Cap", "Micro Cap"];
-        for(let i=0; i<750; i++) {
+        for(let i=0; i<700; i++) {
             let name = baseNames[i % baseNames.length] + (i >= baseNames.length ? (i+1) : "");
             rawStocks.push({
                 s: name,
@@ -139,6 +146,49 @@
                 p: Math.floor(Math.random() * 3000) + 50,
                 vol: Math.floor(Math.random() * 5000000) + 100000
             });
+        }
+
+        // Excel / CSV File Reader Handler using SheetJS
+        function handleExcelUpload(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let data = new Uint8Array(e.target.result);
+                let workbook = XLSX.read(data, {type: 'array'});
+                let firstSheetName = workbook.SheetNames[0];
+                let worksheet = workbook.Sheets[firstSheetName];
+                let jsonSheet = XLSX.utils.sheet_to_json(worksheet);
+
+                if (jsonSheet.length > 0) {
+                    let importedStocks = [];
+                    jsonSheet.forEach(row => {
+                        let symbol = row['Symbol'] || row['symbol'] || row['STOCK'] || row['stock'] || Object.values(row)[0];
+                        let category = row['Category'] || row['category'] || "Small Cap";
+                        let price = parseFloat(row['Price'] || row['price'] || row['LTP'] || row['ltp'] || 100);
+                        let volume = parseInt(row['Volume'] || row['volume'] || 500000);
+
+                        if (symbol) {
+                            importedStocks.push({
+                                s: String(symbol).toUpperCase().trim(),
+                                c: String(category),
+                                p: isNaN(price) ? 100 : price,
+                                vol: isNaN(volume) ? 500000 : volume
+                            });
+                        }
+                    });
+
+                    if (importedStocks.length > 0) {
+                        rawStocks = importedStocks;
+                        alert(`Successfully imported ${rawStocks.length} stocks from your file!`);
+                        renderTable();
+                    } else {
+                        alert("Could not read symbols. Ensure your file has a column named 'Symbol' or 'Stock'.");
+                    }
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         function getStockData(symbol, tf) {
@@ -151,7 +201,7 @@
             return { 
                 zone: zones[Math.abs(hash) % 2], 
                 pattern: patterns[Math.abs(hash >> 3) % 4],
-                strat: strats[Math.abs(hash >> 5)  % strats.length]
+                strat: strats[Math.abs(hash >> 5) % strats.length]
             };
         }
 
@@ -202,7 +252,7 @@
             });
 
             document.getElementById('totalStatsText').innerHTML = 
-                `TF: <span style="color:#58a6ff">${currentTf}</span> | Database: <span style="color:#e3b341">${rawStocks.length}</span> | Filtered: <span style="color:#3fb950">${filtered.length}</span>`;
+                `TF: <span style="color:#58a6ff">${currentTf}</span> | Total Database: <span style="color:#e3b341">${rawStocks.length}</span> | Filtered: <span style="color:#3fb950">${filtered.length}</span>`;
 
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -218,13 +268,11 @@
                 let zoneBadge = data.zone === 'Demand' ? `<span class="badge-demand">Demand</span>` : `<span class="badge-supply">Supply</span>`;
                 let tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${item.s}`;
 
-                // RRR calculations
                 let entry = item.p;
-                let sl = Math.round(entry * 0.96); // 4% SL
-                let target = Math.round(entry * 1.12); // 12% Target (1:3 RRR)
+                let sl = Math.round(entry * 0.96); 
+                let target = Math.round(entry * 1.12); 
                 let risk = entry - sl;
                 let reward = target - entry;
-                let rrr = (reward / risk).toFixed(1) + ":1";
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
