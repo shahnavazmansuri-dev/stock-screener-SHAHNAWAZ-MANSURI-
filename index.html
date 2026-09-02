@@ -19,6 +19,7 @@
         input[type="text"] { width: 140px; }
         .btn.active, .tab-btn.active { background: #00ffcc; color: #000; font-weight: bold; border-color: #00ffcc; }
         .btn-export { background: #0088cc; border-color: #0099ee; font-weight: bold; }
+        .btn-refresh { background: #28a745; border-color: #34ce57; font-weight: bold; color: #fff; }
         .table-container { max-height: 65vh; overflow-y: auto; border-radius: 6px; border: 1px solid #333; }
         table { width: 100%; border-collapse: collapse; background: #1e1e1e; white-space: nowrap; }
         th, td { padding: 8px 8px; text-align: center; border-bottom: 1px solid #333; font-size: 12px; }
@@ -41,7 +42,7 @@
         </div>
         <div class="stats-info">
             <span id="statsInfo">Loading...</span>
-            <span id="timerInfo" style="color: #00ffcc;">Live Refresh: <b id="countdown">900s</b></span>
+            <span id="timerInfo" style="color: #00ffcc;">Next Update: <b id="countdown">900s</b></span>
         </div>
     </div>
 
@@ -87,6 +88,7 @@
 
         <div class="control-group">
             <input type="text" id="searchInput" placeholder="Search symbol..." onkeyup="filterAndRender()">
+            <button class="btn btn-refresh" onclick="manualRefreshLivePrices()">🔄 Refresh Live</button>
             <button class="btn btn-export" onclick="exportToCSV()">📥 Export CSV</button>
         </div>
     </div>
@@ -118,7 +120,7 @@
         let currentTab = 'ALL';
         let currentTf = 'Daily';
         let watchlist = JSON.parse(localStorage.getItem('nse_watchlist')) || [];
-        let timeLeft = 900; // 15 minutes live update timer
+        let timeLeft = 900; // 15 Minutes countdown
         let lastFilteredStocks = [];
         let livePricesCache = {};
 
@@ -132,15 +134,11 @@
                 
                 stockData = rawData.map((item, index) => {
                     let tfData = item.timeframes || {};
+                    let basePrice = item.price ? Number(item.price) : (200 + ((index * 37) % 800));
                     let processedTf = {};
                     
                     timeframesArr.forEach((tf, idx) => {
-                        let basePrice = item.price ? Number(item.price) : (500 + ((index * 31) % 1000));
-                        let multiplier = 1 + ((idx - 4) * 0.003);
-                        
-                        let p = tfData[tf]?.price || Number((basePrice * multiplier).toFixed(2));
                         processedTf[tf] = {
-                            price: p,
                             zone: tfData[tf]?.zone || ((index + idx) % 2 === 0 ? 'Demand' : 'Supply'),
                             pattern: tfData[tf]?.pattern || patternsList[(index + idx) % patternsList.length]
                         };
@@ -149,13 +147,13 @@
                     return {
                         symbol: item.symbol,
                         mCap: item.mCap || "Large Cap",
+                        basePrice: basePrice,
                         timeframes: processedTf
                     };
                 });
 
                 filterAndRender();
-                
-                // Automatically fetch live prices for Watchlist items first
+                // Fetch live prices for visible or watchlist stocks initially
                 fetchLivePricesForCurrentView();
             } catch (error) {
                 console.error("Error loading stocks.json:", error);
@@ -164,15 +162,10 @@
         }
 
         async function fetchLivePricesForCurrentView() {
-            // Target symbols to fetch live prices for (Prioritize Watchlist, or visible table rows)
-            let symbolsToFetch = currentTab === 'WATCHLIST' ? [...watchlist] : lastFilteredStocks.slice(0, 30).map(s => s.symbol);
+            // Fetch live prices for currently visible table rows (batch of top 40 for speed) or Watchlist
+            let symbolsToFetch = currentTab === 'WATCHLIST' ? [...watchlist] : lastFilteredStocks.slice(0, 40).map(s => s.symbol);
             
             for (let sym of symbolsToFetch) {
-                if (livePricesCache[sym]) {
-                    // Use cached live price if fetched recently
-                    applyLivePriceToStock(sym, livePricesCache[sym]);
-                    continue;
-                }
                 try {
                     let proxyUrl = `https://api.allorigins.win/raw?url=` + encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1m&range=1d`);
                     let res = await fetch(proxyUrl);
@@ -182,25 +175,20 @@
                     
                     if (currentPrice) {
                         livePricesCache[sym] = Number(currentPrice.toFixed(2));
-                        applyLivePriceToStock(sym, livePricesCache[sym]);
+                        let stock = stockData.find(s => s.symbol === sym);
+                        if (stock) stock.basePrice = livePricesCache[sym];
                     }
                 } catch (e) {
-                    // Fallback silently if network blocks proxy
+                    // Ignore individual fetch fails silently
                 }
             }
+            filterAndRender();
         }
 
-        function applyLivePriceToStock(symbol, livePrice) {
-            let stock = stockData.find(s => s.symbol === symbol);
-            if (stock) {
-                // Update price across timeframes or specifically current timeframe
-                stock.timeframes[currentTf].price = livePrice;
-                // Re-render only if that stock is currently visible
-                let rowElem = document.getElementById("row_" + symbol);
-                if (rowElem) {
-                    filterAndRender(); // Refresh UI smoothly
-                }
-            }
+        function manualRefreshLivePrices() {
+            timeLeft = 900;
+            fetchLivePricesForCurrentView();
+            alert("Live prices refreshed successfully!");
         }
 
         function switchTab(tab) {
@@ -246,7 +234,7 @@
             tbody.innerHTML = "";
 
             lastFilteredStocks = stockData.filter(stock => {
-                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR', price: 100 };
+                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR' };
                 
                 let matchesTab = (currentTab === 'ALL' || watchlist.includes(stock.symbol));
                 let matchesSearch = stock.symbol.toUpperCase().includes(searchKeyword);
@@ -264,8 +252,8 @@
             }
 
             lastFilteredStocks.forEach((stock) => {
-                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR', price: 100 };
-                let price = tfInfo.price;
+                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR' };
+                let price = livePricesCache[stock.symbol] || stock.basePrice;
                 let pattern = tfInfo.pattern;
                 let zone = tfInfo.zone;
 
@@ -291,7 +279,6 @@
                     : `<span class="badge-supply">Supply</span>`;
 
                 let tr = document.createElement("tr");
-                tr.id = "row_" + stock.symbol;
                 tr.innerHTML = `
                     <td>
                         <button class="star-btn ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${stock.symbol}')" title="Star">
@@ -323,8 +310,8 @@
             let csvContent = "data:text/csv;charset=utf-8,Symbol,MarketCap,Timeframe,Pattern,Zone,Price,Entry,StopLoss,Target,RRR\n";
             
             lastFilteredStocks.forEach(stock => {
-                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR', price: 100 };
-                let price = tfInfo.price;
+                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR' };
+                let price = livePricesCache[stock.symbol] || stock.basePrice;
                 let entry = price;
                 let sl = tfInfo.zone === 'Demand' ? Number((entry * 0.975).toFixed(2)) : Number((entry * 1.025).toFixed(2));
                 let risk = Math.abs(entry - sl);
@@ -345,7 +332,7 @@
 
         loadData();
 
-        // 15-minute background live price refresh timer
+        // Background 15-minute Auto Refresh Timer
         setInterval(() => {
             timeLeft--;
             document.getElementById("countdown").innerText = timeLeft + "s";
@@ -357,3 +344,4 @@
     </script>
 </body>
 </html>
+
