@@ -17,11 +17,24 @@
         .tv-link { color: #00bcd4; text-decoration: none; font-weight: bold; }
         .tv-link:hover { text-decoration: underline; }
         .actions-bar { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .calc-box { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 6px; margin-bottom: 20px; }
+        .calc-box h3 { color: #00ffcc; margin-top: 0; font-size: 16px; }
+        .calc-inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     </style>
 </head>
 <body>
 
     <h2>Shahnawaz Mansuri Stock Screener</h2>
+
+    <div class="calc-box">
+        <h3>Risk-Reward & Target Calculator</h3>
+        <div class="calc-inputs">
+            <input type="number" id="calcEntry" placeholder="Entry Price (₹)" style="width: 140px;">
+            <input type="number" id="calcSL" placeholder="Stop Loss (₹)" style="width: 140px;">
+            <button onclick="calculateLevels()">Calculate Targets</button>
+            <span id="calcResult" style="color: #00ff66; font-weight: bold;"></span>
+        </div>
+    </div>
 
     <div class="actions-bar">
         <input type="file" id="csvFile" accept=".csv" onchange="handleCSVUpload(event)">
@@ -44,6 +57,8 @@
             <option value="ALL">All Strategies / Zones</option>
             <option value="EMA_CROSS">9/20 EMA Crossover</option>
             <option value="Demand">Demand Zone</option>
+            <option value="Bollinger">Bollinger Squeeze / Breakout</option>
+            <option value="MACD_CCI">MACD / CCI Cross</option>
         </select>
     </div>
     
@@ -67,9 +82,9 @@
     <script>
         let stockData = [
             { "s": "RELIANCE", "c": "Large Cap", "p": 2450.0, "zone": "Demand (Daily)", "pattern": "RBR", "strat": "9/20 Bullish Cross" },
-            { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "Consolidation" },
-            { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD", "strat": "9/20 Bullish Cross" },
-            { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD", "strat": "Breakout" }
+            { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "Bollinger Breakout" },
+            { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD", "strat": "MACD / CCI Cross" },
+            { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD", "strat": "9/20 Bullish Cross" }
         ];
 
         let watchlist = JSON.parse(localStorage.getItem('sm_watchlist')) || [];
@@ -110,11 +125,33 @@
                     matchesStrat = stock.strat.includes('9/20');
                 } else if(stratVal === 'Demand') {
                     matchesStrat = stock.zone.includes('Demand');
+                } else if(stratVal === 'Bollinger') {
+                    matchesStrat = stock.strat.includes('Bollinger');
+                } else if(stratVal === 'MACD_CCI') {
+                    matchesStrat = stock.strat.includes('MACD');
                 }
                 return matchesSearch && matchesCat && matchesStrat;
             });
 
             renderTable(filtered);
+        }
+
+        function calculateLevels() {
+            const entry = parseFloat(document.getElementById('calcEntry').value);
+            const sl = parseFloat(document.getElementById('calcSL').value);
+            const resSpan = document.getElementById('calcResult');
+
+            if(!entry || !sl || entry <= sl) {
+                resSpan.innerHTML = "Enter valid Entry > Stop Loss";
+                return;
+            }
+
+            const risk = entry - sl;
+            const t1 = entry + (risk * 1);
+            const t2 = entry + (risk * 2);
+            const t3 = entry + (risk * 3);
+
+            resSpan.innerHTML = `Risk: ₹${risk.toFixed(2)} | T1: ₹${t1.toFixed(2)} | T2: ₹${t2.toFixed(2)} | T3: ₹${t3.toFixed(2)}`;
         }
 
         function toggleWatchlist(symbol) {
@@ -184,4 +221,3 @@
 
 </body>
 </html>
-
