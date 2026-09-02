@@ -1,128 +1,106 @@
-import json
-import pandas as pd
-import yfinance as yf
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Timeframe Stock Screener</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
+        h2 { color: #00ffcc; text-align: center; }
+        .controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        select { padding: 10px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #333; }
+        th { background-color: #2c2c2c; color: #00ffcc; }
+        tr:hover { background-color: #252525; }
+    </style>
+</head>
+<body>
 
-# NSE se poori active stocks ki list fetch karein (Koi limit nahi, saare 341+ stocks aayenge)
-url = "https://archives.nseindia.com/content/equities/EQUITY_L.csv"
-df_nse = pd.read_csv(url)
-symbols = df_nse["SYMBOL"].tolist()
+    <h2>NSE Multi-Timeframe Stock Screener</h2>
+    
+    <div class="controls">
+        <label for="timeframeSelect">Select Timeframe: </label>
+        <select id="timeframeSelect" onchange="renderTable()">
+            <option value="5m">5 Minutes</option>
+            <option value="15m">15 Minutes</option>
+            <option value="30m">30 Minutes</option>
+            <option value="1 Hour">1 Hour</option>
+            <option value="2 Hours">2 Hours</option>
+            <option value="3 Hours">3 Hours</option>
+            <option value="4 Hours">4 Hours</option>
+            <option value="Daily" selected>Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+        </select>
+    </div>
 
-stock_data_list = []
-strategies = ["Nifty Sharia 500", "9/20 EMA Cross", "Bollinger Bands", "Breakout"]
-patterns = ["RBR", "RBD", "DBR", "DBD"]
-zones = ["Demand", "Supply"]
+    <table id="screenerTable">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Market Cap</th>
+                <th>Strategy</th>
+                <th>Pattern</th>
+                <th>Zone</th>
+                <th>Price (<span id="selectedTfLabel">Daily</span>)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="6">Loading market data...</td></tr>
+        </tbody>
+    </table>
 
-print(
-    f"Fetching multi-timeframe nested data for all {len(symbols)} stocks"
-    " without any limits..."
-)
+    <script>
+        let stockData = [];
 
-for i, sym in enumerate(symbols):
-  sym = str(sym).strip()
-  t_symbol = sym + ".NS"
+        async function loadData() {
+            try {
+                let response = await fetch('stocks.json');
+                stockData = await response.json();
+                renderTable();
+            } catch (error) {
+                console.error("Error loading stocks.json:", error);
+                document.querySelector("#screenerTable tbody").innerHTML = `<tr><td colspan="6" style="color:red;">Error loading stocks.json data.</td></tr>`;
+            }
+        }
 
-  try:
-    tk = yf.Ticker(t_symbol)
-    inf = tk.fast_info
-    mcap_val = getattr(inf, "market_cap", 0) / 1e7
-  except Exception:
-    mcap_val = 1500.0
+        function renderTable() {
+            let selectEl = document.getElementById("timeframeSelect");
+            let selectedTf = selectEl ? selectEl.value : "Daily";
+            
+            let labelEl = document.getElementById("selectedTfLabel");
+            if(labelEl) labelEl.innerText = selectedTf;
+            
+            let tbody = document.querySelector("#screenerTable tbody");
+            if(!tbody) return;
+            tbody.innerHTML = "";
 
-  if mcap_val > 20000:
-    category = "Large Cap"
-  elif mcap_val > 5000:
-    category = "Mid Cap"
-  elif mcap_val > 1000:
-    category = "Small Cap"
-  else:
-    category = "Micro Cap"
+            if (stockData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6">No data available</td></tr>`;
+                return;
+            }
 
-  tf_prices = {}
+            stockData.forEach(stock => {
+                let price = "N/A";
+                if (stock.prices && stock.prices[selectedTf] !== undefined) {
+                    price = stock.prices[selectedTf];
+                }
 
-  # 1. Intraday & Hourly data fetch karna (5m, 15m, 30m, 60m/1 Hour)
-  intraday_intervals = {
-      "5m": "5m",
-      "15m": "15m",
-      "30m": "30m",
-      "1 Hour": "60m",
-  }
-  for tf_name, interval_val in intraday_intervals.items():
-    try:
-      df_tf = yf.download(
-          t_symbol, period="5d", interval=interval_val, progress=False
-      )
-      if not df_tf.empty and "Close" in df_tf.columns:
-        close_series = df_tf["Close"].dropna()
-        p_val = (
-            float(close_series.iloc[-1]) if not close_series.empty else 100.0
-        )
-      else:
-        p_val = 100.0
-    except Exception:
-      p_val = 100.0
-    tf_prices[tf_name] = round(p_val, 2)
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${stock.symbol}</strong></td>
+                    <td>${stock.mCap}</td>
+                    <td>${stock.strategy}</td>
+                    <td>${stock.pattern}</td>
+                    <td>${stock.zone}</td>
+                    <td style="color: #00ffcc; font-weight: bold;">₹${price}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-  # 2. Hourly data se 2 Hours, 3 Hours, aur 4 Hours candles generate karna
-  try:
-    df_hourly = yf.download(
-        t_symbol, period="10d", interval="60m", progress=False
-    )
-    if not df_hourly.empty and "Close" in df_hourly.columns:
-      hc = df_hourly["Close"].dropna()
-      if len(hc) >= 4:
-        tf_prices["2 Hours"] = round(float(hc.iloc[::2].iloc[-1]), 2)
-        tf_prices["3 Hours"] = round(float(hc.iloc[::3].iloc[-1]), 2)
-        tf_prices["4 Hours"] = round(float(hc.iloc[::4].iloc[-1]), 2)
-      else:
-        tf_prices["2 Hours"] = tf_prices["1 Hour"]
-        tf_prices["3 Hours"] = tf_prices["1 Hour"]
-        tf_prices["4 Hours"] = tf_prices["1 Hour"]
-    else:
-      tf_prices["2 Hours"] = tf_prices["1 Hour"]
-      tf_prices["3 Hours"] = tf_prices["1 Hour"]
-      tf_prices["4 Hours"] = tf_prices["1 Hour"]
-  except Exception:
-    tf_prices["2 Hours"] = tf_prices.get("1 Hour", 100.0)
-    tf_prices["3 Hours"] = tf_prices.get("1 Hour", 100.0)
-    tf_prices["4 Hours"] = tf_prices.get("1 Hour", 100.0)
-
-  # 3. Positional timeframes (Daily, Weekly, Monthly)
-  pos_configs = {
-      "Daily": {"interval": "1d", "period": "1mo"},
-      "Weekly": {"interval": "1wk", "period": "3mo"},
-      "Monthly": {"interval": "1mo", "period": "1y"},
-  }
-  for tf_name, conf in pos_configs.items():
-    try:
-      df_pos = yf.download(
-          t_symbol,
-          period=conf["period"],
-          interval=conf["interval"],
-          progress=False,
-      )
-      if not df_pos.empty and "Close" in df_pos.columns:
-        cp = df_pos["Close"].dropna()
-        p_val = float(cp.iloc[-1]) if not cp.empty else 100.0
-      else:
-        p_val = 100.0
-    except Exception:
-      p_val = 100.0
-    tf_prices[tf_name] = round(p_val, 2)
-
-  stock_data_list.append({
-      "symbol": sym,
-      "mCap": category,
-      "strategy": strategies[i % len(strategies)],
-      "pattern": patterns[i % len(patterns)],
-      "zone": zones[i % len(zones)],
-      "prices": tf_prices,
-  })
-
-# Final JSON file save for all stocks
-with open("stocks.json", "w") as f:
-  json.dump(stock_data_list, f)
-
-print(
-    "All stocks processed successfully and saved to 'stocks.json' without any"
-    " truncation!"
-)
+        loadData();
+    </script>
+</body>
+</html>
