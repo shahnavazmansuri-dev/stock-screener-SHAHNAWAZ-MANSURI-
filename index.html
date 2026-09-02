@@ -6,20 +6,23 @@
     <title>NSE Multi-Timeframe Demand Zone Screener - Shahnawaz Mansuri</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 15px; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        h2 { color: #00ffcc; margin: 0; font-size: 20px; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        h2 { color: #00ffcc; margin: 0; font-size: 19px; }
         .author-tag { color: #ffcc00; font-size: 13px; font-weight: bold; margin-top: 3px; }
-        .stats-info { font-size: 13px; color: #aaa; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        select, input, .btn { padding: 8px 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; font-size: 14px; cursor: pointer; }
-        input[type="text"] { width: 160px; }
+        .stats-info { font-size: 12px; color: #aaa; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .timeframe-tabs { display: flex; gap: 5px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 5px; }
+        .tf-tab { background: #222; color: #fff; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+        .tf-tab.active { background: #00ffcc; color: #000; font-weight: bold; border-color: #00ffcc; }
+        .controls { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        .control-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        select, input, .btn { padding: 7px 10px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; font-size: 13px; cursor: pointer; }
+        input[type="text"] { width: 150px; }
         .btn.active, .tab-btn.active { background: #00ffcc; color: #000; font-weight: bold; border-color: #00ffcc; }
         .btn-export { background: #0088cc; border-color: #0099ee; font-weight: bold; }
         .btn-export:hover { background: #00aaff; }
-        .table-container { max-height: 70vh; overflow-y: auto; border-radius: 8px; border: 1px solid #333; }
+        .table-container { max-height: 68vh; overflow-y: auto; border-radius: 8px; border: 1px solid #333; }
         table { width: 100%; border-collapse: collapse; background: #1e1e1e; white-space: nowrap; }
-        th, td { padding: 10px 10px; text-align: center; border-bottom: 1px solid #333; font-size: 13px; }
+        th, td { padding: 9px 10px; text-align: center; border-bottom: 1px solid #333; font-size: 13px; }
         th { background-color: #2c2c2c; color: #00ffcc; position: sticky; top: 0; z-index: 10; }
         tr:hover { background-color: #252525; }
         .chart-link { color: #00ffcc; text-decoration: none; font-weight: bold; margin-left: 6px; background: #2a2a2a; padding: 2px 5px; border-radius: 4px; font-size: 11px; border: 1px solid #444; }
@@ -39,30 +42,28 @@
         </div>
         <div class="stats-info">
             <span id="statsInfo">Loading...</span>
-            <span id="timerInfo" style="color: #00ffcc;">Auto-Refresh: <b id="countdown">300s</b></span>
+            <span id="timerInfo" style="color: #00ffcc;">Refresh: <b id="countdown">300s</b></span>
         </div>
+    </div>
+
+    <!-- Higher Timeframe Navigation Tabs (Daily, Weekly, Monthly, Quarterly, Half-Year, Yearly) -->
+    <div class="timeframe-tabs">
+        <button class="tf-tab" onclick="setTf('5m')">5m</button>
+        <button class="tf-tab" onclick="setTf('15m')">15m</button>
+        <button class="tf-tab" onclick="setTf('30m')">30m</button>
+        <button class="tf-tab" onclick="setTf('1 Hour')">1 Hour</button>
+        <button class="tf-tab" onclick="setTf('Daily')" id="defaultTfTab">Daily</button>
+        <button class="tf-tab" onclick="setTf('Weekly')">Weekly</button>
+        <button class="tf-tab" onclick="setTf('Monthly')">Monthly</button>
+        <button class="tf-tab" onclick="setTf('Quarterly')">Quarterly</button>
+        <button class="tf-tab" onclick="setTf('Half-Year')">Half-Yearly</button>
+        <button class="tf-tab" onclick="setTf('Yearly')">Yearly</button>
     </div>
     
     <div class="controls">
         <div class="control-group">
             <button class="btn tab-btn active" id="allTab" onclick="switchTab('ALL')">All Stocks</button>
             <button class="btn tab-btn" id="wlTab" onclick="switchTab('WATCHLIST')">⭐ Watchlist (<span id="wlCount">0</span>)</button>
-            
-            <div>
-                <label for="timeframeSelect">TF: </label>
-                <select id="timeframeSelect" onchange="filterAndRender()">
-                    <option value="5m">5m</option>
-                    <option value="15m">15m</option>
-                    <option value="30m">30m</option>
-                    <option value="1 Hour">1 Hour</option>
-                    <option value="2 Hours">2 Hours</option>
-                    <option value="3 Hours">3 Hours</option>
-                    <option value="4 Hours">4 Hours</option>
-                    <option value="Daily" selected>Daily</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Monthly">Monthly</option>
-                </select>
-            </div>
 
             <div>
                 <label for="zoneFilter">Zone: </label>
@@ -106,6 +107,7 @@
     <script>
         let stockData = [];
         let currentTab = 'ALL';
+        let currentTf = 'Daily';
         let watchlist = JSON.parse(localStorage.getItem('nse_watchlist')) || [];
         let timeLeft = 300; 
         let lastFilteredStocks = [];
@@ -130,6 +132,14 @@
             filterAndRender();
         }
 
+        function setTf(tf) {
+            currentTf = tf;
+            document.querySelectorAll('.tf-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.toLowerCase() === tf.toLowerCase());
+            });
+            filterAndRender();
+        }
+
         function toggleWatchlist(symbol) {
             if (watchlist.includes(symbol)) {
                 watchlist = watchlist.filter(s => s !== symbol);
@@ -145,11 +155,10 @@
         }
 
         function filterAndRender() {
-            let selectedTf = document.getElementById("timeframeSelect").value;
             let zoneVal = document.getElementById("zoneFilter").value;
             let searchKeyword = document.getElementById("searchInput").value.toUpperCase();
             
-            document.getElementById("selectedTfLabel").innerText = selectedTf;
+            document.getElementById("selectedTfLabel").innerText = currentTf;
             document.getElementById("wlCount").innerText = watchlist.length;
             
             let tbody = document.querySelector("#screenerTable tbody");
@@ -170,24 +179,22 @@
             }
 
             lastFilteredStocks.forEach((stock) => {
-                let price = (stock.prices && stock.prices[selectedTf] !== undefined) ? stock.prices[selectedTf] : 100;
+                let price = (stock.prices && stock.prices[currentTf] !== undefined) ? stock.prices[currentTf] : 100;
                 let tvLink = `https://in.tradingview.com/chart/?symbol=NSE:${stock.symbol}`;
                 let isStarred = watchlist.includes(stock.symbol);
                 
-                // Trade Calculator Logic (Entry, Stop Loss, Target, RRR)
+                // Trade Calculator (Entry, SL, Target, RRR)
                 let entry = Number(price);
-                let sl, target, rrrVal;
+                let sl, target;
                 
                 if (stock.zone === 'Demand') {
-                    sl = Number((entry * 0.975).toFixed(2)); // ~2.5% risk below entry
+                    sl = Number((entry * 0.975).toFixed(2)); 
                     let risk = entry - sl;
-                    target = Number((entry + (risk * 2.5)).toFixed(2)); // 1:2.5 target
-                    rrrVal = "1:2.5";
+                    target = Number((entry + (risk * 2.5)).toFixed(2)); 
                 } else {
-                    sl = Number((entry * 1.025).toFixed(2)); // ~2.5% risk above entry
+                    sl = Number((entry * 1.025).toFixed(2)); 
                     let risk = sl - entry;
-                    target = Number((entry - (risk * 2.5)).toFixed(2)); // 1:2.5 target
-                    rrrVal = "1:2.5";
+                    target = Number((entry - (risk * 2.5)).toFixed(2)); 
                 }
 
                 let zoneBadge = stock.zone === 'Demand' 
@@ -202,7 +209,7 @@
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>
-                        <button class="star-btn ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${stock.symbol}')" title="${isStarred ? 'Remove from Watchlist' : 'Add to Watchlist'}">
+                        <button class="star-btn ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${stock.symbol}')" title="${isStarred ? 'Remove' : 'Add'}">
                             ${isStarred ? '★' : '☆'}
                         </button>
                     </td>
@@ -217,7 +224,7 @@
                     <td style="color: #fff; font-weight: bold;">₹${entry}</td>
                     <td style="color: #ff4444; font-weight: bold;">₹${sl}</td>
                     <td style="color: #00ffcc; font-weight: bold;">₹${target}</td>
-                    <td style="color: #ffcc00; font-weight: bold;">${rrrVal}</td>
+                    <td style="color: #ffcc00; font-weight: bold;">1:2.5</td>
                     <td>${volBadge}</td>
                 `;
                 tbody.appendChild(tr);
@@ -229,11 +236,10 @@
                 alert("No data available to export!");
                 return;
             }
-            let selectedTf = document.getElementById("timeframeSelect").value;
-            let csvContent = "data:text/csv;charset=utf-8,Symbol,MarketCap,Pattern,Zone,Price,Entry,StopLoss,Target,RRR\n";
+            let csvContent = "data:text/csv;charset=utf-8,Symbol,MarketCap,Pattern,Zone,Price(" + currentTf + "),Entry,StopLoss,Target,RRR\n";
             
             lastFilteredStocks.forEach(stock => {
-                let price = (stock.prices && stock.prices[selectedTf] !== undefined) ? stock.prices[selectedTf] : 100;
+                let price = (stock.prices && stock.prices[currentTf] !== undefined) ? stock.prices[currentTf] : 100;
                 let entry = price;
                 let sl = stock.zone === 'Demand' ? Number((entry * 0.975).toFixed(2)) : Number((entry * 1.025).toFixed(2));
                 let risk = Math.abs(entry - sl);
@@ -246,7 +252,7 @@
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "NSE_Screener_" + selectedTf + ".csv");
+            link.setAttribute("download", "NSE_Screener_" + currentTf + ".csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -254,7 +260,7 @@
 
         loadData();
 
-        // 5 Minutes Auto Refresh Loop
+        // Auto Refresh Loop
         setInterval(() => {
             timeLeft--;
             document.getElementById("countdown").innerText = timeLeft + "s";
