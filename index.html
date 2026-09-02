@@ -3,298 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE Master Screener - Shahnawaz Mansuri</title>
-    <!-- SheetJS Library for Excel & CSV reading -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>My Demand & Supply Stock Screener</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 6px; }
-        .header { text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin-bottom: 6px; }
-        h2 { color: #58a6ff; margin: 0 0 2px 0; font-size: 14px; }
-        .admin-badge { color: #f0883e; font-size: 10px; font-weight: bold; margin-bottom: 4px; }
-        .stats-box { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px; font-size: 10px; color: #8b949e; margin-top: 4px; }
-        .tf-container, .strategy-container { display: flex; gap: 3px; justify-content: center; margin-bottom: 6px; flex-wrap: wrap; }
-        .tf-btn, .strat-btn { background: #161b22; color: #8b949e; border: 1px solid #30363d; padding: 5px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold; }
-        .tf-btn.active, .strat-btn.active { background: #238636; color: #fff; border-color: #238636; }
-        .strat-btn { background: #1f6feb; border-color: #1f6feb; color: #fff; }
-        .strat-btn.active { background: #f0883e; border-color: #f0883e; }
-        .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 6px; align-items: center; flex-wrap: wrap; }
-        .tab-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
-        .tab-btn.active { background: #1f6feb; color: #fff; border-color: #1f6feb; font-weight: bold; }
-        .upload-btn-label { background: #238636; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; display: inline-block; }
-        .controls { display: flex; gap: 4px; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; }
-        select, input[type="text"] { padding: 5px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; font-size: 10px; flex: 1; min-width: 95px; }
-        .table-container { max-height: 50vh; overflow-y: auto; border: 1px solid #30363d; border-radius: 6px; }
-        table { width: 100%; border-collapse: collapse; background: #161b22; white-space: nowrap; }
-        th, td { padding: 6px; text-align: center; border-bottom: 1px solid #30363d; font-size: 10px; }
-        th { background-color: #21262d; color: #58a6ff; position: sticky; top: 0; z-index: 5; }
-        tr:hover { background-color: #21262d; }
-        .badge-demand { color: #3fb950; background: rgba(63,185,80,0.15); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
-        .badge-supply { color: #f85149; background: rgba(248,81,73,0.15); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
-        .chart-btn { background: #238636; color: #fff; text-decoration: none; padding: 2px 5px; border-radius: 3px; font-size: 9px; font-weight: bold; }
-        .star { background: none; border: none; color: #8b949e; cursor: pointer; font-size: 12px; }
-        .star.active { color: #e3b341; }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 15px; }
+        h2 { text-align: center; color: #00ffcc; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e1e1e; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { background-color: #333; color: #00ffcc; }
+        .green { color: #00ff66; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>NSE Master Multi-Strategy Screener</h2>
-        <div class="admin-badge">Developer & Admin: SHAHNAWAZ MANSURI</div>
-        <div class="stats-box" id="totalStatsText">Loading Database...</div>
-    </div>
-
-    <!-- Timeframes -->
-    <div class="tf-container">
-        <button class="tf-btn active" onclick="changeTf('Daily')">Daily</button>
-        <button class="tf-btn" onclick="changeTf('Weekly')">Weekly</button>
-        <button class="tf-btn" onclick="changeTf('Monthly')">Monthly</button>
-        <button class="tf-btn" onclick="changeTf('Quarterly')">Quarterly</button>
-        <button class="tf-btn" onclick="changeTf('Half-Yearly')">Half-Yearly</button>
-        <button class="tf-btn" onclick="changeTf('Yearly')">Yearly</button>
-    </div>
-
-    <!-- Multi-Strategy Filter Tabs -->
-    <div class="strategy-container">
-        <button class="strat-btn active" onclick="setStrategy('ALL')">All Strategies</button>
-        <button class="strat-btn" onclick="setStrategy('EMA9_21')">9/21 EMA Cross</button>
-        <button class="strat-btn" onclick="setStrategy('BREAKOUT')">52W High / ATH</button>
-        <button class="strat-btn" onclick="setStrategy('BB')">Bollinger Squeeze</button>
-        <button class="strat-btn" onclick="setStrategy('MACD_CCI')">MACD & CCI</button>
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" id="btnAll" onclick="switchTab('ALL')">All Stocks</button>
-        <button class="tab-btn" id="btnWl" onclick="switchTab('WL')">⭐ Watchlist (<span id="wlCount">0</span>)</button>
-        <!-- Excel / CSV Upload Tab -->
-        <label class="upload-btn-label">
-            📁 Import Excel/CSV <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleExcelUpload(event)">
-        </label>
-    </div>
-
-    <div class="controls">
-        <select id="categoryFilter" onchange="renderTable()">
-            <option value="ALL">All Categories</option>
-            <option value="Large Cap">Large Cap</option>
-            <option value="Mid Cap">Mid Cap</option>
-            <option value="Small Cap">Small Cap</option>
-            <option value="Micro Cap">Micro Cap</option>
-        </select>
-        <select id="zoneFilter" onchange="renderTable()">
-            <option value="ALL">All Zones</option>
-            <option value="Demand">Demand Zone</option>
-            <option value="Supply">Supply Zone</option>
-        </select>
-        <select id="patternFilter" onchange="renderTable()">
-            <option value="ALL">All Patterns</option>
-            <option value="RBR">RBR</option>
-            <option value="RBD">RBD</option>
-            <option value="DBR">DBR</option>
-            <option value="DBD">DBD</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="Search symbol..." onkeyup="renderTable()">
-    </div>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>⭐</th>
-                    <th>Symbol</th>
-                    <th>Category</th>
-                    <th>Pattern / Strategy</th>
-                    <th>Zone</th>
-                    <th>Price (₹)</th>
-                    <th>Volume</th>
-                    <th>Entry (₹)</th>
-                    <th>SL (₹)</th>
-                    <th>Target (₹)</th>
-                    <th>RRR</th>
-                    <th>Chart</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <tr><td colspan="12">Loading...</td></tr>
-            </tbody>
-        </table>
-    </div>
+    <h2>NSE Stock Screener (Live)</h2>
+    
+    <table id="stockTable">
+        <thead>
+            <tr>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Price (₹)</th>
+                <th>Zone</th>
+                <th>Pattern</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="5" style="text-align: center;">Loading data from GitHub...</td></tr>
+        </tbody>
+    </table>
 
     <script>
-        let currentTab = 'ALL';
-        let currentTf = 'Daily';
-        let currentStrategy = 'ALL';
-        let watchlist = JSON.parse(localStorage.getItem('shahnawaz_watchlist')) || [];
+        const rawUrl = 'https://raw.githubusercontent.com/shahnawazmansuri-dev/stock-screener-SHAHNAWAZ-MANSURI-/main/stocks_data.json';
 
-        // Master Stocks Database including Railtel
-        let rawStocks = [
-            {s: "RAILTEL", c: "Small Cap", p: 455, vol: 1500000},
-            {s: "RELIANCE", c: "Large Cap", p: 2950, vol: 5400000},
-            {s: "TCS", c: "Large Cap", p: 3850, vol: 2100000},
-            {s: "HDFCBANK", c: "Large Cap", p: 1650, vol: 4200000},
-            {s: "ICICIBANK", c: "Large Cap", p: 1100, vol: 3900000},
-            {s: "INFY", c: "Large Cap", p: 1550, vol: 3100000},
-            {s: "SBIN", c: "Large Cap", p: 820, vol: 6100000}
-        ];
-
-        const baseNames = ["BHARTIARTL","ITC","LT","SUNPHARMA","AXISBANK","KOTAKBANK","WIPRO","TITAN","BAJFINANCE","MARUTI","ULTRACEMCO","POWERGRID","NTPC","ASIANPAINT","TATAMOTORS","TATASTEEL","JSWSTEEL","GRASIM","HCLTECH","TECHM","ADANIENT","ADANIPORTS","COALINDIA","ONGC","BPCL","IOC","HINDPETRO","SBILIFE","HDFCLIFE","BAJAJFINSV","CIPLA","DRREDDY","BRITANNIA","NESTLEIND","TATACONSUM","HEROMOTOCO","EICHERMOT","BAJAJ-AUTO","HINDALCO","VEDL","SHRIRAMFIN","CHOLAFIN","M&M","ABFRL","PIDILITIND","SHREECEM","SRF","MUTHOOTFIN","INDUSINDBK","BANDHANBNK","BANKBARODA","CANBK","PNB","IDBI","ZOMATO","PAYTM","HAL","BEL","TVSMOTOR","PIIND","OFSS","PERSISTENT","LUPIN","MPHASIS","ASTRAL","AUROPHARMA","BHEL","CONCOR","CUMMINSIND","DIVISLAB","POLYCAB","TATACOMM","UPL","PAGEIND","OBEROIRLTY","LALPATHLAB","IPCALAB","JBCHEPHARM","GRANULES","JKCEMENT","RAMCOCEM","DALBHARAT","AMBUJACEM","ACC","GODRECPCP","MARICO","DABUR","COLPAL","GODREJPROP","LODHA","DLF","PHOENIXLTD","PRESTIGE","SYNGENE","LAURUSLABS","NAVINFLUOR","AARTIIND","DEEPAKNTRT","ATUL","DIXON","APOLLOHOSP","ALKEM","TRENT","COFORGE","LTIM","SCHAEFFLER","SKFINDIA","THERMAX","VOLTAS","WHIRLPOOL","CROMPTON","HAVELLS","SUZLON","RVNL","IRFC","NHPC","COCHINSHIP","MAZDOCK","MRF","HUDCO","IRB","NCC","IDFCFIRSTB","RBLBANK","YESBANK","GRSE","BDL","SOLARINDS","ITI","RAINBOW","ASTERDM","KIMS","MEDANTA","FSL","TANLA","HAPPYESTM","ZENSARTECH","CYIENT","BSOFT","INTELLECT","REDINGTON","CEATLTD","APOLLOTYRE","JKTYRE","BALRAMCHIN","TRIDENT","EIDPARRY","RENUKA","CHAMBLFERT","GNFC","GSFC","COROMANDEL","FACT","RCF","NAM-INDIA","CAMS","KPRMILL","WELSPUNLIV","RADICO","JYOTHYLAB","BAJAJCON","EMAMILTD","GILLETTE","PROCTER","HONAUT","3MINDIA","KAJARIACER","HSCL","BORORENEW","DIAMOND","CAMPUS","BATAINDIA","EASEMYTRIP","BCG"];
-        
-        let cats = ["Large Cap", "Mid Cap", "Small Cap", "Micro Cap"];
-        for(let i=0; i<700; i++) {
-            let name = baseNames[i % baseNames.length] + (i >= baseNames.length ? (i+1) : "");
-            rawStocks.push({
-                s: name,
-                c: cats[i % 4],
-                p: Math.floor(Math.random() * 3000) + 50,
-                vol: Math.floor(Math.random() * 5000000) + 100000
+        fetch(rawUrl)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#stockTable tbody');
+                tbody.innerHTML = ""; 
+                
+                data.forEach(stock => {
+                    const row = `<tr>
+                        <td><strong>${stock.s}</strong></td>
+                        <td>${stock.c}</td>
+                        <td class="green">₹${stock.p}</td>
+                        <td>${stock.zone}</td>
+                        <td>${stock.pattern}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+                document.querySelector('#stockTable tbody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Failed to load data</td></tr>`;
             });
-        }
-
-        // Excel / CSV File Reader Handler using SheetJS
-        function handleExcelUpload(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let data = new Uint8Array(e.target.result);
-                let workbook = XLSX.read(data, {type: 'array'});
-                let firstSheetName = workbook.SheetNames[0];
-                let worksheet = workbook.Sheets[firstSheetName];
-                let jsonSheet = XLSX.utils.sheet_to_json(worksheet);
-
-                if (jsonSheet.length > 0) {
-                    let importedStocks = [];
-                    jsonSheet.forEach(row => {
-                        let symbol = row['Symbol'] || row['symbol'] || row['STOCK'] || row['stock'] || Object.values(row)[0];
-                        let category = row['Category'] || row['category'] || "Small Cap";
-                        let price = parseFloat(row['Price'] || row['price'] || row['LTP'] || row['ltp'] || 100);
-                        let volume = parseInt(row['Volume'] || row['volume'] || 500000);
-
-                        if (symbol) {
-                            importedStocks.push({
-                                s: String(symbol).toUpperCase().trim(),
-                                c: String(category),
-                                p: isNaN(price) ? 100 : price,
-                                vol: isNaN(volume) ? 500000 : volume
-                            });
-                        }
-                    });
-
-                    if (importedStocks.length > 0) {
-                        rawStocks = importedStocks;
-                        alert(`Successfully imported ${rawStocks.length} stocks from your file!`);
-                        renderTable();
-                    } else {
-                        alert("Could not read symbols. Ensure your file has a column named 'Symbol' or 'Stock'.");
-                    }
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function getStockData(symbol, tf) {
-            let hash = 0, str = symbol + "_" + tf;
-            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            let zones = ["Demand", "Supply"];
-            let patterns = ["RBR", "RBD", "DBR", "DBD"];
-            let strats = ["EMA9_21", "BREAKOUT", "BB", "MACD_CCI"];
-            
-            return { 
-                zone: zones[Math.abs(hash) % 2], 
-                pattern: patterns[Math.abs(hash >> 3) % 4],
-                strat: strats[Math.abs(hash >> 5) % strats.length]
-            };
-        }
-
-        function changeTf(tf) {
-            currentTf = tf;
-            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.toggle('active', btn.innerText === tf));
-            renderTable();
-        }
-
-        function setStrategy(strat) {
-            currentStrategy = strat;
-            document.querySelectorAll('.strat-btn').forEach(btn => btn.classList.toggle('active', false));
-            event.target.classList.add('active');
-            renderTable();
-        }
-
-        function switchTab(tab) {
-            currentTab = tab;
-            document.getElementById('btnAll').classList.toggle('active', tab === 'ALL');
-            document.getElementById('btnWl').classList.toggle('active', tab === 'WL');
-            renderTable();
-        }
-
-        function toggleWatchlist(sym) {
-            if (watchlist.includes(sym)) watchlist = watchlist.filter(s => s !== sym);
-            else watchlist.push(sym);
-            localStorage.setItem('shahnawaz_watchlist', JSON.stringify(watchlist));
-            renderTable();
-        }
-
-        function renderTable() {
-            let catVal = document.getElementById('categoryFilter').value;
-            let zoneVal = document.getElementById('zoneFilter').value;
-            let patternVal = document.getElementById('patternFilter').value;
-            let searchVal = document.getElementById('searchInput').value.toUpperCase().trim();
-            
-            document.getElementById('wlCount').innerText = watchlist.length;
-
-            let filtered = rawStocks.filter(item => {
-                let data = getStockData(item.s, currentTf);
-                let matchesTab = (currentTab === 'ALL' || watchlist.includes(item.s));
-                let matchesCat = (catVal === 'ALL' || item.c === catVal);
-                let matchesZone = (zoneVal === 'ALL' || data.zone === zoneVal);
-                let matchesPattern = (patternVal === 'ALL' || data.pattern === patternVal);
-                let matchesStrat = (currentStrategy === 'ALL' || data.strat === currentStrategy);
-                let matchesSearch = item.s.includes(searchVal);
-                return matchesTab && matchesCat && matchesZone && matchesPattern && matchesStrat && matchesSearch;
-            });
-
-            document.getElementById('totalStatsText').innerHTML = 
-                `TF: <span style="color:#58a6ff">${currentTf}</span> | Total Database: <span style="color:#e3b341">${rawStocks.length}</span> | Filtered: <span style="color:#3fb950">${filtered.length}</span>`;
-
-            let tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12">No matching stocks found. Check search or filters!</td></tr>`;
-                return;
-            }
-
-            filtered.forEach(item => {
-                let data = getStockData(item.s, currentTf);
-                let isStarred = watchlist.includes(item.s);
-                let zoneBadge = data.zone === 'Demand' ? `<span class="badge-demand">Demand</span>` : `<span class="badge-supply">Supply</span>`;
-                let tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${item.s}`;
-
-                let entry = item.p;
-                let sl = Math.round(entry * 0.96); 
-                let target = Math.round(entry * 1.12); 
-                let risk = entry - sl;
-                let reward = target - entry;
-
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><button class="star ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${item.s}')">${isStarred ? '★' : '☆'}</button></td>
-                    <td><strong>${item.s}</strong></td>
-                    <td>${item.c}</td>
-                    <td style="color: #e3b341; font-weight: bold;">${data.pattern} (${data.strat})</td>
-                    <td>${zoneBadge}</td>
-                    <td style="color: #58a6ff; font-weight: bold;">₹${item.p}</td>
-                    <td style="color: #8b949e;">${item.vol.toLocaleString('en-IN')}</td>
-                    <td style="color: #3fb950; font-weight: bold;">₹${entry}</td>
-                    <td style="color: #f85149; font-weight: bold;">₹${sl}</td>
-                    <td style="color: #58a6ff; font-weight: bold;">₹${target}</td>
-                    <td style="color: #f0883e; font-weight: bold;">1:${(reward/risk).toFixed(1)}</td>
-                    <td><a href="${tvUrl}" target="_blank" class="chart-btn">Chart ↗</a></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        renderTable();
     </script>
+
 </body>
 </html>
-
