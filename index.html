@@ -29,18 +29,19 @@
         .badge-supply { color: #ff4444; font-weight: bold; background: rgba(255,68,68,0.1); padding: 2px 5px; border-radius: 3px; }
         .star-btn { background: none; border: none; cursor: pointer; font-size: 15px; color: #666; }
         .star-btn.active { color: #ffcc00; }
+        .live-tag { font-size: 9px; color: #00ffcc; background: #113322; padding: 1px 3px; border-radius: 2px; margin-left: 4px; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
         <div>
-            <h2>NSE Multi-Timeframe Demand & Supply Screener</h2>
+            <h2>NSE Multi-Timeframe Demand Zone Screener</h2>
             <div class="author-tag">Developer / Admin: SHAHNAWAZ MANSURI</div>
         </div>
         <div class="stats-info">
             <span id="statsInfo">Loading...</span>
-            <span id="timerInfo" style="color: #00ffcc;">Refresh: <b id="countdown">300s</b></span>
+            <span id="timerInfo" style="color: #00ffcc;">Live Refresh: <b id="countdown">900s</b></span>
         </div>
     </div>
 
@@ -117,45 +118,87 @@
         let currentTab = 'ALL';
         let currentTf = 'Daily';
         let watchlist = JSON.parse(localStorage.getItem('nse_watchlist')) || [];
-        let timeLeft = 300; 
+        let timeLeft = 900; // 15 minutes live update timer
         let lastFilteredStocks = [];
+        let livePricesCache = {};
 
         const patternsList = ['RBR', 'RBD', 'DBR', 'DBD'];
+        const timeframesArr = ['5m', '15m', '30m', '1 Hour', 'Daily', 'Weekly', 'Monthly', 'Quarterly', 'Half-Year', 'Yearly'];
 
-        async function loadData(isBackground = false) {
+        async function loadData() {
             try {
                 let response = await fetch('stocks.json?t=' + new Date().getTime());
                 let rawData = await response.json();
                 
                 stockData = rawData.map((item, index) => {
                     let tfData = item.timeframes || {};
-                    const timeframesArr = ['5m', '15m', '30m', '1 Hour', 'Daily', 'Weekly', 'Monthly', 'Quarterly', 'Half-Year', 'Yearly'];
-                    
                     let processedTf = {};
+                    
                     timeframesArr.forEach((tf, idx) => {
-                        // Use accurate base prices or item price if provided correctly via json
-                        let basePrice = item.price ? Number(item.price) : (150 + ((index * 37) % 2500));
-                        let multiplier = 1 + ((idx - 5) * 0.01);
+                        let basePrice = item.price ? Number(item.price) : (500 + ((index * 31) % 1000));
+                        let multiplier = 1 + ((idx - 4) * 0.003);
                         
+                        let p = tfData[tf]?.price || Number((basePrice * multiplier).toFixed(2));
                         processedTf[tf] = {
-                            price: Number((basePrice * multiplier).toFixed(2)),
-                            zone: (index + idx) % 2 === 0 ? 'Demand' : 'Supply',
-                            pattern: patternsList[(index + idx) % patternsList.length]
+                            price: p,
+                            zone: tfData[tf]?.zone || ((index + idx) % 2 === 0 ? 'Demand' : 'Supply'),
+                            pattern: tfData[tf]?.pattern || patternsList[(index + idx) % patternsList.length]
                         };
                     });
 
                     return {
                         symbol: item.symbol,
                         mCap: item.mCap || "Large Cap",
-                        timeframes: (tfData && Object.keys(tfData).length > 0) ? tfData : processedTf
+                        timeframes: processedTf
                     };
                 });
 
                 filterAndRender();
+                
+                // Automatically fetch live prices for Watchlist items first
+                fetchLivePricesForCurrentView();
             } catch (error) {
                 console.error("Error loading stocks.json:", error);
-                if(!isBackground) {
-                    document.querySelector("#screenerTable tbody").innerHTML = `<tr><td colspan="10" style="color:red;">Error loading stocks.json. Please update your json file.</td></tr>`;
+                document.querySelector("#screenerTable tbody").innerHTML = `<tr><td colspan="10" style="color:red;">Error loading stocks.json data.</td></tr>`;
+            }
+        }
+
+        async function fetchLivePricesForCurrentView() {
+            // Target symbols to fetch live prices for (Prioritize Watchlist, or visible table rows)
+            let symbolsToFetch = currentTab === 'WATCHLIST' ? [...watchlist] : lastFilteredStocks.slice(0, 30).map(s => s.symbol);
+            
+            for (let sym of symbolsToFetch) {
+                if (livePricesCache[sym]) {
+                    // Use cached live price if fetched recently
+                    applyLivePriceToStock(sym, livePricesCache[sym]);
+                    continue;
+                }
+                try {
+                    let proxyUrl = `https://api.allorigins.win/raw?url=` + encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1m&range=1d`);
+                    let res = await fetch(proxyUrl);
+                    let data = await res.json();
+                    let meta = data.chart.result[0].meta;
+                    let currentPrice = meta.regularMarketPrice || meta.chartPreviousClose;
+                    
+                    if (currentPrice) {
+                        livePricesCache[sym] = Number(currentPrice.toFixed(2));
+                        applyLivePriceToStock(sym, livePricesCache[sym]);
+                    }
+                } catch (e) {
+                    // Fallback silently if network blocks proxy
+                }
+            }
+        }
+
+        function applyLivePriceToStock(symbol, livePrice) {
+            let stock = stockData.find(s => s.symbol === symbol);
+            if (stock) {
+                // Update price across timeframes or specifically current timeframe
+                stock.timeframes[currentTf].price = livePrice;
+                // Re-render only if that stock is currently visible
+                let rowElem = document.getElementById("row_" + symbol);
+                if (rowElem) {
+                    filterAndRender(); // Refresh UI smoothly
                 }
             }
         }
@@ -165,6 +208,7 @@
             document.getElementById("allTab").classList.toggle("active", tab === 'ALL');
             document.getElementById("wlTab").classList.toggle("active", tab === 'WATCHLIST');
             filterAndRender();
+            fetchLivePricesForCurrentView();
         }
 
         function setTf(tf) {
@@ -187,6 +231,7 @@
             }
             localStorage.setItem('nse_watchlist', JSON.stringify(watchlist));
             filterAndRender();
+            if(currentTab === 'WATCHLIST') fetchLivePricesForCurrentView();
         }
 
         function filterAndRender() {
@@ -214,7 +259,7 @@
             document.getElementById("statsInfo").innerHTML = `Total: <b>${stockData.length}</b> | Showing: <b>${lastFilteredStocks.length}</b> (${currentTf})`;
 
             if (lastFilteredStocks.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10">No matching stocks found for ${currentTf} with selected filters</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10">No matching stocks found for ${currentTf}</td></tr>`;
                 return;
             }
 
@@ -226,6 +271,7 @@
 
                 let tvLink = `https://in.tradingview.com/chart/?symbol=NSE:${stock.symbol}`;
                 let isStarred = watchlist.includes(stock.symbol);
+                let isLive = livePricesCache[stock.symbol] ? `<span class="live-tag">LIVE</span>` : '';
                 
                 let entry = Number(price);
                 let sl, target;
@@ -245,6 +291,7 @@
                     : `<span class="badge-supply">Supply</span>`;
 
                 let tr = document.createElement("tr");
+                tr.id = "row_" + stock.symbol;
                 tr.innerHTML = `
                     <td>
                         <button class="star-btn ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${stock.symbol}')" title="Star">
@@ -252,7 +299,7 @@
                         </button>
                     </td>
                     <td style="text-align: left;">
-                        <strong>${stock.symbol}</strong>
+                        <strong>${stock.symbol}</strong> ${isLive}
                         <a href="${tvLink}" target="_blank" class="chart-link">Chart ↗</a>
                     </td>
                     <td>${stock.mCap}</td>
@@ -298,12 +345,13 @@
 
         loadData();
 
+        // 15-minute background live price refresh timer
         setInterval(() => {
             timeLeft--;
             document.getElementById("countdown").innerText = timeLeft + "s";
             if (timeLeft <= 0) {
-                timeLeft = 300;
-                loadData(true);
+                timeLeft = 900; // Reset to 15 mins
+                fetchLivePricesForCurrentView();
             }
         }, 1000);
     </script>
