@@ -1,98 +1,39 @@
-[
-    {
-        "s": "RELIANCE",
-        "c": "Large Cap",
-        "p": 2450.0,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "TCS",
-        "c": "Large Cap",
-        "p": 3500.0,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "TATASTEEL",
-        "c": "Mid Cap",
-        "p": 130.0,
-        "zone": "Demand (Monthly)",
-        "pattern": "RBD",
-        "strat": "MACD / CCI Cross"
-    },
-    {
-        "s": "SUZLON",
-        "c": "Small Cap",
-        "p": 45.0,
-        "zone": "Demand (Quarterly)",
-        "pattern": "DBD",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "INFY",
-        "c": "Large Cap",
-        "p": 1500.0,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "HDFCBANK",
-        "c": "Large Cap",
-        "p": 1600.0,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "SBIN",
-        "c": "Large Cap",
-        "p": 750.0,
-        "zone": "Demand (Daily)",
-        "pattern": "RBD",
-        "strat": "MACD / CCI Cross"
-    },
-    {
-        "s": "TATAMOTORS",
-        "c": "Large Cap",
-        "p": 950.0,
-        "zone": "Demand (Monthly)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "ITC",
-        "c": "Large Cap",
-        "p": 440.0,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "ZOMATO",
-        "c": "Mid Cap",
-        "p": 180.0,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "IRCTC",
-        "c": "Mid Cap",
-        "p": 900.0,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "MACD / CCI Cross"
-    },
-    {
-        "s": "IDEA",
-        "c": "Small Cap",
-        "p": 14.5,
-        "zone": "Demand (Monthly)",
-        "pattern": "DBD",
-        "strat": "Bollinger Breakout"
-    }
+import json
+import os
+
+tickers = [
+    "RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK", "SBIN", "BHARTIARTL", "LICI", "ITC", "HINDUNILVR",
+    "LARSEN", "AXISBANK", "SUNPHARMA", "TATAMOTORS", "NTPC", "ASIANPAINT", "MARUTI", "TITAN", "BAJFINANCE", "KOTAKBANK",
+    "TATASTEEL", "ZOMATO", "IRCTC", "CHAMBLFERT", "PIDILITIND", "SIEMENS", "GRASIM", "SBILIFE", "BPCL", "DIVISLAB",
+    "SUZLON", "IDEA", "YESBANK", "IDFCFIRSTB", "PCJEWELLER", "SAKAR", "GSP", "NYKAA", "PAYTM", "POLICYBZR",
+    "ADANIENT", "ADANIPORTS", "POWERGRID", "ONGC", "COALINDIA", "JSWSTEEL", "HINDALCO", "M&M", "TECHM"
 ]
+
+stocks_data = []
+
+for i, name in enumerate(tickers):
+    if i < 20:
+        category = "Large Cap"
+    elif i < 35:
+        category = "Mid Cap"
+    else:
+        category = "Small Cap"
+        
+    base_price = float((i * 45.5) % 2500 + 120)
+    
+    stocks_data.append({
+        "s": name,
+        "c": category,
+        "p": round(base_price, 2),
+        "zone": "Demand (Daily)" if i % 2 == 0 else "Demand (Weekly)",
+        "pattern": "RBR" if i % 3 == 0 else "DBR",
+        "strat": "9/20 Bullish Cross" if i % 2 == 0 else "Bollinger Breakout"
+    })
+
+download_path = "/storage/emulated/0/Download/stocks_data.json"
+
+with open(download_path, "w", encoding="utf-8") as f:
+    json.dump(stocks_data, f, indent=4)
+
+print("SUCCESS: Download folder me stocks_data.json file save ho gayi hai!")
+
