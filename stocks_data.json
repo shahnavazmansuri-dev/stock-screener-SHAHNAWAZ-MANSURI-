@@ -1,0 +1,20 @@
+[
+    {
+        "s": "RELIANCE",
+        "c": "Large Cap",
+        "p": 2450.0,
+        "vol": 5400000,
+        "zone": "Demand",
+        "pattern": "RBR",
+        "strat": "EMA9_21"
+    },
+    {
+        "s": "TCS",
+        "c": "Large Cap",
+        "p": 3500.0,
+        "vol": 2100000,
+        "zone": "Demand",
+        "pattern": "RBR",
+        "strat": "EMA9_21"
+    }
+]
