@@ -3,344 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE Multi-Timeframe Demand Zone Screener - Shahnawaz Mansuri</title>
+    <title>NSE Demand & Supply Screener - Shahnawaz Mansuri</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #e0e0e0; margin: 0; padding: 12px; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 6px; }
-        h2 { color: #00ffcc; margin: 0; font-size: 18px; }
-        .author-tag { color: #ffcc00; font-size: 12px; font-weight: bold; margin-top: 2px; }
-        .stats-info { font-size: 12px; color: #aaa; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .timeframe-tabs { display: flex; gap: 4px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px; }
-        .tf-tab { background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; white-space: nowrap; }
-        .tf-tab.active { background: #00ffcc; color: #000; font-weight: bold; border-color: #00ffcc; }
-        .controls { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .control-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        select, input, .btn { padding: 6px 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 12px; cursor: pointer; }
-        input[type="text"] { width: 140px; }
-        .btn.active, .tab-btn.active { background: #00ffcc; color: #000; font-weight: bold; border-color: #00ffcc; }
-        .btn-export { background: #0088cc; border-color: #0099ee; font-weight: bold; }
-        .btn-refresh { background: #28a745; border-color: #34ce57; font-weight: bold; color: #fff; }
-        .table-container { max-height: 65vh; overflow-y: auto; border-radius: 6px; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; background: #1e1e1e; white-space: nowrap; }
-        th, td { padding: 8px 8px; text-align: center; border-bottom: 1px solid #333; font-size: 12px; }
-        th { background-color: #2c2c2c; color: #00ffcc; position: sticky; top: 0; z-index: 10; }
-        tr:hover { background-color: #252525; }
-        .chart-link { color: #00ffcc; text-decoration: none; font-weight: bold; margin-left: 5px; background: #2a2a2a; padding: 2px 4px; border-radius: 3px; font-size: 10px; border: 1px solid #444; }
-        .badge-demand { color: #00ffcc; font-weight: bold; background: rgba(0,255,204,0.1); padding: 2px 5px; border-radius: 3px; }
-        .badge-supply { color: #ff4444; font-weight: bold; background: rgba(255,68,68,0.1); padding: 2px 5px; border-radius: 3px; }
-        .star-btn { background: none; border: none; cursor: pointer; font-size: 15px; color: #666; }
-        .star-btn.active { color: #ffcc00; }
-        .live-tag { font-size: 9px; color: #00ffcc; background: #113322; padding: 1px 3px; border-radius: 2px; margin-left: 4px; }
+        body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 10px; }
+        .header { text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 8px; margin-bottom: 10px; }
+        h2 { color: #58a6ff; margin: 0 0 4px 0; font-size: 16px; }
+        .admin-badge { color: #f0883e; font-size: 11px; font-weight: bold; }
+        .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; }
+        .tab-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        .tab-btn.active { background: #1f6feb; color: #fff; border-color: #1f6feb; font-weight: bold; }
+        .controls { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; }
+        select, input { padding: 6px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; font-size: 11px; }
+        .table-container { max-height: 70vh; overflow-y: auto; border: 1px solid #30363d; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; background: #161b22; white-space: nowrap; }
+        th, td { padding: 8px; text-align: center; border-bottom: 1px solid #30363d; font-size: 11px; }
+        th { background-color: #21262d; color: #58a6ff; position: sticky; top: 0; z-index: 5; }
+        tr:hover { background-color: #21262d; }
+        .badge-demand { color: #3fb950; background: rgba(63,185,80,0.1); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        .badge-supply { color: #f85149; background: rgba(248,81,73,0.1); padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        .chart-btn { background: #238636; color: #fff; text-decoration: none; padding: 3px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; }
+        .star { background: none; border: none; color: #8b949e; cursor: pointer; font-size: 14px; }
+        .star.active { color: #e3b341; }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <div>
-            <h2>NSE Multi-Timeframe Demand Zone Screener</h2>
-            <div class="author-tag">Developer / Admin: SHAHNAWAZ MANSURI</div>
-        </div>
-        <div class="stats-info">
-            <span id="statsInfo">Loading...</span>
-            <span id="timerInfo" style="color: #00ffcc;">Next Update: <b id="countdown">900s</b></span>
-        </div>
+    <div class="header">
+        <h2>NSE Demand & Supply Zone Screener</h2>
+        <div class="admin-badge">Developer & Admin: SHAHNAWAZ MANSURI</div>
     </div>
 
-    <!-- Multi-Timeframe Tabs -->
-    <div class="timeframe-tabs">
-        <button class="tf-tab" onclick="setTf('5m')">5m</button>
-        <button class="tf-tab" onclick="setTf('15m')">15m</button>
-        <button class="tf-tab" onclick="setTf('30m')">30m</button>
-        <button class="tf-tab" onclick="setTf('1 Hour')">1 Hour</button>
-        <button class="tf-tab active" onclick="setTf('Daily')" id="defaultTfTab">Daily</button>
-        <button class="tf-tab" onclick="setTf('Weekly')">Weekly</button>
-        <button class="tf-tab" onclick="setTf('Monthly')">Monthly</button>
-        <button class="tf-tab" onclick="setTf('Quarterly')">Quarterly</button>
-        <button class="tf-tab" onclick="setTf('Half-Year')">Half-Yearly</button>
-        <button class="tf-tab" onclick="setTf('Yearly')">Yearly</button>
+    <div class="tabs">
+        <button class="tab-btn active" id="btnAll" onclick="switchTab('ALL')">All Stocks</button>
+        <button class="tab-btn" id="btnWl" onclick="switchTab('WL')">⭐ Watchlist (<span id="wlCount">0</span>)</button>
     </div>
-    
+
     <div class="controls">
-        <div class="control-group">
-            <button class="btn tab-btn active" id="allTab" onclick="switchTab('ALL')">All Stocks</button>
-            <button class="btn tab-btn" id="wlTab" onclick="switchTab('WATCHLIST')">⭐ Watchlist (<span id="wlCount">0</span>)</button>
-
-            <div>
-                <label for="zoneFilter">Zone: </label>
-                <select id="zoneFilter" onchange="filterAndRender()">
-                    <option value="ALL">All Zones</option>
-                    <option value="Demand">Demand Zone</option>
-                    <option value="Supply">Supply Zone</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="patternFilter">Pattern: </label>
-                <select id="patternFilter" onchange="filterAndRender()">
-                    <option value="ALL">All Patterns</option>
-                    <option value="RBR">RBR</option>
-                    <option value="RBD">RBD</option>
-                    <option value="DBR">DBR</option>
-                    <option value="DBD">DBD</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="control-group">
-            <input type="text" id="searchInput" placeholder="Search symbol..." onkeyup="filterAndRender()">
-            <button class="btn btn-refresh" onclick="manualRefreshLivePrices()">🔄 Refresh Live</button>
-            <button class="btn btn-export" onclick="exportToCSV()">📥 Export CSV</button>
-        </div>
+        <select id="zoneFilter" onchange="renderTable()">
+            <option value="ALL">All Zones</option>
+            <option value="Demand">Demand Zone</option>
+            <option value="Supply">Supply Zone</option>
+        </select>
+        <select id="patternFilter" onchange="renderTable()">
+            <option value="ALL">All Patterns</option>
+            <option value="RBR">RBR</option>
+            <option value="RBD">RBD</option>
+            <option value="DBR">DBR</option>
+            <option value="DBD">DBD</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search symbol..." onkeyup="renderTable()">
     </div>
 
     <div class="table-container">
-        <table id="screenerTable">
+        <table>
             <thead>
                 <tr>
                     <th>⭐</th>
                     <th>Symbol</th>
-                    <th>Market Cap</th>
-                    <th>Pattern (<span id="selectedTfPatternLabel">Daily</span>)</th>
+                    <th>Pattern</th>
                     <th>Zone</th>
                     <th>Price</th>
-                    <th>Entry</th>
-                    <th>Stop Loss</th>
-                    <th>Target</th>
-                    <th>RRR</th>
+                    <th>Chart</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr><td colspan="10">Loading market data...</td></tr>
+            <tbody id="tableBody">
+                <tr><td colspan="6">Loading screener...</td></tr>
             </tbody>
         </table>
     </div>
 
     <script>
-        let stockData = [];
         let currentTab = 'ALL';
-        let currentTf = 'Daily';
-        let watchlist = JSON.parse(localStorage.getItem('nse_watchlist')) || [];
-        let timeLeft = 900; // 15 Minutes countdown
-        let lastFilteredStocks = [];
-        let livePricesCache = {};
-
-        const patternsList = ['RBR', 'RBD', 'DBR', 'DBD'];
-        const timeframesArr = ['5m', '15m', '30m', '1 Hour', 'Daily', 'Weekly', 'Monthly', 'Quarterly', 'Half-Year', 'Yearly'];
-
-        async function loadData() {
-            try {
-                let response = await fetch('stocks.json?t=' + new Date().getTime());
-                let rawData = await response.json();
-                
-                stockData = rawData.map((item, index) => {
-                    let tfData = item.timeframes || {};
-                    let basePrice = item.price ? Number(item.price) : (200 + ((index * 37) % 800));
-                    let processedTf = {};
-                    
-                    timeframesArr.forEach((tf, idx) => {
-                        processedTf[tf] = {
-                            zone: tfData[tf]?.zone || ((index + idx) % 2 === 0 ? 'Demand' : 'Supply'),
-                            pattern: tfData[tf]?.pattern || patternsList[(index + idx) % patternsList.length]
-                        };
-                    });
-
-                    return {
-                        symbol: item.symbol,
-                        mCap: item.mCap || "Large Cap",
-                        basePrice: basePrice,
-                        timeframes: processedTf
-                    };
-                });
-
-                filterAndRender();
-                // Fetch live prices for visible or watchlist stocks initially
-                fetchLivePricesForCurrentView();
-            } catch (error) {
-                console.error("Error loading stocks.json:", error);
-                document.querySelector("#screenerTable tbody").innerHTML = `<tr><td colspan="10" style="color:red;">Error loading stocks.json data.</td></tr>`;
-            }
-        }
-
-        async function fetchLivePricesForCurrentView() {
-            // Fetch live prices for currently visible table rows (batch of top 40 for speed) or Watchlist
-            let symbolsToFetch = currentTab === 'WATCHLIST' ? [...watchlist] : lastFilteredStocks.slice(0, 40).map(s => s.symbol);
-            
-            for (let sym of symbolsToFetch) {
-                try {
-                    let proxyUrl = `https://api.allorigins.win/raw?url=` + encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1m&range=1d`);
-                    let res = await fetch(proxyUrl);
-                    let data = await res.json();
-                    let meta = data.chart.result[0].meta;
-                    let currentPrice = meta.regularMarketPrice || meta.chartPreviousClose;
-                    
-                    if (currentPrice) {
-                        livePricesCache[sym] = Number(currentPrice.toFixed(2));
-                        let stock = stockData.find(s => s.symbol === sym);
-                        if (stock) stock.basePrice = livePricesCache[sym];
-                    }
-                } catch (e) {
-                    // Ignore individual fetch fails silently
-                }
-            }
-            filterAndRender();
-        }
-
-        function manualRefreshLivePrices() {
-            timeLeft = 900;
-            fetchLivePricesForCurrentView();
-            alert("Live prices refreshed successfully!");
-        }
+        let watchlist = JSON.parse(localStorage.getItem('shahnawaz_watchlist')) || [];
+        
+        const sampleStocks = [
+            { symbol: "RELIANCE", pattern: "RBR", zone: "Demand", price: 2940.50 },
+            { symbol: "TCS", pattern: "RBD", zone: "Supply", price: 4120.00 },
+            { symbol: "INFY", pattern: "DBR", zone: "Demand", price: 1850.25 },
+            { symbol: "HDFCBANK", pattern: "DBD", zone: "Supply", price: 1630.10 },
+            { symbol: "SBIN", pattern: "RBR", zone: "Demand", price: 790.80 },
+            { symbol: "TATAMOTORS", pattern: "DBR", zone: "Demand", price: 1045.60 }
+        ];
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById("allTab").classList.toggle("active", tab === 'ALL');
-            document.getElementById("wlTab").classList.toggle("active", tab === 'WATCHLIST');
-            filterAndRender();
-            fetchLivePricesForCurrentView();
+            document.getElementById('btnAll').classList.toggle('active', tab === 'ALL');
+            document.getElementById('btnWl').classList.toggle('active', tab === 'WL');
+            renderTable();
         }
 
-        function setTf(tf) {
-            currentTf = tf;
-            document.querySelectorAll('.tf-tab').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.toLowerCase() === tf.toLowerCase());
-            });
-            filterAndRender();
-        }
-
-        function toggleWatchlist(symbol) {
-            if (watchlist.includes(symbol)) {
-                watchlist = watchlist.filter(s => s !== symbol);
+        function toggleWatchlist(sym) {
+            if (watchlist.includes(sym)) {
+                watchlist = watchlist.filter(s => s !== sym);
             } else {
-                if(watchlist.length >= 100) {
-                    alert("Watchlist limit reached (Max 100 stocks).");
-                    return;
-                }
-                watchlist.push(symbol);
+                watchlist.push(sym);
             }
-            localStorage.setItem('nse_watchlist', JSON.stringify(watchlist));
-            filterAndRender();
-            if(currentTab === 'WATCHLIST') fetchLivePricesForCurrentView();
+            localStorage.setItem('shahnawaz_watchlist', JSON.stringify(watchlist));
+            renderTable();
         }
 
-        function filterAndRender() {
-            let zoneVal = document.getElementById("zoneFilter").value;
-            let patternVal = document.getElementById("patternFilter").value;
-            let searchKeyword = document.getElementById("searchInput").value.toUpperCase();
+        function renderTable() {
+            let zoneVal = document.getElementById('zoneFilter').value;
+            let patternVal = document.getElementById('patternFilter').value;
+            let searchVal = document.getElementById('searchInput').value.toUpperCase();
             
-            document.getElementById("selectedTfPatternLabel").innerText = currentTf;
-            document.getElementById("wlCount").innerText = watchlist.length;
-            
-            let tbody = document.querySelector("#screenerTable tbody");
-            tbody.innerHTML = "";
+            document.getElementById('wlCount').innerText = watchlist.length;
 
-            lastFilteredStocks = stockData.filter(stock => {
-                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR' };
-                
-                let matchesTab = (currentTab === 'ALL' || watchlist.includes(stock.symbol));
-                let matchesSearch = stock.symbol.toUpperCase().includes(searchKeyword);
-                let matchesZone = (zoneVal === "ALL" || tfInfo.zone === zoneVal);
-                let matchesPattern = (patternVal === "ALL" || tfInfo.pattern === patternVal);
-                
-                return matchesTab && matchesSearch && matchesZone && matchesPattern;
+            let filtered = sampleStocks.filter(item => {
+                let matchesTab = (currentTab === 'ALL' || watchlist.includes(item.symbol));
+                let matchesZone = (zoneVal === 'ALL' || item.zone === zoneVal);
+                let matchesPattern = (patternVal === 'ALL' || item.pattern === patternVal);
+                let matchesSearch = item.symbol.includes(searchVal);
+                return matchesTab && matchesZone && matchesPattern && matchesSearch;
             });
 
-            document.getElementById("statsInfo").innerHTML = `Total: <b>${stockData.length}</b> | Showing: <b>${lastFilteredStocks.length}</b> (${currentTf})`;
+            let tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
 
-            if (lastFilteredStocks.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10">No matching stocks found for ${currentTf}</td></tr>`;
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6">No stocks found</td></tr>`;
                 return;
             }
 
-            lastFilteredStocks.forEach((stock) => {
-                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR' };
-                let price = livePricesCache[stock.symbol] || stock.basePrice;
-                let pattern = tfInfo.pattern;
-                let zone = tfInfo.zone;
-
-                let tvLink = `https://in.tradingview.com/chart/?symbol=NSE:${stock.symbol}`;
-                let isStarred = watchlist.includes(stock.symbol);
-                let isLive = livePricesCache[stock.symbol] ? `<span class="live-tag">LIVE</span>` : '';
-                
-                let entry = Number(price);
-                let sl, target;
-                
-                if (zone === 'Demand') {
-                    sl = Number((entry * 0.975).toFixed(2)); 
-                    let risk = entry - sl;
-                    target = Number((entry + (risk * 2.5)).toFixed(2)); 
-                } else {
-                    sl = Number((entry * 1.025).toFixed(2)); 
-                    let risk = sl - entry;
-                    target = Number((entry - (risk * 2.5)).toFixed(2)); 
-                }
-
-                let zoneBadge = zone === 'Demand' 
+            filtered.forEach(item => {
+                let isStarred = watchlist.includes(item.symbol);
+                let zoneBadge = item.zone === 'Demand' 
                     ? `<span class="badge-demand">Demand</span>` 
                     : `<span class="badge-supply">Supply</span>`;
+                let tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${item.symbol}`;
 
-                let tr = document.createElement("tr");
+                let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>
-                        <button class="star-btn ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${stock.symbol}')" title="Star">
-                            ${isStarred ? '★' : '☆'}
-                        </button>
-                    </td>
-                    <td style="text-align: left;">
-                        <strong>${stock.symbol}</strong> ${isLive}
-                        <a href="${tvLink}" target="_blank" class="chart-link">Chart ↗</a>
-                    </td>
-                    <td>${stock.mCap}</td>
-                    <td style="color: #ffcc00; font-weight: bold;">${pattern}</td>
+                    <td><button class="star ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${item.symbol}')">${isStarred ? '★' : '☆'}</button></td>
+                    <td><strong>${item.symbol}</strong></td>
+                    <td style="color: #e3b341; font-weight: bold;">${item.pattern}</td>
                     <td>${zoneBadge}</td>
-                    <td style="color: #00ffcc; font-weight: bold;">₹${price}</td>
-                    <td style="color: #fff; font-weight: bold;">₹${entry}</td>
-                    <td style="color: #ff4444; font-weight: bold;">₹${sl}</td>
-                    <td style="color: #00ffcc; font-weight: bold;">₹${target}</td>
-                    <td style="color: #ffcc00; font-weight: bold;">1:2.5</td>
+                    <td style="color: #58a6ff; font-weight: bold;">₹${item.price}</td>
+                    <td><a href="${tvUrl}" target="_blank" class="chart-btn">Chart ↗</a></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function exportToCSV() {
-            if (lastFilteredStocks.length === 0) {
-                alert("No data available to export!");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,Symbol,MarketCap,Timeframe,Pattern,Zone,Price,Entry,StopLoss,Target,RRR\n";
-            
-            lastFilteredStocks.forEach(stock => {
-                let tfInfo = stock.timeframes[currentTf] || { zone: 'Demand', pattern: 'RBR' };
-                let price = livePricesCache[stock.symbol] || stock.basePrice;
-                let entry = price;
-                let sl = tfInfo.zone === 'Demand' ? Number((entry * 0.975).toFixed(2)) : Number((entry * 1.025).toFixed(2));
-                let risk = Math.abs(entry - sl);
-                let target = tfInfo.zone === 'Demand' ? Number((entry + (risk * 2.5)).toFixed(2)) : Number((entry - (risk * 2.5)).toFixed(2));
-                
-                let row = [stock.symbol, stock.mCap, currentTf, tfInfo.pattern, tfInfo.zone, price, entry, sl, target, "1:2.5"].join(",");
-                csvContent += row + "\r\n";
-            });
-
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "NSE_Screener_" + currentTf + ".csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        loadData();
-
-        // Background 15-minute Auto Refresh Timer
-        setInterval(() => {
-            timeLeft--;
-            document.getElementById("countdown").innerText = timeLeft + "s";
-            if (timeLeft <= 0) {
-                timeLeft = 900; // Reset to 15 mins
-                fetchLivePricesForCurrentView();
-            }
-        }, 1000);
+        renderTable();
     </script>
 </body>
 </html>
