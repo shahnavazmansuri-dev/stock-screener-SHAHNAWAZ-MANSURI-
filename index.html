@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,36 +29,47 @@
             </tr>
         </thead>
         <tbody>
-            <tr><td colspan="5" style="text-align: center;">Loading data from GitHub...</td></tr>
+            <!-- Data will be loaded dynamically -->
         </tbody>
     </table>
 
     <script>
-        const rawUrl = 'https://raw.githubusercontent.com/shahnawazmansuri-dev/stock-screener-SHAHNAWAZ-MANSURI-/main/stocks_data.json';
+        // Directly embedded JSON data to avoid CORS and loading errors on mobile
+        const stockData = [
+            {
+                "s": "RELIANCE",
+                "c": "Large Cap",
+                "p": 2450.0,
+                "vol": 5400000,
+                "zone": "Demand",
+                "pattern": "RBR",
+                "strat": "EMA9_21"
+            },
+            {
+                "s": "TCS",
+                "c": "Large Cap",
+                "p": 3500.0,
+                "vol": 2100000,
+                "zone": "Demand",
+                "pattern": "RBR",
+                "strat": "EMA9_21"
+            }
+        ];
 
-        fetch(rawUrl)
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.querySelector('#stockTable tbody');
-                tbody.innerHTML = ""; 
-                
-                data.forEach(stock => {
-                    const row = `<tr>
-                        <td><strong>${stock.s}</strong></td>
-                        <td>${stock.c}</td>
-                        <td class="green">₹${stock.p}</td>
-                        <td>${stock.zone}</td>
-                        <td>${stock.pattern}</td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-            })
-            .catch(error => {
-                console.error("Error fetching data:", error);
-                document.querySelector('#stockTable tbody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Failed to load data</td></tr>`;
-            });
+        const tbody = document.querySelector('#stockTable tbody');
+        tbody.innerHTML = ""; 
+        
+        stockData.forEach(stock => {
+            const row = `<tr>
+                <td><strong>${stock.s}</strong></td>
+                <td>${stock.c}</td>
+                <td class="green">₹${stock.p}</td>
+                <td>${stock.zone}</td>
+                <td>${stock.pattern}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
     </script>
 
 </body>
 </html>
-
