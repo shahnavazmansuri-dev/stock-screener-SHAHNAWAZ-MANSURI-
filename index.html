@@ -1,22 +1,37 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Demand & Supply Stock Screener</title>
+    <title>Shahnawaz Mansuri Stock Screener</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 15px; }
         h2 { text-align: center; color: #00ffcc; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e1e1e; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        .controls { display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        select, input { padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; font-size: 14px; }
         th { background-color: #333; color: #00ffcc; }
         .green { color: #00ff66; font-weight: bold; }
+        .tv-link { color: #00bcd4; text-decoration: none; font-weight: bold; }
+        .tv-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <h2>NSE Stock Screener (Live)</h2>
+    <h2>Shahnawaz Mansuri Stock Screener</h2>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search Stock..." onkeyup="filterStocks()">
+        <select id="categorySelect" onchange="filterStocks()">
+            <option value="ALL">All Categories</option>
+            <option value="Large Cap">Large Cap</option>
+            <option value="Mid Cap">Mid Cap</option>
+            <option value="Small Cap">Small Cap</option>
+            <option value="Micro Cap">Micro Cap</option>
+            <option value="Shariah">Nifty Shariah</option>
+        </select>
+    </div>
     
     <table id="stockTable">
         <thead>
@@ -24,51 +39,58 @@
                 <th>Stock</th>
                 <th>Category</th>
                 <th>Price (₹)</th>
-                <th>Zone</th>
-                <th>Pattern</th>
+                <th>Zone / Pattern</th>
+                <th>Chart</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Data will be loaded dynamically -->
+            <!-- Dynamic Data -->
         </tbody>
     </table>
 
     <script>
-        // Directly embedded JSON data to avoid CORS and loading errors on mobile
         const stockData = [
-            {
-                "s": "RELIANCE",
-                "c": "Large Cap",
-                "p": 2450.0,
-                "vol": 5400000,
-                "zone": "Demand",
-                "pattern": "RBR",
-                "strat": "EMA9_21"
-            },
-            {
-                "s": "TCS",
-                "c": "Large Cap",
-                "p": 3500.0,
-                "vol": 2100000,
-                "zone": "Demand",
-                "pattern": "RBR",
-                "strat": "EMA9_21"
-            }
+            { "s": "RELIANCE", "c": "Large Cap", "p": 2450.0, "zone": "Demand (Daily)", "pattern": "RBR" },
+            { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR" },
+            { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD" },
+            { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD" }
         ];
 
-        const tbody = document.querySelector('#stockTable tbody');
-        tbody.innerHTML = ""; 
-        
-        stockData.forEach(stock => {
-            const row = `<tr>
-                <td><strong>${stock.s}</strong></td>
-                <td>${stock.c}</td>
-                <td class="green">₹${stock.p}</td>
-                <td>${stock.zone}</td>
-                <td>${stock.pattern}</td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
+        function renderTable(data) {
+            const tbody = document.querySelector('#stockTable tbody');
+            tbody.innerHTML = "";
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
+                return;
+            }
+            data.forEach(stock => {
+                const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${stock.s}`;
+                const row = `<tr>
+                    <td><strong>${stock.s}</strong></td>
+                    <td>${stock.c}</td>
+                    <td class="green">₹${stock.p}</td>
+                    <td>${stock.zone} (${stock.pattern})</td>
+                    <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function filterStocks() {
+            const searchVal = document.getElementById('searchInput').value.toUpperCase();
+            const catVal = document.getElementById('categorySelect').value;
+
+            const filtered = stockData.filter(stock => {
+                const matchesSearch = stock.s.includes(searchVal);
+                const matchesCat = (catVal === 'ALL' || stock.c === catVal);
+                return matchesSearch && matchesCat;
+            });
+
+            renderTable(filtered);
+        }
+
+        // Initial Load
+        renderTable(stockData);
     </script>
 
 </body>
