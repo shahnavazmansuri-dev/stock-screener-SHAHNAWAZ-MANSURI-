@@ -1,12 +1,9 @@
 name: Automated Stock Screener Update
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write
+  schedule:
+    - cron: '0 9 * * 1-5'
 
 jobs:
   update-data:
@@ -14,8 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,17 +19,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install yfinance pandas requests
+          python -m pip install --upgrade pip
+          pip install pandas yfinance requests
 
-      - name: Run stock screener script
-        run: |
-          python update_screener.py
+      - name: Run screener script
+        run: python update_screener.py
 
       - name: Commit and push updated stocks.json
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin main --rebase
           git add stocks.json
           git commit -m "Auto-update stock prices via GitHub Actions [skip ci]" || exit 0
-          git push
+          git push origin main
           
