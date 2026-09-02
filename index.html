@@ -40,6 +40,11 @@
             <option value="Micro Cap">Micro Cap</option>
             <option value="Shariah">Nifty Shariah</option>
         </select>
+        <select id="strategySelect" onchange="filterStocks()">
+            <option value="ALL">All Strategies / Zones</option>
+            <option value="EMA_CROSS">9/20 EMA Crossover</option>
+            <option value="Demand">Demand Zone</option>
+        </select>
     </div>
     
     <table id="stockTable">
@@ -49,6 +54,7 @@
                 <th>Category</th>
                 <th>Price (₹)</th>
                 <th>Zone / Pattern</th>
+                <th>Strategy</th>
                 <th>Chart</th>
                 <th>Action</th>
             </tr>
@@ -60,10 +66,10 @@
 
     <script>
         let stockData = [
-            { "s": "RELIANCE", "c": "Large Cap", "p": 2450.0, "zone": "Demand (Daily)", "pattern": "RBR" },
-            { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR" },
-            { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD" },
-            { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD" }
+            { "s": "RELIANCE", "c": "Large Cap", "p": 2450.0, "zone": "Demand (Daily)", "pattern": "RBR", "strat": "9/20 Bullish Cross" },
+            { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "Consolidation" },
+            { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD", "strat": "9/20 Bullish Cross" },
+            { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD", "strat": "Breakout" }
         ];
 
         let watchlist = JSON.parse(localStorage.getItem('sm_watchlist')) || [];
@@ -72,7 +78,7 @@
             const tbody = document.querySelector('#stockTable tbody');
             tbody.innerHTML = "";
             if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
                 return;
             }
             data.forEach(stock => {
@@ -83,6 +89,7 @@
                     <td>${stock.c}</td>
                     <td class="green">₹${stock.p}</td>
                     <td>${stock.zone} (${stock.pattern})</td>
+                    <td>${stock.strat}</td>
                     <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
                     <td><button onclick="toggleWatchlist('${stock.s}')">${isWatched ? '★ Remove' : '☆ Watch'}</button></td>
                 </tr>`;
@@ -93,11 +100,18 @@
         function filterStocks() {
             const searchVal = document.getElementById('searchInput').value.toUpperCase();
             const catVal = document.getElementById('categorySelect').value;
+            const stratVal = document.getElementById('strategySelect').value;
 
             const filtered = stockData.filter(stock => {
                 const matchesSearch = stock.s.includes(searchVal);
                 const matchesCat = (catVal === 'ALL' || stock.c === catVal);
-                return matchesSearch && matchesCat;
+                let matchesStrat = true;
+                if(stratVal === 'EMA_CROSS') {
+                    matchesStrat = stock.strat.includes('9/20');
+                } else if(stratVal === 'Demand') {
+                    matchesStrat = stock.zone.includes('Demand');
+                }
+                return matchesSearch && matchesCat && matchesStrat;
             });
 
             renderTable(filtered);
@@ -119,14 +133,14 @@
         }
 
         function downloadCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Stock,Category,Price,Zone,Pattern\n";
+            let csvContent = "data:text/csv;charset=utf-8,Stock,Category,Price,Zone,Pattern,Strategy\n";
             stockData.forEach(row => {
-                csvContent += `${row.s},${row.c},${row.p},${row.zone},${row.pattern}\n`;
+                csvContent += `${row.s},${row.c},${row.p},${row.zone},${row.pattern},${row.strat}\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "shahnawaz_watchlist_stocks.csv");
+            link.setAttribute("download", "shahnawaz_screener_data.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -142,13 +156,14 @@
                 let newStocks = [];
                 for(let i = 1; i < lines.length; i++) {
                     const cols = lines[i].split(",");
-                    if(cols.length >= 5) {
+                    if(cols.length >= 6) {
                         newStocks.push({
                             s: cols[0].trim(),
                             c: cols[1].trim(),
                             p: parseFloat(cols[2]) || 0,
                             zone: cols[3].trim(),
-                            pattern: cols[4].trim()
+                            pattern: cols[4].trim(),
+                            strat: cols[5].trim()
                         });
                     }
                 }
@@ -169,3 +184,4 @@
 
 </body>
 </html>
+
