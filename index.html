@@ -8,18 +8,27 @@
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 15px; }
         h2 { text-align: center; color: #00ffcc; }
         .controls { display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        select, input { padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; background: #1e1e1e; }
+        select, input, button { padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #333; color: #00ffcc; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; margin-top: 10px; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; font-size: 14px; }
         th { background-color: #333; color: #00ffcc; }
         .green { color: #00ff66; font-weight: bold; }
         .tv-link { color: #00bcd4; text-decoration: none; font-weight: bold; }
         .tv-link:hover { text-decoration: underline; }
+        .actions-bar { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
     </style>
 </head>
 <body>
 
     <h2>Shahnawaz Mansuri Stock Screener</h2>
+
+    <div class="actions-bar">
+        <input type="file" id="csvFile" accept=".csv" onchange="handleCSVUpload(event)">
+        <button onclick="downloadCSV()">Download CSV</button>
+        <button onclick="showWatchlist()">View Watchlist</button>
+        <button onclick="renderTable(stockData)">All Stocks</button>
+    </div>
 
     <div class="controls">
         <input type="text" id="searchInput" placeholder="Search Stock..." onkeyup="filterStocks()">
@@ -41,6 +50,7 @@
                 <th>Price (₹)</th>
                 <th>Zone / Pattern</th>
                 <th>Chart</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -49,28 +59,32 @@
     </table>
 
     <script>
-        const stockData = [
+        let stockData = [
             { "s": "RELIANCE", "c": "Large Cap", "p": 2450.0, "zone": "Demand (Daily)", "pattern": "RBR" },
             { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR" },
             { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD" },
             { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD" }
         ];
 
+        let watchlist = JSON.parse(localStorage.getItem('sm_watchlist')) || [];
+
         function renderTable(data) {
             const tbody = document.querySelector('#stockTable tbody');
             tbody.innerHTML = "";
             if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
                 return;
             }
             data.forEach(stock => {
                 const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${stock.s}`;
+                const isWatched = watchlist.includes(stock.s);
                 const row = `<tr>
                     <td><strong>${stock.s}</strong></td>
                     <td>${stock.c}</td>
                     <td class="green">₹${stock.p}</td>
                     <td>${stock.zone} (${stock.pattern})</td>
                     <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
+                    <td><button onclick="toggleWatchlist('${stock.s}')">${isWatched ? '★ Remove' : '☆ Watch'}</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -87,6 +101,66 @@
             });
 
             renderTable(filtered);
+        }
+
+        function toggleWatchlist(symbol) {
+            if(watchlist.includes(symbol)) {
+                watchlist = watchlist.filter(s => s !== symbol);
+            } else {
+                watchlist.push(symbol);
+            }
+            localStorage.setItem('sm_watchlist', JSON.stringify(watchlist));
+            filterStocks();
+        }
+
+        function showWatchlist() {
+            const watchedStocks = stockData.filter(stock => watchlist.includes(stock.s));
+            renderTable(watchedStocks);
+        }
+
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Stock,Category,Price,Zone,Pattern\n";
+            stockData.forEach(row => {
+                csvContent += `${row.s},${row.c},${row.p},${row.zone},${row.pattern}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "shahnawaz_watchlist_stocks.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split("\n");
+                let newStocks = [];
+                for(let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(",");
+                    if(cols.length >= 5) {
+                        newStocks.push({
+                            s: cols[0].trim(),
+                            c: cols[1].trim(),
+                            p: parseFloat(cols[2]) || 0,
+                            zone: cols[3].trim(),
+                            pattern: cols[4].trim()
+                        });
+                    }
+                }
+                if(newStocks.length > 0) {
+                    stockData = newStocks;
+                    renderTable(stockData);
+                    alert("CSV Data Uploaded Successfully!");
+                } else {
+                    alert("Invalid CSV Format!");
+                }
+            };
+            reader.readAsText(file);
         }
 
         // Initial Load
