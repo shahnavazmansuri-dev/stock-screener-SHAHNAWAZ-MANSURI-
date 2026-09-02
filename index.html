@@ -37,7 +37,7 @@
     </div>
 
     <div class="actions-bar">
-        <input type="file" id="csvFile" accept=".csv" onchange="handleCSVUpload(event)">
+        <input type="file" id="jsonFile" accept=".json,.csv" onchange="handleFileUpload(event)">
         <button onclick="downloadCSV()">Download CSV</button>
         <button onclick="showWatchlist()">View Watchlist</button>
         <button onclick="renderTable(stockData)">All Stocks</button>
@@ -75,25 +75,23 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Dynamic Data -->
-        </tbody>
+            </tbody>
     </table>
 
     <script>
-        let stockData = [
-            { "s": "RELIANCE", "c": "Large Cap", "p": 2450.0, "zone": "Demand (Daily)", "pattern": "RBR", "strat": "9/20 Bullish Cross" },
-            { "s": "TCS", "c": "Large Cap", "p": 3500.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "Bollinger Breakout" },
-            { "s": "TATASTEEL", "c": "Mid Cap", "p": 130.0, "zone": "Demand (Monthly)", "pattern": "RBD", "strat": "MACD / CCI Cross" },
-            { "s": "SUZLON", "c": "Small Cap", "p": 45.0, "zone": "Demand (Quarterly)", "pattern": "DBD", "strat": "9/20 Bullish Cross" },
-            { "s": "INFY", "c": "Large Cap", "p": 1500.0, "zone": "Demand (Daily)", "pattern": "RBR", "strat": "9/20 Bullish Cross" },
-            { "s": "HDFCBANK", "c": "Large Cap", "p": 1600.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "Bollinger Breakout" },
-            { "s": "SBIN", "c": "Large Cap", "p": 750.0, "zone": "Demand (Daily)", "pattern": "RBD", "strat": "MACD / CCI Cross" },
-            { "s": "TATAMOTORS", "c": "Large Cap", "p": 950.0, "zone": "Demand (Monthly)", "pattern": "RBR", "strat": "9/20 Bullish Cross" },
-            { "s": "ITC", "c": "Large Cap", "p": 440.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "Bollinger Breakout" },
-            { "s": "ZOMATO", "c": "Mid Cap", "p": 180.0, "zone": "Demand (Daily)", "pattern": "RBR", "strat": "9/20 Bullish Cross" },
-            { "s": "IRCTC", "c": "Mid Cap", "p": 900.0, "zone": "Demand (Weekly)", "pattern": "DBR", "strat": "MACD / CCI Cross" },
-            { "s": "IDEA", "c": "Small Cap", "p": 14.5, "zone": "Demand (Monthly)", "pattern": "DBD", "strat": "Bollinger Breakout" }
-        ];
+        let stockData = [];
+
+        // GitHub se direct live JSON file fetch karna
+        fetch('stocks_data.json')
+            .then(response => response.json())
+            .then(data => {
+                stockData = data;
+                renderTable(stockData);
+            })
+            .catch(error => {
+                console.error('Error loading stock data:', error);
+                document.querySelector('#stockTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error loading stocks_data.json</td></tr>`;
+            });
 
         let watchlist = JSON.parse(localStorage.getItem('sm_watchlist')) || [];
 
@@ -191,40 +189,27 @@
             document.body.removeChild(link);
         }
 
-        function handleCSVUpload(event) {
+        function handleFileUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
-                const lines = text.split("\n");
-                let newStocks = [];
-                for(let i = 1; i < lines.length; i++) {
-                    const cols = lines[i].split(",");
-                    if(cols.length >= 6) {
-                        newStocks.push({
-                            s: cols[0].trim(),
-                            c: cols[1].trim(),
-                            p: parseFloat(cols[2]) || 0,
-                            zone: cols[3].trim(),
-                            pattern: cols[4].trim(),
-                            strat: cols[5].trim()
-                        });
+                try {
+                    const jsonData = JSON.parse(text);
+                    if(Array.isArray(jsonData) && jsonData.length > 0) {
+                        stockData = jsonData;
+                        renderTable(stockData);
+                        alert("JSON File Uploaded Successfully!");
+                    } else {
+                        alert("Invalid JSON format!");
                     }
-                }
-                if(newStocks.length > 0) {
-                    stockData = newStocks;
-                    renderTable(stockData);
-                    alert("CSV Data Uploaded Successfully!");
-                } else {
-                    alert("Invalid CSV Format!");
+                } catch(err) {
+                    alert("Error parsing JSON file!");
                 }
             };
             reader.readAsText(file);
         }
-
-        // Initial Load
-        renderTable(stockData);
     </script>
 
 </body>
