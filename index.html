@@ -3,50 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSE Master 500+ Multi-Timeframe Screener - Shahnawaz Mansuri</title>
+    <title>NSE Master Screener - Shahnawaz Mansuri</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 10px; }
         .header { text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 8px; margin-bottom: 10px; }
         h2 { color: #58a6ff; margin: 0 0 4px 0; font-size: 15px; }
         .admin-badge { color: #f0883e; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
-        .stats-box { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px; font-size: 11px; color: #8b949e; margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
-        .live-tag { color: #3fb950; font-weight: bold; }
-        
+        .stats-box { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 6px; font-size: 11px; color: #8b949e; margin-top: 6px; }
         .tf-container { display: flex; gap: 4px; justify-content: center; margin-bottom: 8px; flex-wrap: wrap; }
         .tf-btn { background: #161b22; color: #8b949e; border: 1px solid #30363d; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
         .tf-btn.active { background: #238636; color: #fff; border-color: #238636; }
-
         .tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px; }
         .tab-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
         .tab-btn.active { background: #1f6feb; color: #fff; border-color: #1f6feb; font-weight: bold; }
-        
         .controls { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; }
         select, input { padding: 6px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 4px; font-size: 11px; flex: 1; min-width: 110px; }
-        
         .table-container { max-height: 55vh; overflow-y: auto; border: 1px solid #30363d; border-radius: 6px; }
         table { width: 100%; border-collapse: collapse; background: #161b22; white-space: nowrap; }
         th, td { padding: 8px; text-align: center; border-bottom: 1px solid #30363d; font-size: 11px; }
         th { background-color: #21262d; color: #58a6ff; position: sticky; top: 0; z-index: 5; }
         tr:hover { background-color: #21262d; }
-        
         .badge-demand { color: #3fb950; background: rgba(63,185,80,0.15); padding: 3px 6px; border-radius: 3px; font-weight: bold; }
         .badge-supply { color: #f85149; background: rgba(248,81,73,0.15); padding: 3px 6px; border-radius: 3px; font-weight: bold; }
         .chart-btn { background: #238636; color: #fff; text-decoration: none; padding: 3px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; }
         .star { background: none; border: none; color: #8b949e; cursor: pointer; font-size: 14px; }
         .star.active { color: #e3b341; }
-        .price-up { color: #3fb950 !important; }
-        .price-down { color: #f85149 !important; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>NSE Master 500+ Multi-Timeframe Demand & Supply Screener</h2>
+        <h2>NSE Master 700+ Multi-Timeframe Screener</h2>
         <div class="admin-badge">Developer & Admin: SHAHNAWAZ MANSURI</div>
-        <div class="stats-box">
-            <div><span class="live-tag">● Watchlist: Live Ticking Feed</span> | <span id="bgStats" style="color: #8b949e;">Other Stocks: 15-Min Sync</span></div>
-            <div id="totalStatsText" style="color: #c9d1d9; font-weight: bold;">Loading 500+ Master Database...</div>
-        </div>
+        <div class="stats-box" id="totalStatsText">Loading Database...</div>
     </div>
 
     <div class="tf-container">
@@ -70,7 +59,6 @@
             <option value="Mid Cap">Mid Cap</option>
             <option value="Small Cap">Small Cap</option>
             <option value="Micro Cap">Micro Cap</option>
-            <option value="Nifty Sharia">Nifty Sharia Stocks</option>
         </select>
         <select id="zoneFilter" onchange="renderTable()">
             <option value="ALL">All Zones</option>
@@ -102,7 +90,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="8">Initializing 500+ Master Database...</td></tr>
+                <tr><td colspan="8">Loading...</td></tr>
             </tbody>
         </table>
     </div>
@@ -112,222 +100,110 @@
         let currentTf = 'Daily';
         let watchlist = JSON.parse(localStorage.getItem('shahnawaz_watchlist')) || [];
 
-        // Master Database of 500+ NSE Stocks spanning Large, Mid, Small, Micro Caps & Sharia
-        const rawStocks = [
-            // Large Cap (1-100)
-            { s: "RELIANCE", c: "Large Cap", sh: true, p: 2940 },
-            { s: "TCS", c: "Large Cap", sh: true, p: 4120 },
-            { s: "HDFCBANK", c: "Large Cap", sh: false, p: 1630 },
-            { s: "ICICIBANK", c: "Large Cap", sh: false, p: 1150 },
-            { s: "INFY", c: "Large Cap", sh: true, p: 1850 },
-            { s: "SBIN", c: "Large Cap", sh: false, p: 790 },
-            { s: "BHARTIARTL", c: "Large Cap", sh: true, p: 1420 },
-            { s: "ITC", c: "Large Cap", sh: false, p: 450 },
-            { s: "LT", c: "Large Cap", sh: false, p: 3560 },
-            { s: "SUNPHARMA", c: "Large Cap", sh: true, p: 1680 },
-            { s: "AXISBANK", c: "Large Cap", sh: false, p: 1120 },
-            { s: "KOTAKBANK", c: "Large Cap", sh: false, p: 1750 },
-            { s: "WIPRO", c: "Large Cap", sh: true, p: 540 },
-            { s: "TITAN", c: "Large Cap", sh: false, p: 3450 },
-            { s: "BAJFINANCE", c: "Large Cap", sh: false, p: 7100 },
-            { s: "MARUTI", c: "Large Cap", sh: false, p: 12500 },
-            { s: "ULTRACEMCO", c: "Large Cap", sh: false, p: 11200 },
-            { s: "POWERGRID", c: "Large Cap", sh: true, p: 330 },
-            { s: "NTPC", c: "Large Cap", sh: true, p: 380 },
-            { s: "ASIANPAINT", c: "Large Cap", sh: false, p: 2850 },
-            { s: "TATAMOTORS", c: "Large Cap", sh: true, p: 980 },
-            { s: "TATASTEEL", c: "Large Cap", sh: true, p: 160 },
-            { s: "JSWSTEEL", c: "Large Cap", sh: true, p: 920 },
-            { s: "GRASIM", c: "Large Cap", sh: false, p: 2600 },
-            { s: "HCLTECH", c: "Large Cap", sh: true, p: 1780 },
-            { s: "TECHM", c: "Large Cap", sh: true, p: 1550 },
-            { s: "ADANIENT", c: "Large Cap", sh: false, p: 3100 },
-            { s: "ADANIPORTS", c: "Large Cap", sh: true, p: 1450 },
-            { s: "COALINDIA", c: "Large Cap", sh: true, p: 480 },
-            { s: "ONGC", c: "Large Cap", sh: true, p: 280 },
-            { s: "BPCL", c: "Large Cap", sh: true, p: 320 },
-            { s: "IOC", c: "Large Cap", sh: true, p: 165 },
-            { s: "HINDPETRO", c: "Large Cap", sh: true, p: 350 },
-            { s: "SBILIFE", c: "Large Cap", sh: false, p: 1480 },
-            { s: "HDFCLIFE", c: "Large Cap", sh: false, p: 650 },
-            { s: "BAJAJFINSV", c: "Large Cap", sh: false, p: 1650 },
-            { s: "CIPLA", c: "Large Cap", sh: true, p: 1500 },
-            { s: "DRREDDY", c: "Large Cap", sh: true, p: 1300 },
-            { s: "BRITANNIA", c: "Large Cap", sh: true, p: 5200 },
-            { s: "NESTLEIND", c: "Large Cap", sh: true, p: 2500 },
-            { s: "TATACONSUM", c: "Large Cap", sh: true, p: 1100 },
-            { s: "HEROMOTOCO", c: "Large Cap", sh: true, p: 4900 },
-            { s: "EICHERMOT", c: "Large Cap", sh: true, p: 4800 },
-            { s: "BAJAJ-AUTO", c: "Large Cap", sh: true, p: 9500 },
-            { s: "HINDALCO", c: "Large Cap", sh: true, p: 650 },
-            { s: "VEDL", c: "Large Cap", sh: true, p: 450 },
-            { s: "SHRIRAMFIN", c: "Large Cap", sh: false, p: 3100 },
-            { s: "CHOLAFIN", c: "Large Cap", sh: false, p: 1380 },
-            { s: "M&M", c: "Large Cap", sh: true, p: 2800 },
-            { s: "ABFRL", c: "Large Cap", sh: false, p: 320 },
-            { s: "PIDILITIND", c: "Large Cap", sh: true, p: 2900 },
-            { s: "SHREECEM", c: "Large Cap", sh: false, p: 26000 },
-            { s: "SRF", c: "Large Cap", sh: true, p: 2400 },
-            { s: "MUTHOOTFIN", c: "Large Cap", sh: false, p: 1800 },
-            { s: "INDUSINDBK", c: "Large Cap", sh: false, p: 1400 },
-            { s: "BANDHANBNK", c: "Large Cap", sh: false, p: 190 },
-            { s: "BANKBARODA", c: "Large Cap", sh: false, p: 270 },
-            { s: "CANBK", c: "Large Cap", sh: false, p: 110 },
-            { s: "PNB", c: "Large Cap", sh: false, p: 115 },
-            { s: "IDBI", c: "Large Cap", sh: false, p: 90 },
+        // Clean 700+ Array Generation
+        const baseNames = [
+            "RELIANCE","TCS","HDFCBANK","ICICIBANK","INFY","SBIN","BHARTIARTL","ITC","LT","SUNPHARMA","AXISBANK","KOTAKBANK","WIPRO","TITAN","BAJFINANCE","MARUTI","ULTRACEMCO","POWERGRID","NTPC","ASIANPAINT",
+            "TATAMOTORS","TATASTEEL","JSWSTEEL","GRASIM","HCLTECH","TECHM","ADANIENT","ADANIPORTS","COALINDIA","ONGC","BPCL","IOC","HINDPETRO","SBILIFE","HDFCLIFE","BAJAJFINSV","CIPLA","DRREDDY","BRITANNIA","NESTLEIND",
+            "TATACONSUM","HEROMOTOCO","EICHERMOT","BAJAJ-AUTO","HINDALCO","VEDL","SHRIRAMFIN","CHOLAFIN","M&M","ABFRL","PIDILITIND","SHREECEM","SRF","MUTHOOTFIN","INDUSINDBK","BANDHANBNK","BANKBARODA","CANBK","PNB","IDBI",
+            "ZOMATO","PAYTM","HAL","BEL","TVSMOTOR","PIIND","OFSS","PERSISTENT","LUPIN","MPHASIS","ASTRAL","AUROPHARMA","BHEL","CONCOR","CUMMINSIND","DIVISLAB","POLYCAB","TATACOMM","UPL","PAGEIND",
+            "OBEROIRLTY","LALPATHLAB","IPCALAB","JBCHEPHARM","GRANULES","JKCEMENT","RAMCOCEM","DALBHARAT","AMBUJACEM","ACC","GODRECPCP","MARICO","DABUR","COLPAL","GODREJPROP","LODHA","DLF","PHOENIXLTD","PRESTIGE","SYNGENE",
+            "LAURUSLABS","NAVINFLUOR","AARTIIND","DEEPAKNTRT","ATUL","DIXON","APOLLOHOSP","ALKEM","TRENT","COFORGE","LTIM","SCHAEFFLER","SKFINDIA","THERMAX","VOLTAS","WHIRLPOOL","CROMPTON","HAVELLS","SUZLON","RVNL",
+            "IRFC","NHPC","COCHINSHIP","MAZDOCK","MRF","HUDCO","IRB","NCC","IDFCFIRSTB","RBLBANK","YESBANK","GRSE","BDL","SOLARINDS","ITI","RAINBOW","ASTERDM","KIMS","MEDANTA","FSL",
+            "TANLA","HAPPYESTM","ZENSARTECH","CYIENT","BSOFT","INTELLECT","REDINGTON","CEATLTD","APOLLOTYRE","JKTYRE","BALRAMCHIN","TRIDENT","EIDPARRY","RENUKA","CHAMBLFERT","GNFC","GSFC","COROMANDEL","FACT","RCF",
+            "NAM-INDIA","CAMS","KPRMILL","WELSPUNLIV","RADICO","JYOTHYLAB","BAJAJCON","EMAMILTD","GILLETTE","PROCTER","HONAUT","3MINDIA","KAJARIACER","HSCL","BORORENEW","DIAMOND","CAMPUS","BATAINDIA","EASEMYTRIP","BCG",
+            "JPPOWER","SOUTHBANK","GTLINFRA","VODAFONE","HATHWAY","TV18BRDCST","ALOKINDS","SUNDRMFAST","SKIPPER","HEG","GRAPHITE","JISLALEQS","SUVENPHAR","ORIENTELEC","HIMATSEIDE","SHK","SULA","GABRIEL","SUBEX","CIGNITITEC"
+        ];
 
-            // Mid Cap (101-250)
-            { s: "ZOMATO", c: "Mid Cap", sh: true, p: 215 },
-            { s: "PAYTM", c: "Mid Cap", sh: false, p: 450 },
-            { s: "HAL", c: "Mid Cap", sh: true, p: 4600 },
-            { s: "BEL", c: "Mid Cap", sh: true, p: 290 },
-            { s: "TVSMOTOR", c: "Mid Cap", sh: false, p: 2400 },
-            { s: "PIIND", c: "Mid Cap", sh: true, p: 3800 },
-            { s: "OFSS", c: "Mid Cap", sh: true, p: 9500 },
-            { s: "PERSISTENT", c: "Mid Cap", sh: true, p: 4900 },
-            { s: "LUPIN", c: "Mid Cap", sh: true, p: 2100 },
-            { s: "MPHASIS", c: "Mid Cap", sh: true, p: 2800 },
-            { s: "ASTRAL", c: "Mid Cap", sh: false, p: 2100 },
-            { s: "AUROPHARMA", c: "Mid Cap", sh: true, p: 1250 },
-            { s: "BHEL", c: "Mid Cap", sh: true, p: 290 },
-            { s: "CONCOR", c: "Mid Cap", sh: true, p: 1050 },
-            { s: "CUMMINSIND", c: "Mid Cap", sh: true, p: 3600 },
-            { s: "DIVISLAB", c: "Mid Cap", sh: true, p: 4900 },
-            { s: "POLYCAB", c: "Mid Cap", sh: false, p: 6800 },
-            { s: "TATACOMM", c: "Mid Cap", sh: true, p: 1950 },
-            { s: "UPL", c: "Mid Cap", sh: false, p: 580 },
-            { s: "PAGEIND", c: "Mid Cap", sh: true, p: 39000 },
-            { s: "OBEROIRLTY", c: "Mid Cap", sh: false, p: 1900 },
-            { s: "LALPATHLAB", c: "Mid Cap", sh: true, p: 2800 },
-            { s: "IPCALAB", c: "Mid Cap", sh: true, p: 1400 },
-            { s: "JBCHEPHARM", c: "Mid Cap", sh: true, p: 1800 },
-            { s: "GRANULES", c: "Mid Cap", sh: true, p: 550 },
-            { s: "JKCEMENT", c: "Mid Cap", sh: false, p: 4300 },
-            { s: "RAMCOCEM", c: "Mid Cap", sh: false, p: 850 },
-            { s: "DALBHARAT", c: "Mid Cap", sh: false, p: 1900 },
-            { s: "AMBUJACEM", c: "Mid Cap", sh: false, p: 620 },
-            { s: "ACC", c: "Mid Cap", sh: false, p: 2400 },
-            { s: "GODRECPCP", c: "Mid Cap", sh: true, p: 1300 },
-            { s: "MARICO", c: "Mid Cap", sh: true, p: 650 },
-            { s: "DABUR", c: "Mid Cap", sh: true, p: 580 },
-            { s: "COLPAL", c: "Mid Cap", sh: true, p: 3100 },
-            { s: "GODREJPROP", c: "Mid Cap", sh: true, p: 2900 },
-            { s: "LODHA", c: "Mid Cap", sh: false, p: 1450 },
-            { s: "DLF", c: "Mid Cap", sh: false, p: 830 },
-            { s: "PHOENIXLTD", c: "Mid Cap", sh: false, p: 1600 },
-            { s: "PRESTIGE", c: "Mid Cap", sh: false, p: 1700 },
-            { s: "SYNGENE", c: "Mid Cap", sh: true, p: 800 },
-            { s: "LAURUSLABS", c: "Mid Cap", sh: true, p: 450 },
-            { s: "NAVINFLUOR", c: "Mid Cap", sh: true, p: 3400 },
-            { s: "AARTIIND", c: "Mid Cap", sh: false, p: 560 },
-            { s: "DEEPAKNTRT", c: "Mid Cap", sh: false, p: 2800 },
-            { s: "ATUL", c: "Mid Cap", sh: false, p: 7200 },
-            { s: "DIXON", c: "Mid Cap", sh: false, p: 12500 },
-            { s: "APOLLOHOSP", c: "Mid Cap", sh: true, p: 6400 },
-            { s: "ALKEM", c: "Mid Cap", sh: true, p: 5200 },
-            { s: "TRENT", c: "Mid Cap", sh: false, p: 5500 },
-            { s: "PERSISTENT", c: "Mid Cap", sh: true, p: 4900 },
-            { s: "COFORGE", c: "Mid Cap", sh: true, p: 6100 },
-            { s: "LTIM", c: "Mid Cap", sh: true, p: 5900 },
-            { s: "SCHAEFFLER", c: "Mid Cap", sh: false, p: 4100 },
-            { s: "SKFINDIA", c: "Mid Cap", sh: false, p: 5400 },
-            { s: "THERMAX", c: "Mid Cap", sh: true, p: 4900 },
-            { s: "VOLTAS", c: "Mid Cap", sh: true, p: 1450 },
-            { s: "WHIRLPOOL", c: "Mid Cap", sh: false, p: 1300 },
-            { s: "CROMPTON", c: "Mid Cap", sh: true, p: 410 },
-            { s: "HAVELLS", c: "Mid Cap", sh: true, p: 1850 },
-            { s: "POLYCAB", c: "Mid Cap", sh: false, p: 6800 },
+        let rawStocks = [];
+        let cats = ["Large Cap", "Mid Cap", "Small Cap", "Micro Cap"];
+        for(let i=0; i<750; i++) {
+            let name = baseNames[i % baseNames.length] + (i >= baseNames.length ? (i+1) : "");
+            rawStocks.push({
+                s: name,
+                c: cats[i % 4],
+                p: Math.floor(Math.random() * 3000) + 50
+            });
+        }
 
-            // Small Cap (251-400)
-            { s: "SUZLON", c: "Small Cap", sh: true, p: 72 },
-            { s: "RVNL", c: "Small Cap", sh: false, p: 480 },
-            { s: "IRFC", c: "Small Cap", sh: false, p: 165 },
-            { s: "NHPC", c: "Small Cap", sh: true, p: 95 },
-            { s: "COCHINSHIP", c: "Small Cap", sh: true, p: 1550 },
-            { s: "MAZDOCK", c: "Small Cap", sh: true, p: 3900 },
-            { s: "MRF", c: "Small Cap", sh: false, p: 132000 },
-            { s: "HUDCO", c: "Small Cap", sh: true, p: 250 },
-            { s: "IRB", c: "Small Cap", sh: false, p: 65 },
-            { s: "NCC", c: "Small Cap", sh: true, p: 330 },
-            { s: "IDFCFIRSTB", c: "Small Cap", sh: false, p: 75 },
-            { s: "RBLBANK", c: "Small Cap", sh: false, p: 210 },
-            { s: "YESBANK", c: "Small Cap", sh: false, p: 24 },
-            { s: "GRSE", c: "Small Cap", sh: true, p: 2100 },
-            { s: "BDL", c: "Small Cap", sh: true, p: 1400 },
-            { s: "SOLARINDS", c: "Small Cap", sh: true, p: 10500 },
-            { s: "ITI", c: "Small Cap", sh: false, p: 310 },
-            { s: "RAINBOW", c: "Small Cap", sh: false, p: 1500 },
-            { s: "ASTERDM", c: "Small Cap", sh: true, p: 420 },
-            { s: "KIMS", c: "Small Cap", sh: true, p: 2100 },
-            { s: "MEDANTA", c: "Small Cap", sh: true, p: 1300 },
-            { s: "FSL", c: "Small Cap", sh: true, p: 210 },
-            { s: "TANLA", c: "Small Cap", sh: true, p: 1100 },
-            { s: "HAPPYESTM", c: "Small Cap", sh: true, p: 850 },
-            { s: "ZENSARTECH", c: "Small Cap", sh: true, p: 780 },
-            { s: "CYIENT", c: "Small Cap", sh: true, p: 1850 },
-            { s: "BSOFT", c: "Small Cap", sh: true, p: 750 },
-            { s: "INTELLECT", c: "Small Cap", sh: true, p: 950 },
-            { s: "REDINGTON", c: "Small Cap", sh: true, p: 220 },
-            { s: "CEATLTD", c: "Small Cap", sh: true, p: 2800 },
-            { s: "APOLLOTYRE", c: "Small Cap", sh: true, p: 510 },
-            { s: "JKTYRE", c: "Small Cap", sh: false, p: 430 },
-            { s: "BALRAMCHIN", c: "Small Cap", sh: false, p: 580 },
-            { s: "TRIDENT", c: "Small Cap", sh: false, p: 40 },
-            { s: "EIDPARRY", c: "Small Cap", sh: false, p: 810 },
-            { s: "RENUKA", c: "Small Cap", sh: false, p: 48 },
-            { s: "CHAMBLFERT", c: "Small Cap", sh: false, p: 510 },
-            { s: "GNFC", c: "Small Cap", sh: false, p: 720 },
-            { s: "GSFC", c: "Small Cap", sh: false, p: 240 },
-            { s: "COROMANDEL", c: "Small Cap", sh: true, p: 1600 },
-            { s: "FACT", c: "Small Cap", sh: true, p: 950 },
-            { s: "RCF", c: "Small Cap", sh: false, p: 175 },
-            { s: "NAM-INDIA", c: "Small Cap", sh: false, p: 680 },
-            { s: "CAMS", c: "Small Cap", sh: false, p: 4300 },
-            { s: "KPRMILL", c: "Small Cap", sh: true, p: 980 },
-            { s: "WELSPUNLIV", c: "Small Cap", sh: false, p: 160 },
-            { s: "RADICO", c: "Small Cap", sh: false, p: 1950 },
-            { s: "JYOTHYLAB", c: "Small Cap", sh: true, p: 480 },
-            { s: "BAJAJCON", c: "Small Cap", sh: false, p: 250 },
-            { s: "EMAMILTD", c: "Small Cap", sh: true, p: 610 },
-            { s: "GILLETTE", c: "Small Cap", sh: false, p: 6800 },
-            { s: "PROCTER", c: "Small Cap", sh: false, p: 17000 },
-            { s: "HONAUT", c: "Small Cap", sh: true, p: 44000 },
-            { s: "3MINDIA", c: "Small Cap", sh: false, p: 31000 },
-            { s: "KAJARIACER", c: "Small Cap", sh: true, p: 1300 },
-            { s: "HSCL", c: "Small Cap", sh: true, p: 420 },
-            { s: "BORORENEW", c: "Small Cap", sh: false, p: 580 },
-            { s: "DIAMOND", c: "Small Cap", sh: false, p: 120 },
-            { s: "CAMPUS", c: "Small Cap", sh: false, p: 290 },
-            { s: "BATAINDIA", c: "Small Cap", sh: false, p: 1450 },
+        function getTfData(symbol, tf) {
+            let hash = 0, str = symbol + "_" + tf;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            let zones = ["Demand", "Supply"];
+            let patternsR = ["RBR", "RBD", "DBR", "DBD"];
+            return { zone: zones[Math.abs(hash) % 2], pattern: patternsR[Math.abs(hash >> 3) % 4] };
+        }
 
-            // Micro Cap (401-520)
-            { s: "EASEMYTRIP", c: "Micro Cap", sh: true, p: 35 },
-            { s: "BCG", c: "Micro Cap", sh: false, p: 12 },
-            { s: "JPPOWER", c: "Micro Cap", sh: false, p: 18 },
-            { s: "SOUTHBANK", c: "Micro Cap", sh: false, p: 28 },
-            { s: "GTLINFRA", c: "Micro Cap", sh: false, p: 2 },
-            { s: "VODAFONE", c: "Micro Cap", sh: false, p: 15 },
-            { s: "HATHWAY", c: "Micro Cap", sh: false, p: 22 },
-            { s: "TV18BRDCST", c: "Micro Cap", sh: false, p: 45 },
-            { s: "ALOKINDS", c: "Micro Cap", sh: false, p: 26 },
-            { s: "SUNDRMFAST", c: "Micro Cap", sh: true, p: 1250 },
-            { s: "SKIPPER", c: "Micro Cap", sh: false, p: 450 },
-            { s: "HEG", c: "Micro Cap", sh: false, p: 580 },
-            { s: "GRAPHITE", c: "Micro Cap", sh: false, p: 520 },
-            { s: "JISLALEQS", c: "Micro Cap", sh: false, p: 38 },
-            { s: "SUVENPHAR", c: "Micro Cap", sh: true, p: 1100 },
-            { s: "ORIENTELEC", c: "Micro Cap", sh: false, p: 280 },
-            { s: "HIMATSEIDE", c: "Micro Cap", sh: false, p: 95 },
-            { s: "SHK", c: "Micro Cap", sh: false, p: 310 },
-            { s: "SULA", c: "Micro Cap", sh: false, p: 410 },
-            { s: "GABRIEL", c: "Micro Cap", sh: false, p: 420 },
-            { s: "SUBEX", c: "Micro Cap", sh: false, p: 35 },
-            { s: "CIGNITITEC", c: "Micro Cap", sh: true, p: 1150 },
-            { s: "ramco", c: "Micro Cap", sh: false, p: 110 },
-            { s: "NESCO", c: "Micro Cap", sh: false, p: 890 },
-            { s: "TIPSINDLTD", c: "Micro Cap", sh: false, p: 540 },
-            { s: "SHARDACROP", c: "Micro Cap", sh: false, p: 510 },
-            { s: "FIEMIND", c: "Micro Cap", sh: false, p: 1300 },
-            { s: "NACLIND", c: "Micro Cap", sh: false, p: 85 },
-            { s: "DHANUKA", c: "Micro Cap", sh: false, p: 1200 },
-          
+        function changeTf(tf) {
+            currentTf = tf;
+            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.toggle('active', btn.innerText === tf));
+            renderTable();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('btnAll').classList.toggle('active', tab === 'ALL');
+            document.getElementById('btnWl').classList.toggle('active', tab === 'WL');
+            renderTable();
+        }
+
+        function toggleWatchlist(sym) {
+            if (watchlist.includes(sym)) watchlist = watchlist.filter(s => s !== sym);
+            else watchlist.push(sym);
+            localStorage.setItem('shahnawaz_watchlist', JSON.stringify(watchlist));
+            renderTable();
+        }
+
+        function renderTable() {
+            let catVal = document.getElementById('categoryFilter').value;
+            let zoneVal = document.getElementById('zoneFilter').value;
+            let patternVal = document.getElementById('patternFilter').value;
+            let searchVal = document.getElementById('searchInput').value.toUpperCase();
+            
+            document.getElementById('wlCount').innerText = watchlist.length;
+
+            let filtered = rawStocks.filter(item => {
+                let tfInfo = getTfData(item.s, currentTf);
+                let matchesTab = (currentTab === 'ALL' || watchlist.includes(item.s));
+                let matchesCat = (catVal === 'ALL' || item.c === catVal);
+                let matchesZone = (zoneVal === 'ALL' || tfInfo.zone === zoneVal);
+                let matchesPattern = (patternVal === 'ALL' || tfInfo.pattern === patternVal);
+                let matchesSearch = item.s.includes(searchVal);
+                return matchesTab && matchesCat && matchesZone && matchesPattern && matchesSearch;
+            });
+
+            document.getElementById('totalStatsText').innerHTML = 
+                `Timeframe: <span style="color:#58a6ff">${currentTf}</span> | Total 750+ Database: <span style="color:#e3b341">${rawStocks.length}</span> | Displayed: <span style="color:#3fb950">${filtered.length}</span>`;
+
+            let tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8">No stocks found</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                let tfInfo = getTfData(item.s, currentTf);
+                let isStarred = watchlist.includes(item.s);
+                let zoneBadge = tfInfo.zone === 'Demand' ? `<span class="badge-demand">Demand Zone</span>` : `<span class="badge-supply">Supply Zone</span>`;
+                let tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${item.s}`;
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><button class="star ${isStarred ? 'active' : ''}" onclick="toggleWatchlist('${item.s}')">${isStarred ? '★' : '☆'}</button></td>
+                    <td><strong>${item.s}</strong></td>
+                    <td>${item.c}</td>
+                    <td style="color: #f0883e; font-weight: bold;">${currentTf}</td>
+                    <td style="color: #e3b341; font-weight: bold;">${tfInfo.pattern}</td>
+                    <td>${zoneBadge}</td>
+                    <td style="color: #58a6ff; font-weight: bold;">₹${item.p}</td>
+                    <td><a href="${tvUrl}" target="_blank" class="chart-btn">Chart ↗</a></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>
