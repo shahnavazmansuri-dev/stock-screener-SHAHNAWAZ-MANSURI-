@@ -1,82 +1,335 @@
-[
-    {
-        "s": "RELIANCE",
-        "c": "Large Cap",
-        "p": 2450.5,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "TCS",
-        "c": "Large Cap",
-        "p": 3820.0,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "HDFCBANK",
-        "c": "Large Cap",
-        "p": 1540.25,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "INFY",
-        "c": "Large Cap",
-        "p": 1420.75,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "ICICIBANK",
-        "c": "Large Cap",
-        "p": 980.5,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "SBIN",
-        "c": "Large Cap",
-        "p": 760.4,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "TATAMOTORS",
-        "c": "Mid Cap",
-        "p": 950.0,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "ZOMATO",
-        "c": "Mid Cap",
-        "p": 185.5,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    },
-    {
-        "s": "SUZLON",
-        "c": "Small Cap",
-        "p": 45.2,
-        "zone": "Demand (Daily)",
-        "pattern": "RBR",
-        "strat": "9/20 Bullish Cross"
-    },
-    {
-        "s": "IDEA",
-        "c": "Small Cap",
-        "p": 14.8,
-        "zone": "Demand (Weekly)",
-        "pattern": "DBR",
-        "strat": "Bollinger Breakout"
-    }
-]
+Symbol	Market Cap	Strategy	Timeframe	Pattern	Close	
+20MICRONS	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	217.94	
+21STCENMGM	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	39.54	
+360ONE	Large Cap	Bollinger Bands	Monthly	DBR - Demand	1171	
+3BBLACKBIO	Mid Cap	Breakout	Quarterly	DBD - Supply	1495	
+3IINFOLTD	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	23.16	
+3MINDIA	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	33485	
+3PLAND	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	31.87	
+5PAISA	Small Cap	Breakout	Quarterly	DBD - Supply	357	
+63MOONS	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	778.55	
+A2ZINFRA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	16.68	
+AAATECH	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	95.66	
+AADHARHFC	Large Cap	Breakout	Quarterly	DBD - Supply	466.85	
+AAKASH	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	8.63	
+AAREYDRUGS	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	87.73	
+AARNAV	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	32.33	
+AARON	Micro Cap	Breakout	Quarterly	DBD - Supply	130.12	
+AARTECH	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	48.4	
+AARTIDRUGS	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	414	
+AARTIIND	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	522.85	
+AARTIPHARM	Mid Cap	Breakout	Quarterly	DBD - Supply	836.6	
+AARTISURF	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	517.95	
+AARVI	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	140.93	
+AASTHA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	83.03	
+AAVAS	Mid Cap	Breakout	Quarterly	DBD - Supply	1263.8	
+ABAN	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	14.54	
+ABANSENT	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	27.86	
+ABB	Large Cap	Bollinger Bands	Monthly	DBR - Demand	7394.5	
+ABBOTINDIA	Large Cap	Breakout	Quarterly	DBD - Supply	25925	
+ABCAPITAL	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	396.65	
+ABCOTS	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	214.81	
+ABDL	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	619.5	
+ABFRL	Mid Cap	Breakout	Quarterly	DBD - Supply	52.09	
+ABINFRA	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	11.33	
+ABLBL	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	85.78	
+ABMINTLLTD		Bollinger Bands	Monthly	DBR - Demand	55.18	
+ABMKNO	Small Cap	Breakout	Quarterly	DBD - Supply	196.7	
+ABREL	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	1358.6	
+ABSLAMC	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	1018.6	
+ACC	Large Cap	Bollinger Bands	Monthly	DBR - Demand	1285.6	
+ACCELYA	Small Cap	Breakout	Quarterly	DBD - Supply	1132.9	
+ACCURACY	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	4.4	
+ACE	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	1105.6	
+ACEINTEG	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	17.75	
+ACGL	Mid Cap	Breakout	Quarterly	DBD - Supply	1780	
+ACI	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	501.15	
+ACL	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	43.55	
+ACMESOLAR	Large Cap	Bollinger Bands	Monthly	DBR - Demand	395.85	
+ACSTECH	Micro Cap	Breakout	Quarterly	DBD - Supply	50.65	
+ACUTAAS	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	3182.4	
+ADANIENSOL	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	1398.7	
+ADANIENT	Large Cap	Bollinger Bands	Monthly	DBR - Demand	2899	
+ADANIGREEN	Large Cap	Breakout	Quarterly	DBD - Supply	1264	
+ADANIPORTS	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	1646.9	
+ADANIPOWER	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	203.99	
+ADDIND	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	83.8	
+ADFFOODS	Small Cap	Breakout	Quarterly	DBD - Supply	269	
+ADL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	75	
+ADOR	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	1694	
+ADROITINFO	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	10.68	
+ADSL	Micro Cap	Breakout	Quarterly	DBD - Supply	104.61	
+ADVAIT	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	2101.8	
+ADVANCE	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	117.01	
+ADVANIHOTR	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	49.75	
+ADVENTHTL	Micro Cap	Breakout	Quarterly	DBD - Supply	138.04	
+ADVENZYMES	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	296.65	
+ADVIKCA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	1.15	
+AEGISLOG	Large Cap	Bollinger Bands	Monthly	DBR - Demand	1203	
+AEGISVOPAK	Large Cap	Breakout	Quarterly	DBD - Supply	264.8	
+AEPL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	15.4	
+AEQUS	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	243.24	
+AEROENTER	Small Cap	Bollinger Bands	Monthly	DBR - Demand	138.39	
+AEROFLEX	Mid Cap	Breakout	Quarterly	DBD - Supply	533.05	
+AERONEU	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	81.58	
+AEROPLANE	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	174.72	
+AETHER	Large Cap	Bollinger Bands	Monthly	DBR - Demand	1678	
+AFCONS	Mid Cap	Breakout	Quarterly	DBD - Supply	286.85	
+AFFLE	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	1577	
+AFFORDABLE	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	159.33	
+AFIL	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	9.47	
+AFSL	Small Cap	Breakout	Quarterly	DBD - Supply	208	
+AGARIND	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	449	
+AGARWALEYE	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	513.45	
+AGI	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	779.2	
+AGIIL	Small Cap	Breakout	Quarterly	DBD - Supply	286	
+AGL	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	13.81	
+AGRITECH	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	101.02	
+AGROPHOS	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	26.25	
+AGSTRA	Micro Cap	Breakout	Quarterly	DBD - Supply	2.02	
+AHCL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	15.62	
+AHLADA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	38.78	
+AHLEAST	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	137.36	
+AHLUCONT	Small Cap	Breakout	Quarterly	DBD - Supply	620.65	
+AHLWEST	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	524	
+AIAENG	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	4230	
+AIIL	Large Cap	Bollinger Bands	Monthly	DBR - Demand	558.3	
+AIRAN	Micro Cap	Breakout	Quarterly	DBD - Supply	14.88	
+AIROLAM	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	89	
+AJANTPHARM	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	3509.3	
+AJAXENGG	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	571.4	
+AJMERA	Small Cap	Breakout	Quarterly	DBD - Supply	115.75	
+AJOONI	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	3.85	
+AKASH	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	24.5	
+AKCAPIT	Small Cap	Bollinger Bands	Monthly	DBR - Demand	1678.4	
+AKG	Micro Cap	Breakout	Quarterly	DBD - Supply	9.2	
+AKI	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	4.11	
+AKSHAR	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	0.42	
+AKSHARCHEM	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	384.65	
+AKSHOPTFBR	Micro Cap	Breakout	Quarterly	DBD - Supply	7.17	
+AKUMS	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	785.2	
+ALANKIT	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	8.13	
+ALBERTDAVD	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	900.05	
+ALEMBICLTD	Small Cap	Breakout	Quarterly	DBD - Supply	97.61	
+ALFREDHE	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	2947.3	
+ALGOQUANT	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	63.8	
+ALICON	Small Cap	Bollinger Bands	Monthly	DBR - Demand	666.9	
+ALIVUS	Mid Cap	Breakout	Quarterly	DBD - Supply	1433.1	
+ALKALI	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	66	
+ALKEM	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	5313	
+ALKYLAMINE	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	2027	
+ALLCARGO	Small Cap	Breakout	Quarterly	DBD - Supply	12.04	
+ALLDIGI	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	816.1	
+ALLTIME	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	205.01	
+ALMONDZ	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	17.6	
+ALOKINDS	Small Cap	Breakout	Quarterly	DBD - Supply	8.15	
+ALPA	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	62.8	
+ALPHAGEO	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	290	
+ALPINETEX	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	53.48	
+ALUFLUOR	Small Cap	Breakout	Quarterly	DBD - Supply	483.95	
+AMAGI	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	558.7	
+AMAL	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	747	
+AMANTA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	190.8	
+AMARJOTHI	Small Cap	Breakout	Quarterly	DBD - Supply	157.65	
+AMBALALSA	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	45.76	
+AMBER	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	7585.5	
+AMBICAAGAR	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	24.96	
+AMBIKCO	Micro Cap	Breakout	Quarterly	DBD - Supply	1652.4	
+AMBUJACEM	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	406.15	
+AMDIND	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	57.49	
+AMJLAND	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	39.09	
+AMNPLST	Small Cap	Breakout	Quarterly	DBD - Supply	182.26	
+AMRUTANJAN	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	507.3	
+ANANDRATHI	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	2207.3	
+ANANTRAJ	Large Cap	Bollinger Bands	Monthly	DBR - Demand	592.75	
+ANDHRAPAP	Small Cap	Breakout	Quarterly	DBD - Supply	60.33	
+ANDHRSUGAR	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	97.6	
+ANDREWYU	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	28.01	
+ANGELONE	Large Cap	Bollinger Bands	Monthly	DBR - Demand	283.85	
+ANIKINDS	Micro Cap	Breakout	Quarterly	DBD - Supply	46.95	
+ANKITMETAL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	1.71	
+ANMOL	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	10.05	
+ANNAPURNA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	145.98	
+ANSALAPI	Micro Cap	Breakout	Quarterly	DBD - Supply	3.2	
+ANSALBU	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	87.99	
+ANTELOPUS	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	796.55	
+ANTGRAPHIC	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	0.78	
+ANTHEM	Large Cap	Breakout	Quarterly	DBD - Supply	923.85	
+ANUHPHR	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	81.9	
+ANUP	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	1781	
+ANURAS	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	1264.6	
+APARINDS	Large Cap	Breakout	Quarterly	DBD - Supply	17732	
+APCL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	100.8	
+APCOTEXIND	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	646.35	
+APEX	Small Cap	Bollinger Bands	Monthly	DBR - Demand	381	
+APLAPOLLO	Large Cap	Breakout	Quarterly	DBD - Supply	2222.1	
+APLLTD	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	837.3	
+APOLLO	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	386.25	
+APOLLOHOSP	Large Cap	Bollinger Bands	Monthly	DBR - Demand	8789.5	
+APOLLOPIPE	Small Cap	Breakout	Quarterly	DBD - Supply	612.95	
+APOLLOTYRE	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	440.6	
+APOLSINHOT	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	1222.9	
+APOORVA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	25.31	
+APTECHT	Micro Cap	Breakout	Quarterly	DBD - Supply	91.6	
+APTUS	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	251.68	
+AQYLON	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	22.04	
+ARCHIDPLY	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	104.5	
+ARCHIES	Micro Cap	Breakout	Quarterly	DBD - Supply	13.25	
+ARCL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	226.22	
+ARDEE	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	57.04	
+ARE&M	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	888.1	
+ARENTERP	Micro Cap	Breakout	Quarterly	DBD - Supply	36.97	
+ARFIN	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	87.62	
+ARIES	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	467.55	
+ARIHANT	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	884.7	
+ARIHANTCAP	Micro Cap	Breakout	Quarterly	DBD - Supply	77.72	
+ARIHANTSUP	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	252	
+ARIS	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	129.36	
+ARKADE	Small Cap	Bollinger Bands	Monthly	DBR - Demand	122.73	
+ARMANFIN	Small Cap	Breakout	Quarterly	DBD - Supply	1984.9	
+AROGRANITE	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	25	
+ARROWGREEN	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	713.9	
+ARSHIYA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	0.74	
+ARSSBL	Small Cap	Breakout	Quarterly	DBD - Supply	509.7	
+ARTEMISMED	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	319.05	
+ARTNIRMAN	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	41.2	
+ARVEE	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	164.6	
+ARVIND	Mid Cap	Breakout	Quarterly	DBD - Supply	555.5	
+ARVINDFASN	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	449.15	
+ARVSMART	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	657.95	
+ARYAMAN	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	644.3	
+ASAHIINDIA	Large Cap	Breakout	Quarterly	DBD - Supply	950.8	
+ASAHISONG	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	380	
+ASAL	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	482.25	
+ASALCBR	Small Cap	Bollinger Bands	Monthly	DBR - Demand	702.3	
+ASHAPURMIN	Mid Cap	Breakout	Quarterly	DBD - Supply	569.65	
+ASHIANA	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	368	
+ASHIKAG	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	430	
+ASHIMASYN	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	18.4	
+ASHOKA	Small Cap	Breakout	Quarterly	DBD - Supply	121.85	
+ASHOKAMET	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	13.62	
+ASHOKLEY	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	174.72	
+ASIANENE	Small Cap	Bollinger Bands	Monthly	DBR - Demand	472.75	
+ASIANHOTNR	Small Cap	Breakout	Quarterly	DBD - Supply	362.8	
+ASIANPAINT	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	2583.4	
+ASIANTILES	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	50.01	
+ASIANTNE	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	10.3	
+ASKAUTOLTD	Mid Cap	Breakout	Quarterly	DBD - Supply	641.7	
+ASMS	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	7.05	
+ASPINWALL	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	265	
+ASSAMENT	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	777.5	
+ASTAR	Mid Cap	Breakout	Quarterly	DBD - Supply	599.9	
+ASTEC	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	564.9	
+ASTERDM	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	757	
+ASTRAL	Large Cap	Bollinger Bands	Monthly	DBR - Demand	1527.4	
+ASTRAMICRO	Mid Cap	Breakout	Quarterly	DBD - Supply	1687.2	
+ASTRAZEN	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	6952	
+ASTRON	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	3.08	
+ATALREAL	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	33.24	
+ATAM	Micro Cap	Breakout	Quarterly	DBD - Supply	55.4	
+ATGL	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	625.95	
+ATHERENERG	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	1714.7	
+ATL	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	26.18	
+ATLANTAA	Micro Cap	Breakout	Quarterly	DBD - Supply	40.49	
+ATLANTAELE	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	1861.1	
+ATLASCYCLE	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	95.73	
+ATUL	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	6406	
+ATULAUTO	Small Cap	Breakout	Quarterly	DBD - Supply	490.15	
+AUBANK	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	1079.4	
+AUGMONT	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	872	
+AURIONPRO	Small Cap	Bollinger Bands	Monthly	DBR - Demand	702.2	
+AUROPHARMA	Large Cap	Breakout	Quarterly	DBD - Supply	1692.8	
+AURUM	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	230.98	
+AURUS	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	4.66	
+AUSOMENT	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	148.2	
+AUSTENG	Small Cap	Breakout	Quarterly	DBD - Supply	120.6	
+AUTOAXLES	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	1731.5	
+AUTOIND	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	86.87	
+AVADHSUGAR	Small Cap	Bollinger Bands	Monthly	DBR - Demand	837.5	
+AVALON	Mid Cap	Breakout	Quarterly	DBD - Supply	2353.3	
+AVANCE	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	0.88	
+AVANTEL	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	160.91	
+AVANTIFEED	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	831.45	
+AVG	Micro Cap	Breakout	Quarterly	DBD - Supply	172.8	
+AVL	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	596.85	
+AVONMORE	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	13.33	
+AVROIND	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	8.99	
+AVTNPL	Small Cap	Breakout	Quarterly	DBD - Supply	90.25	
+AWFIS	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	257.65	
+AWHCL	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	379	
+AWL	Large Cap	Bollinger Bands	Monthly	DBR - Demand	193.31	
+AXISBANK	Large Cap	Breakout	Quarterly	DBD - Supply	1268.3	
+AXISCADES	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	1667.6	
+AXITA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	8.05	
+AXTEL	Small Cap	Bollinger Bands	Monthly	DBR - Demand	395	
+AYE	Small Cap	Breakout	Quarterly	DBD - Supply	178.02	
+AYMSYNTEX	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	275.05	
+AZAD	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	2888.5	
+AZADIND	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	89.7	
+BAFNAPH	Micro Cap	Breakout	Quarterly	DBD - Supply	305.05	
+BAGFILMS	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	4.41	
+BAIDFIN	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	10.2	
+BAJAJ-AUTO	Large Cap	Bollinger Bands	Monthly	DBR - Demand	12408	
+BAJAJCON	Mid Cap	Breakout	Quarterly	DBD - Supply	485.8	
+BAJAJELEC	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	326	
+BAJAJFINSV	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	1966.3	
+BAJAJHCARE	Small Cap	Bollinger Bands	Monthly	DBR - Demand	329.95	
+BAJAJHFL	Large Cap	Breakout	Quarterly	DBD - Supply	83.91	
+BAJAJHIND	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	22.02	
+BAJAJHLDNG	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	11377	
+BAJAJINDEF	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	223.98	
+BAJAJST	Small Cap	Breakout	Quarterly	DBD - Supply	355.6	
+BAJEL	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	192.06	
+BAJFINANCE	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	1053.5	
+BALAJEE	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	26.27	
+BALAJITELE	Small Cap	Breakout	Quarterly	DBD - Supply	92.01	
+BALAMINES	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	2349	
+BALAXI	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	22.76	
+BALKRISHNA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	17.02	
+BALKRISIND	Large Cap	Breakout	Quarterly	DBD - Supply	2331.4	
+BALMLAWRIE	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	175.4	
+BALPHARMA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	84.68	
+BALRAMCHIN	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	673.75	
+BALUFORGE	Mid Cap	Breakout	Quarterly	DBD - Supply	623.9	
+BANARBEADS	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	116.94	
+BANARISUG	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	3869.9	
+BANCOINDIA	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	621.05	
+BANDHANBNK	Large Cap	Breakout	Quarterly	DBD - Supply	162.38	
+BANG	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	34.48	
+BANKA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	77.1	
+BANKBARODA	Large Cap	Bollinger Bands	Monthly	DBR - Demand	237.65	
+BANKINDIA	Large Cap	Breakout	Quarterly	DBD - Supply	141.59	
+BANSALWIRE	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	320.65	
+BANSWRAS	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	117.16	
+BASF	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	3780.2	
+BASML	Micro Cap	Breakout	Quarterly	DBD - Supply	25.5	
+BATAINDIA	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	685.2	
+BATLIBOI	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	86.07	
+BAYERCROP	Mid Cap	Bollinger Bands	Monthly	DBR - Demand	3975.1	
+BBL	Small Cap	Breakout	Quarterly	DBD - Supply	2346	
+BBOX	Mid Cap	Nifty Sharia 500	Daily	RBR - Demand	724.2	
+BBTC	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	1527	
+BBTCL	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	222	
+BCG	Small Cap	Breakout	Quarterly	DBD - Supply	9.03	
+BCLIND	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	36.23	
+BCONCEPTS	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	164.05	
+BCPL	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	68	
+BDL	Large Cap	Breakout	Quarterly	DBD - Supply	1257.5	
+BEARDSELL	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	26.15	
+BECTORFOOD	Mid Cap	9/20 EMA Cross	Weekly	RBD - Supply	225.38	
+BEDMUTHA	Micro Cap	Bollinger Bands	Monthly	DBR - Demand	107.83	
+BEEKAY	Small Cap	Breakout	Quarterly	DBD - Supply	395	
+BEL	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	411.65	
+BELLACASA	Micro Cap	9/20 EMA Cross	Weekly	RBD - Supply	237.31	
+BELRISE	Large Cap	Bollinger Bands	Monthly	DBR - Demand	231.89	
+BEML	Mid Cap	Breakout	Quarterly	DBD - Supply	1952.3	
+BENARAS	Large Cap	Nifty Sharia 500	Daily	RBR - Demand	10122	
+BENGALASM	Large Cap	9/20 EMA Cross	Weekly	RBD - Supply	6600	
+BEPL	Small Cap	Bollinger Bands	Monthly	DBR - Demand	124.72	
+BERGEPAINT	Large Cap	Breakout	Quarterly	DBD - Supply	494.7	
+BESTAGRO	Micro Cap	Nifty Sharia 500	Daily	RBR - Demand	17.24	
+BETA	Small Cap	9/20 EMA Cross	Weekly	RBD - Supply	2214	
+BFINVEST	Small Cap	Bollinger Bands	Monthly	DBR - Demand	445.1	
+BFUTILITIE	Small Cap	Breakout	Quarterly	DBD - Supply	502.6	
+BGRENERGY	Small Cap	Nifty Sharia 500	Daily	RBR - Demand	238.5	
+BHAGCHEM	Small Cap	
