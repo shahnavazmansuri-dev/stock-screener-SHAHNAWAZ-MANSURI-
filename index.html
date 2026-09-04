@@ -102,16 +102,23 @@
                 return;
             }
             data.forEach(stock => {
-                const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${stock.s}`;
-                const isWatched = watchlist.includes(stock.s);
+                const sym = stock.s || stock.symbol || stock.Stock || stock.name || "UNKNOWN";
+                const cat = stock.c || stock.category || stock.Category || "-";
+                const price = stock.p || stock.price || stock.Price || 0;
+                const zone = stock.zone || stock.Zone || "-";
+                const pattern = stock.pattern || stock.Pattern || "-";
+                const strat = stock.strat || stock.strategy || stock.Strategy || "-";
+
+                const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${sym}`;
+                const isWatched = watchlist.includes(sym);
                 const row = `<tr>
-                    <td><strong>${stock.s}</strong></td>
-                    <td>${stock.c}</td>
-                    <td class="green">₹${stock.p}</td>
-                    <td>${stock.zone} (${stock.pattern})</td>
-                    <td>${stock.strat}</td>
+                    <td><strong>${sym}</strong></td>
+                    <td>${cat}</td>
+                    <td class="green">₹${typeof price === 'number' ? price.toFixed(2) : price}</td>
+                    <td>${zone} (${pattern})</td>
+                    <td>${strat}</td>
                     <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
-                    <td><button onclick="toggleWatchlist('${stock.s}')">${isWatched ? '★ Remove' : '☆ Watch'}</button></td>
+                    <td><button onclick="toggleWatchlist('${sym}')">${isWatched ? '★ Remove' : '☆ Watch'}</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -123,17 +130,22 @@
             const stratVal = document.getElementById('strategySelect').value;
 
             const filtered = stockData.filter(stock => {
-                const matchesSearch = stock.s.includes(searchVal);
-                const matchesCat = (catVal === 'ALL' || stock.c === catVal);
+                const sym = stock.s || stock.symbol || stock.Stock || "";
+                const cat = stock.c || stock.category || stock.Category || "";
+                const zone = stock.zone || stock.Zone || "";
+                const strat = stock.strat || stock.strategy || stock.Strategy || "";
+
+                const matchesSearch = sym.toUpperCase().includes(searchVal);
+                const matchesCat = (catVal === 'ALL' || cat === catVal);
                 let matchesStrat = true;
                 if(stratVal === 'EMA_CROSS') {
-                    matchesStrat = stock.strat.includes('9/20');
+                    matchesStrat = strat.includes('9/20');
                 } else if(stratVal === 'Demand') {
-                    matchesStrat = stock.zone.includes('Demand');
+                    matchesStrat = zone.includes('Demand');
                 } else if(stratVal === 'Bollinger') {
-                    matchesStrat = stock.strat.includes('Bollinger');
+                    matchesStrat = strat.includes('Bollinger');
                 } else if(stratVal === 'MACD_CCI') {
-                    matchesStrat = stock.strat.includes('MACD');
+                    matchesStrat = strat.includes('MACD');
                 }
                 return matchesSearch && matchesCat && matchesStrat;
             });
@@ -170,14 +182,23 @@
         }
 
         function showWatchlist() {
-            const watchedStocks = stockData.filter(stock => watchlist.includes(stock.s));
+            const watchedStocks = stockData.filter(stock => {
+                const sym = stock.s || stock.symbol || stock.Stock || "";
+                return watchlist.includes(sym);
+            });
             renderTable(watchedStocks);
         }
 
         function downloadCSV() {
             let csvContent = "data:text/csv;charset=utf-8,Stock,Category,Price,Zone,Pattern,Strategy\n";
             stockData.forEach(row => {
-                csvContent += `${row.s},${row.c},${row.p},${row.zone},${row.pattern},${row.strat}\n`;
+                const sym = row.s || row.symbol || row.Stock || "";
+                const cat = row.c || row.category || row.Category || "";
+                const price = row.p || row.price || row.Price || 0;
+                const zone = row.zone || row.Zone || "";
+                const pattern = row.pattern || row.Pattern || "";
+                const strat = row.strat || row.strategy || row.Strategy || "";
+                csvContent += `${sym},${cat},${price},${zone},${pattern},${strat}\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
@@ -213,3 +234,4 @@
 
 </body>
 </html>
+
