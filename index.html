@@ -1,64 +1,215 @@
-import json
-import pandas as pd
-import yfinance as yf
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shahnawaz Mansuri Stock Screener</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 15px; }
+        h2 { text-align: center; color: #00ffcc; }
+        .controls { display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        select, input, button { padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #333; color: #00ffcc; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; font-size: 14px; }
+        th { background-color: #333; color: #00ffcc; }
+        .green { color: #00ff66; font-weight: bold; }
+        .tv-link { color: #00bcd4; text-decoration: none; font-weight: bold; }
+        .tv-link:hover { text-decoration: underline; }
+        .actions-bar { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .calc-box { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 6px; margin-bottom: 20px; }
+        .calc-box h3 { color: #00ffcc; margin-top: 0; font-size: 16px; }
+        .calc-inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    </style>
+</head>
+<body>
 
-# NSE se list fetch karein aur Top 400 stocks lein
-url = "https://archives.nseindia.com/content/equities/EQUITY_L.csv"
-df_nse = pd.read_csv(url)
-symbols = df_nse["SYMBOL"].tolist()[:400] 
+    <h2>Shahnawaz Mansuri Stock Screener</h2>
 
-stock_data_list = []
-strategies = ["Nifty Sharia 500", "9/20 EMA Cross", "Bollinger Bands", "Breakout"]
-patterns = ["RBR", "RBD", "DBR", "DBD"]
-zones = ["Demand", "Supply"]
+    <div class="calc-box">
+        <h3>Risk-Reward & Target Calculator</h3>
+        <div class="calc-inputs">
+            <input type="number" id="calcEntry" placeholder="Entry Price (₹)" style="width: 140px;">
+            <input type="number" id="calcSL" placeholder="Stop Loss (₹)" style="width: 140px;">
+            <button onclick="calculateLevels()">Calculate Targets</button>
+            <span id="calcResult" style="color: #00ff66; font-weight: bold;"></span>
+        </div>
+    </div>
 
-print(f"Fetching multi-timeframe nested data for {len(symbols)} stocks...")
+    <div class="actions-bar">
+        <input type="file" id="jsonFile" accept=".json,.csv" onchange="handleFileUpload(event)">
+        <button onclick="downloadCSV()">Download CSV</button>
+        <button onclick="showWatchlist()">View Watchlist</button>
+        <button onclick="renderTable(stockData)">All Stocks</button>
+    </div>
 
-for i, sym in enumerate(symbols):
-  sym = str(sym).strip()
-  t_symbol = sym + ".NS"
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search Stock..." onkeyup="filterStocks()">
+        <select id="categorySelect" onchange="filterStocks()">
+            <option value="ALL">All Categories</option>
+            <option value="Large Cap">Large Cap</option>
+            <option value="Mid Cap">Mid Cap</option>
+            <option value="Small Cap">Small Cap</option>
+            <option value="Micro Cap">Micro Cap</option>
+            <option value="Shariah">Nifty Shariah</option>
+        </select>
+        <select id="strategySelect" onchange="filterStocks()">
+            <option value="ALL">All Strategies / Zones</option>
+            <option value="EMA_CROSS">9/20 EMA Crossover</option>
+            <option value="Demand">Demand Zone</option>
+            <option value="Bollinger">Bollinger Squeeze / Breakout</option>
+            <option value="MACD_CCI">MACD / CCI Cross</option>
+        </select>
+    </div>
+    
+    <table id="stockTable">
+        <thead>
+            <tr>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Price (₹)</th>
+                <th>Zone / Pattern</th>
+                <th>Strategy</th>
+                <th>Chart</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
 
-  try:
-    tk = yf.Ticker(t_symbol)
-    inf = tk.fast_info
-    mcap_val = getattr(inf, "market_cap", 0) / 1e7
-  except Exception:
-    mcap_val = 1500.0
+    <script>
+        let stockData = [];
 
-  if mcap_val > 20000:
-    category = "Large Cap"
-  elif mcap_val > 5000:
-    category = "Mid Cap"
-  elif mcap_val > 1000:
-    category = "Small Cap"
-  else:
-    category = "Micro Cap"
+        fetch('stocks_data.json')
+            .then(response => response.json())
+            .then(data => {
+                stockData = data;
+                renderTable(stockData);
+            })
+            .catch(error => {
+                console.error('Error loading stock data:', error);
+                document.querySelector('#stockTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error loading stocks_data.json</td></tr>`;
+            });
 
-  # Daily price fetch karna
-  try:
-    df_pos = yf.download(t_symbol, period="1mo", interval="1d", progress=False)
-    if not df_pos.empty and "Close" in df_pos.columns:
-      cp = df_pos["Close"].dropna()
-      p_val = float(cp.iloc[-1]) if not cp.empty else 100.0
-    else:
-      p_val = 100.0
-  except Exception:
-    p_val = 100.0
-  
-  final_price = round(p_val, 2)
+        let watchlist = JSON.parse(localStorage.getItem('sm_watchlist')) || [];
 
-  # HTML ke hisab se exact short keys mapping (`s`, `c`, `p`, `zone`, `pattern`, `strat`)
-  stock_data_list.append({
-      "s": sym,              # index.html me stock.s ke liye
-      "c": category,         # index.html me stock.c ke liye
-      "p": final_price,      # index.html me stock.p ke liye
-      "zone": zones[i % len(zones)],
-      "pattern": patterns[i % len(patterns)],
-      "strat": strategies[i % len(strategies)],
-  })
+        function renderTable(data) {
+            const tbody = document.querySelector('#stockTable tbody');
+            tbody.innerHTML = "";
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
+                return;
+            }
+            data.forEach(stock => {
+                const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${stock.s}`;
+                const isWatched = watchlist.includes(stock.s);
+                const row = `<tr>
+                    <td><strong>${stock.s}</strong></td>
+                    <td>${stock.c}</td>
+                    <td class="green">₹${stock.p}</td>
+                    <td>${stock.zone} (${stock.pattern})</td>
+                    <td>${stock.strat}</td>
+                    <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
+                    <td><button onclick="toggleWatchlist('${stock.s}')">${isWatched ? '★ Remove' : '☆ Watch'}</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
 
-with open("stocks_data.json", "w") as f:
-  json.dump(stock_data_list, f)
+        function filterStocks() {
+            const searchVal = document.getElementById('searchInput').value.toUpperCase();
+            const catVal = document.getElementById('categorySelect').value;
+            const stratVal = document.getElementById('strategySelect').value;
 
-print("Data successfully generated matching index.html keys!")
+            const filtered = stockData.filter(stock => {
+                const matchesSearch = stock.s.includes(searchVal);
+                const matchesCat = (catVal === 'ALL' || stock.c === catVal);
+                let matchesStrat = true;
+                if(stratVal === 'EMA_CROSS') {
+                    matchesStrat = stock.strat.includes('9/20');
+                } else if(stratVal === 'Demand') {
+                    matchesStrat = stock.zone.includes('Demand');
+                } else if(stratVal === 'Bollinger') {
+                    matchesStrat = stock.strat.includes('Bollinger');
+                } else if(stratVal === 'MACD_CCI') {
+                    matchesStrat = stock.strat.includes('MACD');
+                }
+                return matchesSearch && matchesCat && matchesStrat;
+            });
 
+            renderTable(filtered);
+        }
+
+        function calculateLevels() {
+            const entry = parseFloat(document.getElementById('calcEntry').value);
+            const sl = parseFloat(document.getElementById('calcSL').value);
+            const resSpan = document.getElementById('calcResult');
+
+            if(!entry || !sl || entry <= sl) {
+                resSpan.innerHTML = "Enter valid Entry > Stop Loss";
+                return;
+            }
+
+            const risk = entry - sl;
+            const t1 = entry + (risk * 1);
+            const t2 = entry + (risk * 2);
+            const t3 = entry + (risk * 3);
+
+            resSpan.innerHTML = `Risk: ₹${risk.toFixed(2)} | T1: ₹${t1.toFixed(2)} | T2: ₹${t2.toFixed(2)} | T3: ₹${t3.toFixed(2)}`;
+        }
+
+        function toggleWatchlist(symbol) {
+            if(watchlist.includes(symbol)) {
+                watchlist = watchlist.filter(s => s !== symbol);
+            } else {
+                watchlist.push(symbol);
+            }
+            localStorage.setItem('sm_watchlist', JSON.stringify(watchlist));
+            filterStocks();
+        }
+
+        function showWatchlist() {
+            const watchedStocks = stockData.filter(stock => watchlist.includes(stock.s));
+            renderTable(watchedStocks);
+        }
+
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Stock,Category,Price,Zone,Pattern,Strategy\n";
+            stockData.forEach(row => {
+                csvContent += `${row.s},${row.c},${row.p},${row.zone},${row.pattern},${row.strat}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "shahnawaz_screener_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                try {
+                    const jsonData = JSON.parse(text);
+                    if(Array.isArray(jsonData) && jsonData.length > 0) {
+                        stockData = jsonData;
+                        renderTable(stockData);
+                        alert("JSON File Uploaded Successfully!");
+                    } else {
+                        alert("Invalid JSON format!");
+                    }
+                } catch(err) {
+                    alert("Error parsing JSON file!");
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+
+</body>
+</html>
