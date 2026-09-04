@@ -41,7 +41,7 @@ success = 0
 
 for stock in stocks:
 
-    symbol = stock.get("s")
+    symbol = stock.get("symbol") or stock.get("s")
 
     if not symbol:
         continue
