@@ -98,7 +98,9 @@ for i, sym in enumerate(symbols):
     tf_prices[tf_name] = round(p_val, 2)
 
   stock_data_list.append({
+      "symbol": sym,
       "stock": sym,
+      "mCap": category,
       "category": category,
       "price": tf_prices.get("Daily", 100.0),
       "strategy": strategies[i % len(strategies)],
