@@ -106,7 +106,7 @@ for i, sym in enumerate(symbols):
       "prices": tf_prices,
   })
 
-with open("stocks.json", "w") as f:
+with open("stocks_data.json", "w") as f:
   json.dump(stock_data_list, f)
 
-print("Multi-timeframe data successfully generated for all stocks!")
+print("Multi-timeframe data successfully generated for stocks_data.json!")
