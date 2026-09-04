@@ -98,8 +98,9 @@ for i, sym in enumerate(symbols):
     tf_prices[tf_name] = round(p_val, 2)
 
   stock_data_list.append({
-      "symbol": sym,
-      "mCap": category,
+      "stock": sym,
+      "category": category,
+      "price": tf_prices.get("Daily", 100.0),
       "strategy": strategies[i % len(strategies)],
       "pattern": patterns[i % len(patterns)],
       "zone": zones[i % len(zones)],
@@ -110,3 +111,4 @@ with open("stocks_data.json", "w") as f:
   json.dump(stock_data_list, f)
 
 print("Multi-timeframe data successfully generated for stocks_data.json!")
+
