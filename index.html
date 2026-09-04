@@ -4,51 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shahnawaz Mansuri Stock Screener</title>
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 15px; }
-        h2 { text-align: center; color: #00ffcc; }
-        .controls { display: flex; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        select, input, button { padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #333; color: #00ffcc; }
-        table { width: 100%; border-collapse: collapse; background: #1e1e1e; margin-top: 10px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; font-size: 14px; }
-        th { background-color: #333; color: #00ffcc; }
-        .green { color: #00ff66; font-weight: bold; }
-        .tv-link { color: #00bcd4; text-decoration: none; font-weight: bold; }
-        .tv-link:hover { text-decoration: underline; }
-        .actions-bar { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .calc-box { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 6px; margin-bottom: 20px; }
-        .calc-box h3 { color: #00ffcc; margin-top: 0; font-size: 16px; }
-        .calc-inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        #liveStatus { color: #ffbb00; font-size: 13px; font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            padding: 15px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #00ffcc;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        select, input, button {
+            padding: 8px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #333;
+            color: #00ffcc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e1e1e;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #333;
+            color: #00ffcc;
+        }
+
+        .green {
+            color: #00ff66;
+            font-weight: bold;
+        }
+
+        .tv-link {
+            color: #00bcd4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .tv-link:hover {
+            text-decoration: underline;
+        }
+
+        .actions-bar {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .calc-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .calc-box h3 {
+            color: #00ffcc;
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .calc-inputs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #liveStatus {
+            color: #ffbb00;
+            font-size: 13px;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
 
     <h2>Shahnawaz Mansuri Stock Screener</h2>
 
     <div class="calc-box">
         <h3>Risk-Reward & Target Calculator</h3>
+
         <div class="calc-inputs">
-            <input type="number" id="calcEntry" placeholder="Entry Price (₹)" style="width: 140px;">
-            <input type="number" id="calcSL" placeholder="Stop Loss (₹)" style="width: 140px;">
-            <button onclick="calculateLevels()">Calculate Targets</button>
-            <span id="calcResult" style="color: #00ff66; font-weight: bold;"></span>
+            <input
+                type="number"
+                id="calcEntry"
+                placeholder="Entry Price (₹)"
+                style="width: 140px;"
+            >
+
+            <input
+                type="number"
+                id="calcSL"
+                placeholder="Stop Loss (₹)"
+                style="width: 140px;"
+            >
+
+            <button onclick="calculateLevels()">
+                Calculate Targets
+            </button>
+
+            <span
+                id="calcResult"
+                style="color: #00ff66; font-weight: bold;"
+            ></span>
         </div>
     </div>
 
     <div class="actions-bar">
-        <input type="file" id="jsonFile" accept=".json,.csv" onchange="handleFileUpload(event)">
-        <button onclick="downloadCSV()">Download CSV</button>
-        <button onclick="showWatchlist()">View Watchlist</button>
-        <button onclick="renderTable(stockData)">All Stocks</button>
-        <button onclick="fetchAllLivePrices()" style="background: #005555; color: #00ffcc;">🔄 Fetch Live Prices</button>
+
+        <input
+            type="file"
+            id="jsonFile"
+            accept=".json,.csv"
+            onchange="handleFileUpload(event)"
+        >
+
+        <button onclick="downloadCSV()">
+            Download CSV
+        </button>
+
+        <button onclick="showWatchlist()">
+            View Watchlist
+        </button>
+
+        <button onclick="renderTable(stockData)">
+            All Stocks
+        </button>
+
+        <button
+            onclick="fetchAllLivePrices()"
+            style="background: #005555; color: #00ffcc;"
+        >
+            🔄 Refresh Prices
+        </button>
+
         <span id="liveStatus"></span>
     </div>
 
     <div class="controls">
-        <input type="text" id="searchInput" placeholder="Search Stock..." onkeyup="filterStocks()">
-        <select id="categorySelect" onchange="filterStocks()">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search Stock..."
+            onkeyup="filterStocks()"
+        >
+
+        <select
+            id="categorySelect"
+            onchange="filterStocks()"
+        >
             <option value="ALL">All Categories</option>
             <option value="Large Cap">Large Cap</option>
             <option value="Mid Cap">Mid Cap</option>
@@ -56,16 +195,36 @@
             <option value="Micro Cap">Micro Cap</option>
             <option value="Shariah">Nifty Shariah</option>
         </select>
-        <select id="strategySelect" onchange="filterStocks()">
-            <option value="ALL">All Strategies / Zones</option>
-            <option value="EMA_CROSS">9/20 EMA Crossover</option>
-            <option value="Demand">Demand Zone</option>
-            <option value="Bollinger">Bollinger Squeeze / Breakout</option>
-            <option value="MACD_CCI">MACD / CCI Cross</option>
+
+        <select
+            id="strategySelect"
+            onchange="filterStocks()"
+        >
+            <option value="ALL">
+                All Strategies / Zones
+            </option>
+
+            <option value="EMA_CROSS">
+                9/20 EMA Crossover
+            </option>
+
+            <option value="Demand">
+                Demand Zone
+            </option>
+
+            <option value="Bollinger">
+                Bollinger Squeeze / Breakout
+            </option>
+
+            <option value="MACD_CCI">
+                MACD / CCI Cross
+            </option>
         </select>
+
     </div>
-    
+
     <table id="stockTable">
+
         <thead>
             <tr>
                 <th>Stock</th>
@@ -77,199 +236,646 @@
                 <th>Action</th>
             </tr>
         </thead>
+
         <tbody>
         </tbody>
+
     </table>
 
     <script>
+
         let stockData = [];
 
-        fetch('stocks_data.json')
-            .then(response => response.json())
-            .then(data => {
-                stockData = data;
-                renderTable(stockData);
-                fetchAllLivePrices(); // Page load hote hi live prices fetch karega
-            })
-            .catch(error => {
-                console.error('Error loading stock data:', error);
-                document.querySelector('#stockTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Error loading stocks_data.json</td></tr>`;
-            });
+        let watchlist =
+            JSON.parse(
+                localStorage.getItem('sm_watchlist')
+            ) || [];
 
-        let watchlist = JSON.parse(localStorage.getItem('sm_watchlist')) || [];
+
+        // ==============================
+        // LOAD STOCK DATA
+        // ==============================
+
+        function loadStockData() {
+
+            const statusSpan =
+                document.getElementById('liveStatus');
+
+            statusSpan.innerText =
+                "Loading latest prices...";
+
+
+            fetch('stocks_data.json?t=' + Date.now())
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(
+                            "stocks_data.json load failed"
+                        );
+                    }
+
+                    return response.json();
+                })
+
+                .then(data => {
+
+                    if (Array.isArray(data)) {
+
+                        stockData = data;
+
+                    } else {
+
+                        stockData =
+                            data.stocks || [];
+                    }
+
+
+                    renderTable(stockData);
+
+
+                    statusSpan.innerText =
+                        "Latest prices loaded ✅";
+
+
+                    setTimeout(() => {
+
+                        statusSpan.innerText = "";
+
+                    }, 3000);
+
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        'Error loading stock data:',
+                        error
+                    );
+
+
+                    document.querySelector(
+                        '#stockTable tbody'
+                    ).innerHTML =
+                        `<tr>
+                            <td
+                                colspan="7"
+                                style="text-align:center; color:red;"
+                            >
+                                Error loading stocks_data.json
+                            </td>
+                        </tr>`;
+
+
+                    statusSpan.innerText =
+                        "Price loading failed ❌";
+                });
+        }
+
+
+        // ==============================
+        // REFRESH PRICES
+        // ==============================
+
+        function fetchAllLivePrices() {
+
+            loadStockData();
+
+        }
+
+
+        // ==============================
+        // PAGE LOAD
+        // ==============================
+
+        loadStockData();
+
+
+        // ==============================
+        // RENDER TABLE
+        // ==============================
 
         function renderTable(data) {
-            const tbody = document.querySelector('#stockTable tbody');
+
+            const tbody =
+                document.querySelector(
+                    '#stockTable tbody'
+                );
+
             tbody.innerHTML = "";
-            if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">No Stocks Found</td></tr>`;
+
+
+            if (data.length === 0) {
+
+                tbody.innerHTML =
+                    `<tr>
+                        <td
+                            colspan="7"
+                            style="text-align:center; color:red;"
+                        >
+                            No Stocks Found
+                        </td>
+                    </tr>`;
+
                 return;
             }
-            data.forEach(stock => {
-                const sym = stock.s || stock.symbol || stock.Stock || stock.name || "UNKNOWN";
-                const cat = stock.c || stock.category || stock.Category || "-";
-                const price = stock.p || stock.price || stock.Price || 0;
-                const zone = stock.zone || stock.Zone || "-";
-                const pattern = stock.pattern || stock.Pattern || "-";
-                const strat = stock.strat || stock.strategy || stock.Strategy || "-";
 
-                const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${sym}`;
-                const isWatched = watchlist.includes(sym);
-                const row = `<tr id="row-${sym}">
-                    <td><strong>${sym}</strong></td>
-                    <td>${cat}</td>
-                    <td class="green price-cell">₹${typeof price === 'number' ? price.toFixed(2) : price}</td>
-                    <td>${zone} (${pattern})</td>
-                    <td>${strat}</td>
-                    <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
-                    <td><button onclick="toggleWatchlist('${sym}')">${isWatched ? '★ Remove' : '☆ Watch'}</button></td>
-                </tr>`;
+
+            data.forEach(stock => {
+
+                const sym =
+                    stock.s ||
+                    stock.symbol ||
+                    stock.Stock ||
+                    stock.name ||
+                    "UNKNOWN";
+
+
+                const cat =
+                    stock.c ||
+                    stock.category ||
+                    stock.Category ||
+                    "-";
+
+
+                const price =
+                    stock.p ??
+                    stock.live_price ??
+                    stock.currentPrice?.NSE ??
+                    stock.price ??
+                    stock.Price ??
+                    stock.ltp ??
+                    stock.close ??
+                    0;
+
+
+                const zone =
+                    stock.zone ||
+                    stock.Zone ||
+                    "-";
+
+
+                const pattern =
+                    stock.pattern ||
+                    stock.Pattern ||
+                    "-";
+
+
+                const strat =
+                    stock.strat ||
+                    stock.strategy ||
+                    stock.Strategy ||
+                    "-";
+
+
+                const tvUrl =
+                    `https://in.tradingview.com/chart/?symbol=NSE:${sym}`;
+
+
+                const isWatched =
+                    watchlist.includes(sym);
+
+
+                let displayPrice = "-";
+
+
+                if (
+                    typeof price === 'number' &&
+                    !isNaN(price)
+                ) {
+
+                    displayPrice =
+                        `₹${price.toFixed(2)}`;
+
+                } else if (
+                    price !== null &&
+                    price !== undefined &&
+                    price !== ""
+                ) {
+
+                    displayPrice =
+                        `₹${price}`;
+                }
+
+
+                const row =
+                    `<tr id="row-${sym}">
+
+                        <td>
+                            <strong>${sym}</strong>
+                        </td>
+
+                        <td>
+                            ${cat}
+                        </td>
+
+                        <td class="green price-cell">
+                            ${displayPrice}
+                        </td>
+
+                        <td>
+                            ${zone} (${pattern})
+                        </td>
+
+                        <td>
+                            ${strat}
+                        </td>
+
+                        <td>
+                            <a
+                                href="${tvUrl}"
+                                target="_blank"
+                                class="tv-link"
+                            >
+                                TV Chart
+                            </a>
+                        </td>
+
+                        <td>
+                            <button
+                                onclick="toggleWatchlist('${sym}')"
+                            >
+                                ${
+                                    isWatched
+                                    ? '★ Remove'
+                                    : '☆ Watch'
+                                }
+                            </button>
+                        </td>
+
+                    </tr>`;
+
+
                 tbody.innerHTML += row;
+
             });
         }
 
-        async function fetchAllLivePrices() {
-            const statusSpan = document.getElementById('liveStatus');
-            statusSpan.innerText = "Fetching live prices...";
-            
-            let updatedCount = 0;
-            for (let stock of stockData) {
-                const sym = stock.s || stock.symbol || stock.Stock;
-                if (!sym) continue;
 
-                try {
-                    const url = `https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1m`;
-                    const res = await fetch(url);
-                    const json = await res.json();
-                    const livePrice = json.chart.result[0].meta.regularMarketPrice;
-
-                    if (livePrice) {
-                        stock.p = livePrice;
-                        const row = document.getElementById(`row-${sym}`);
-                        if (row) {
-                            const priceCell = row.querySelector('.price-cell');
-                            if (priceCell) {
-                                priceCell.innerText = `₹${livePrice.toFixed(2)}`;
-                            }
-                        }
-                        updatedCount++;
-                    }
-                } catch (err) {
-                    console.error(`Could not fetch live price for ${sym}`, err);
-                }
-            }
-            statusSpan.innerText = `Live prices updated! (${updatedCount} stocks)`;
-            setTimeout(() => { statusSpan.innerText = ""; }, 5000);
-        }
+        // ==============================
+        // FILTER STOCKS
+        // ==============================
 
         function filterStocks() {
-            const searchVal = document.getElementById('searchInput').value.toUpperCase();
-            const catVal = document.getElementById('categorySelect').value;
-            const stratVal = document.getElementById('strategySelect').value;
 
-            const filtered = stockData.filter(stock => {
-                const sym = stock.s || stock.symbol || stock.Stock || "";
-                const cat = stock.c || stock.category || stock.Category || "";
-                const zone = stock.zone || stock.Zone || "";
-                const strat = stock.strat || stock.strategy || stock.Strategy || "";
+            const searchVal =
+                document
+                    .getElementById('searchInput')
+                    .value
+                    .toUpperCase();
 
-                const matchesSearch = sym.toUpperCase().includes(searchVal);
-                const matchesCat = (catVal === 'ALL' || cat === catVal);
-                let matchesStrat = true;
-                if(stratVal === 'EMA_CROSS') {
-                    matchesStrat = strat.includes('9/20');
-                } else if(stratVal === 'Demand') {
-                    matchesStrat = zone.includes('Demand');
-                } else if(stratVal === 'Bollinger') {
-                    matchesStrat = strat.includes('Bollinger');
-                } else if(stratVal === 'MACD_CCI') {
-                    matchesStrat = strat.includes('MACD');
-                }
-                return matchesSearch && matchesCat && matchesStrat;
-            });
+
+            const catVal =
+                document.getElementById(
+                    'categorySelect'
+                ).value;
+
+
+            const stratVal =
+                document.getElementById(
+                    'strategySelect'
+                ).value;
+
+
+            const filtered =
+                stockData.filter(stock => {
+
+                    const sym =
+                        stock.s ||
+                        stock.symbol ||
+                        stock.Stock ||
+                        "";
+
+
+                    const cat =
+                        stock.c ||
+                        stock.category ||
+                        stock.Category ||
+                        "";
+
+
+                    const zone =
+                        stock.zone ||
+                        stock.Zone ||
+                        "";
+
+
+                    const strat =
+                        stock.strat ||
+                        stock.strategy ||
+                        stock.Strategy ||
+                        "";
+
+
+                    const matchesSearch =
+                        sym
+                            .toUpperCase()
+                            .includes(searchVal);
+
+
+                    const matchesCat =
+                        (
+                            catVal === 'ALL' ||
+                            cat === catVal
+                        );
+
+
+                    let matchesStrat = true;
+
+
+                    if (
+                        stratVal === 'EMA_CROSS'
+                    ) {
+
+                        matchesStrat =
+                            strat.includes('9/20');
+
+                    } else if (
+                        stratVal === 'Demand'
+                    ) {
+
+                        matchesStrat =
+                            zone.includes('Demand');
+
+                    } else if (
+                        stratVal === 'Bollinger'
+                    ) {
+
+                        matchesStrat =
+                            strat.includes('Bollinger');
+
+                    } else if (
+                        stratVal === 'MACD_CCI'
+                    ) {
+
+                        matchesStrat =
+                            strat.includes('MACD');
+                    }
+
+
+                    return (
+                        matchesSearch &&
+                        matchesCat &&
+                        matchesStrat
+                    );
+
+                });
+
 
             renderTable(filtered);
         }
 
-        function calculateLevels() {
-            const entry = parseFloat(document.getElementById('calcEntry').value);
-            const sl = parseFloat(document.getElementById('calcSL').value);
-            const resSpan = document.getElementById('calcResult');
 
-            if(!entry || !sl || entry <= sl) {
-                resSpan.innerHTML = "Enter valid Entry > Stop Loss";
+        // ==============================
+        // CALCULATOR
+        // ==============================
+
+        function calculateLevels() {
+
+            const entry =
+                parseFloat(
+                    document.getElementById(
+                        'calcEntry'
+                    ).value
+                );
+
+
+            const sl =
+                parseFloat(
+                    document.getElementById(
+                        'calcSL'
+                    ).value
+                );
+
+
+            const resSpan =
+                document.getElementById(
+                    'calcResult'
+                );
+
+
+            if (
+                !entry ||
+                !sl ||
+                entry <= sl
+            ) {
+
+                resSpan.innerHTML =
+                    "Enter valid Entry > Stop Loss";
+
                 return;
             }
 
-            const risk = entry - sl;
-            const t1 = entry + (risk * 1);
-            const t2 = entry + (risk * 2);
-            const t3 = entry + (risk * 3);
 
-            resSpan.innerHTML = `Risk: ₹${risk.toFixed(2)} | T1: ₹${t1.toFixed(2)} | T2: ₹${t2.toFixed(2)} | T3: ₹${t3.toFixed(2)}`;
+            const risk =
+                entry - sl;
+
+
+            const t1 =
+                entry + (risk * 1);
+
+
+            const t2 =
+                entry + (risk * 2);
+
+
+            const t3 =
+                entry + (risk * 3);
+
+
+            resSpan.innerHTML =
+                `Risk: ₹${risk.toFixed(2)} |
+                 T1: ₹${t1.toFixed(2)} |
+                 T2: ₹${t2.toFixed(2)} |
+                 T3: ₹${t3.toFixed(2)}`;
         }
 
+
+        // ==============================
+        // WATCHLIST
+        // ==============================
+
         function toggleWatchlist(symbol) {
-            if(watchlist.includes(symbol)) {
-                watchlist = watchlist.filter(s => s !== symbol);
+
+            if (
+                watchlist.includes(symbol)
+            ) {
+
+                watchlist =
+                    watchlist.filter(
+                        s => s !== symbol
+                    );
+
             } else {
+
                 watchlist.push(symbol);
             }
-            localStorage.setItem('sm_watchlist', JSON.stringify(watchlist));
+
+
+            localStorage.setItem(
+                'sm_watchlist',
+                JSON.stringify(watchlist)
+            );
+
+
             filterStocks();
         }
 
+
         function showWatchlist() {
-            const watchedStocks = stockData.filter(stock => {
-                const sym = stock.s || stock.symbol || stock.Stock || "";
-                return watchlist.includes(sym);
-            });
+
+            const watchedStocks =
+                stockData.filter(stock => {
+
+                    const sym =
+                        stock.s ||
+                        stock.symbol ||
+                        stock.Stock ||
+                        "";
+
+
+                    return watchlist.includes(
+                        sym
+                    );
+
+                });
+
+
             renderTable(watchedStocks);
         }
 
+
+        // ==============================
+        // DOWNLOAD CSV
+        // ==============================
+
         function downloadCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Stock,Category,Price,Zone,Pattern,Strategy\n";
+
+            let csvContent =
+                "data:text/csv;charset=utf-8," +
+                "Stock,Category,Price,Zone,Pattern,Strategy\n";
+
+
             stockData.forEach(row => {
-                const sym = row.s || row.symbol || row.Stock || "";
-                const cat = row.c || row.category || row.Category || "";
-                const price = row.p || row.price || row.Price || 0;
-                const zone = row.zone || row.Zone || "";
-                const pattern = row.pattern || row.Pattern || "";
-                const strat = row.strat || row.strategy || row.Strategy || "";
-                csvContent += `${sym},${cat},${price},${zone},${pattern},${strat}\n`;
+
+                const sym =
+                    row.s ||
+                    row.symbol ||
+                    row.Stock ||
+                    "";
+
+
+                const cat =
+                    row.c ||
+                    row.category ||
+                    row.Category ||
+                    "";
+
+
+                const price =
+                    row.p ??
+                    row.live_price ??
+                    row.currentPrice?.NSE ??
+                    row.price ??
+                    row.Price ??
+                    row.ltp ??
+                    row.close ??
+                    0;
+
+
+                const zone =
+                    row.zone ||
+                    row.Zone ||
+                    "";
+
+
+                const pattern =
+                    row.pattern ||
+                    row.Pattern ||
+                    "";
+
+
+                const strat =
+                    row.strat ||
+                    row.strategy ||
+                    row.Strategy ||
+                    "";
+
+
+                csvContent +=
+                    `${sym},${cat},${price},${zone},${pattern},${strat}\n`;
+
             });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "shahnawaz_screener_data.csv");
+
+
+            const encodedUri =
+                encodeURI(csvContent);
+
+
+            const link =
+                document.createElement("a");
+
+
+            link.setAttribute(
+                "href",
+                encodedUri
+            );
+
+
+            link.setAttribute(
+                "download",
+                "shahnawaz_screener_data.csv"
+            );
+
+
             document.body.appendChild(link);
+
+
             link.click();
+
+
             document.body.removeChild(link);
         }
 
+
+        // ==============================
+        // FILE UPLOAD
+        // ==============================
+
         function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                try {
-                    const jsonData = JSON.parse(text);
-                    if(Array.isArray(jsonData) && jsonData.length > 0) {
-                        stockData = jsonData;
-                        renderTable(stockData);
-                        alert("JSON File Uploaded Successfully!");
-                    } else {
-                        alert("Invalid JSON format!");
-                    }
-                } catch(err) {
-                    alert("Error parsing JSON file!");
-                }
-            };
-            reader.readAsText(file);
-        }
-    </script>
 
-</body>
-</html>
+            const file =
+                event.target.files[0];
 
+
+            if (!file) return;
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(e) {
+
+                    const text =
+                        e.target.result;
+
+
+                    try {
+
+                        const jsonData =
+                            JSON.parse(text);
+
+
+                        if (
+                            Array.isArray(jsonData) &&
+                            jsonData.length > 0
+                        ) {
+
+                            stockData =
+                                jsonData;
+
+
+                            renderTable(
+                      
