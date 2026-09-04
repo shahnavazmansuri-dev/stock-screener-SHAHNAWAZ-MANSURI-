@@ -26,7 +26,10 @@
       "Daily": 218.0,
       "Weekly": 218.0,
       "Monthly": 218.0
-    }
+    },
+    "p": "222.49",
+    "live_price": "222.49",
+    "percent_change": "2.76"
   },
   {
     "symbol": "21STCENMGM",
@@ -55,7 +58,10 @@
       "Daily": 37.41,
       "Weekly": 37.41,
       "Monthly": 37.41
-    }
+    },
+    "p": "38",
+    "live_price": "38",
+    "percent_change": "-0.21"
   },
   {
     "symbol": "360ONE",
@@ -84,7 +90,10 @@
       "Daily": 1140.5,
       "Weekly": 1140.5,
       "Monthly": 1140.5
-    }
+    },
+    "p": "1137",
+    "live_price": "1137",
+    "percent_change": "-1.56"
   },
   {
     "symbol": "3BBLACKBIO",
@@ -113,7 +122,10 @@
       "Daily": 1423.5,
       "Weekly": 1423.5,
       "Monthly": 1423.5
-    }
+    },
+    "p": "1476.20",
+    "live_price": "1476.20",
+    "percent_change": "-0.52"
   },
   {
     "symbol": "3IINFOLTD",
@@ -142,7 +154,10 @@
       "Daily": 22.38,
       "Weekly": 22.38,
       "Monthly": 22.38
-    }
+    },
+    "p": "22.40",
+    "live_price": "22.40",
+    "percent_change": "3.35"
   },
   {
     "symbol": "3MINDIA",
@@ -171,7 +186,10 @@
       "Daily": 32730.0,
       "Weekly": 32730.0,
       "Monthly": 32730.0
-    }
+    },
+    "p": "32955",
+    "live_price": "32955",
+    "percent_change": "-0.31"
   },
   {
     "symbol": "3PLAND",
@@ -200,7 +218,10 @@
       "Daily": 31.98,
       "Weekly": 31.98,
       "Monthly": 31.98
-    }
+    },
+    "p": "32.39",
+    "live_price": "32.39",
+    "percent_change": "-5.25"
   },
   {
     "symbol": "5PAISA",
@@ -229,7 +250,10 @@
       "Daily": 348.05,
       "Weekly": 348.05,
       "Monthly": 348.05
-    }
+    },
+    "p": "342.10",
+    "live_price": "342.10",
+    "percent_change": "0.12"
   },
   {
     "symbol": "63MOONS",
@@ -258,7 +282,10 @@
       "Daily": 895.4,
       "Weekly": 895.4,
       "Monthly": 895.4
-    }
+    },
+    "p": "876.50",
+    "live_price": "876.50",
+    "percent_change": "2.86"
   },
   {
     "symbol": "A2ZINFRA",
@@ -287,7 +314,10 @@
       "Daily": 15.65,
       "Weekly": 15.65,
       "Monthly": 15.65
-    }
+    },
+    "p": "15.74",
+    "live_price": "15.74",
+    "percent_change": "-0.95"
   },
   {
     "symbol": "AAATECH",
@@ -316,7 +346,10 @@
       "Daily": 92.82,
       "Weekly": 92.82,
       "Monthly": 92.82
-    }
+    },
+    "p": "91.46",
+    "live_price": "91.46",
+    "percent_change": "-3.08"
   },
   {
     "symbol": "AADHARHFC",
@@ -345,7 +378,10 @@
       "Daily": 486.2,
       "Weekly": 486.2,
       "Monthly": 486.2
-    }
+    },
+    "p": "485.00",
+    "live_price": "485.00",
+    "percent_change": "1.67"
   },
   {
     "symbol": "AAKASH",
@@ -374,7 +410,10 @@
       "Daily": 8.73,
       "Weekly": 8.73,
       "Monthly": 8.73
-    }
+    },
+    "p": "8.80",
+    "live_price": "8.80",
+    "percent_change": "0.34"
   },
   {
     "symbol": "AAREYDRUGS",
@@ -403,7 +442,10 @@
       "Daily": 96.0,
       "Weekly": 96.0,
       "Monthly": 96.0
-    }
+    },
+    "p": "96",
+    "live_price": "96",
+    "percent_change": "0.20"
   },
   {
     "symbol": "AARNAV",
@@ -432,7 +474,10 @@
       "Daily": 32.87,
       "Weekly": 32.87,
       "Monthly": 32.87
-    }
+    },
+    "p": "32.10",
+    "live_price": "32.10",
+    "percent_change": "-2.40"
   },
   {
     "symbol": "AARON",
@@ -461,7 +506,10 @@
       "Daily": 129.1,
       "Weekly": 129.1,
       "Monthly": 129.1
-    }
+    },
+    "p": "128.00",
+    "live_price": "128.00",
+    "percent_change": "-0.76"
   },
   {
     "symbol": "AARTECH",
@@ -490,7 +538,10 @@
       "Daily": 49.4,
       "Weekly": 49.4,
       "Monthly": 49.4
-    }
+    },
+    "p": "48.50",
+    "live_price": "48.50",
+    "percent_change": "-0.78"
   },
   {
     "symbol": "AARTIDRUGS",
@@ -519,7 +570,10 @@
       "Daily": 434.35,
       "Weekly": 434.35,
       "Monthly": 434.35
-    }
+    },
+    "p": "431.65",
+    "live_price": "431.65",
+    "percent_change": "2.08"
   },
   {
     "symbol": "AARTIIND",
@@ -548,7 +602,10 @@
       "Daily": 498.5,
       "Weekly": 498.25,
       "Monthly": 498.5
-    }
+    },
+    "p": "492.05",
+    "live_price": "492.05",
+    "percent_change": "-1.87"
   },
   {
     "symbol": "AARTIPHARM",
@@ -577,7 +634,10 @@
       "Daily": 856.9,
       "Weekly": 856.9,
       "Monthly": 856.9
-    }
+    },
+    "p": "858.80",
+    "live_price": "858.80",
+    "percent_change": "-0.52"
   },
   {
     "symbol": "AARTISURF",
@@ -606,7 +666,10 @@
       "Daily": 542.0,
       "Weekly": 542.0,
       "Monthly": 542.0
-    }
+    },
+    "p": "550.90",
+    "live_price": "550.90",
+    "percent_change": "-0.51"
   },
   {
     "symbol": "AARVI",
@@ -635,7 +698,10 @@
       "Daily": 142.58,
       "Weekly": 142.58,
       "Monthly": 142.58
-    }
+    },
+    "p": "141.15",
+    "live_price": "141.15",
+    "percent_change": "1.06"
   },
   {
     "symbol": "AASTHA",
@@ -664,7 +730,10 @@
       "Daily": 79.04,
       "Weekly": 79.04,
       "Monthly": 79.04
-    }
+    },
+    "p": "78.12",
+    "live_price": "78.12",
+    "percent_change": "-2.16"
   },
   {
     "symbol": "AAVAS",
@@ -693,7 +762,10 @@
       "Daily": 1308.4,
       "Weekly": 1308.4,
       "Monthly": 1308.4
-    }
+    },
+    "p": "1307",
+    "live_price": "1307",
+    "percent_change": "0.91"
   },
   {
     "symbol": "ABAN",
@@ -722,7 +794,10 @@
       "Daily": 14.56,
       "Weekly": 14.56,
       "Monthly": 14.56
-    }
+    },
+    "p": "202.00",
+    "live_price": "202.00",
+    "percent_change": "-2.46"
   },
   {
     "symbol": "ABANSENT",
@@ -751,7 +826,10 @@
       "Daily": 27.49,
       "Weekly": 27.49,
       "Monthly": 27.49
-    }
+    },
+    "p": "27.50",
+    "live_price": "27.50",
+    "percent_change": "2.42"
   },
   {
     "symbol": "ABB",
@@ -780,7 +858,10 @@
       "Daily": 7415.0,
       "Weekly": 7415.0,
       "Monthly": 7415.0
-    }
+    },
+    "p": "7410.00",
+    "live_price": "7410.00",
+    "percent_change": "-0.15"
   },
   {
     "symbol": "ABBOTINDIA",
@@ -809,7 +890,10 @@
       "Daily": 25855.0,
       "Weekly": 25855.0,
       "Monthly": 25855.0
-    }
+    },
+    "p": "26090",
+    "live_price": "26090",
+    "percent_change": "0.94"
   },
   {
     "symbol": "ABCAPITAL",
@@ -838,7 +922,10 @@
       "Daily": 405.0,
       "Weekly": 405.0,
       "Monthly": 405.0
-    }
+    },
+    "p": "404.90",
+    "live_price": "404.90",
+    "percent_change": "1.43"
   },
   {
     "symbol": "ABCOTS",
@@ -867,7 +954,10 @@
       "Daily": 209.35,
       "Weekly": 209.35,
       "Monthly": 209.35
-    }
+    },
+    "p": "207.00",
+    "live_price": "207.00",
+    "percent_change": "-0.50"
   },
   {
     "symbol": "ABDL",
@@ -896,7 +986,10 @@
       "Daily": 609.4,
       "Weekly": 609.4,
       "Monthly": 609.4
-    }
+    },
+    "p": "609.95",
+    "live_price": "609.95",
+    "percent_change": "-0.21"
   },
   {
     "symbol": "ABFRL",
@@ -925,7 +1018,10 @@
       "Daily": 51.26,
       "Weekly": 51.26,
       "Monthly": 51.26
-    }
+    },
+    "p": "52.97",
+    "live_price": "52.97",
+    "percent_change": "4.96"
   },
   {
     "symbol": "ABINFRA",
@@ -954,7 +1050,10 @@
       "Daily": 11.1,
       "Weekly": 11.1,
       "Monthly": 11.1
-    }
+    },
+    "p": "11.50",
+    "live_price": "11.50",
+    "percent_change": "2.22"
   },
   {
     "symbol": "ABLBL",
@@ -983,7 +1082,10 @@
       "Daily": 84.48,
       "Weekly": 84.48,
       "Monthly": 84.48
-    }
+    },
+    "p": "86.25",
+    "live_price": "86.25",
+    "percent_change": "2.86"
   },
   {
     "symbol": "ABMINTLLTD",
@@ -1012,7 +1114,10 @@
       "Daily": 55.86,
       "Weekly": 55.86,
       "Monthly": 55.86
-    }
+    },
+    "p": "55.86",
+    "live_price": "55.86",
+    "percent_change": "-2"
   },
   {
     "symbol": "ABMKNO",
@@ -1041,7 +1146,10 @@
       "Daily": 188.0,
       "Weekly": 188.0,
       "Monthly": 188.0
-    }
+    },
+    "p": "189.90",
+    "live_price": "189.90",
+    "percent_change": "0.00"
   },
   {
     "symbol": "ABREL",
@@ -1070,7 +1178,10 @@
       "Daily": 1374.0,
       "Weekly": 1374.0,
       "Monthly": 1374.0
-    }
+    },
+    "p": "1372.00",
+    "live_price": "1372.00",
+    "percent_change": "-0.15"
   },
   {
     "symbol": "ABSLAMC",
@@ -1099,7 +1210,10 @@
       "Daily": 1039.5,
       "Weekly": 1039.5,
       "Monthly": 1039.5
-    }
+    },
+    "p": "1062.30",
+    "live_price": "1062.30",
+    "percent_change": "1.67"
   },
   {
     "symbol": "ACC",
@@ -1128,7 +1242,10 @@
       "Daily": 1282.0,
       "Weekly": 1282.0,
       "Monthly": 1282.0
-    }
+    },
+    "p": "1287.00",
+    "live_price": "1287.00",
+    "percent_change": "1.18"
   },
   {
     "symbol": "ACCELYA",
@@ -1157,7 +1274,10 @@
       "Daily": 1130.3,
       "Weekly": 1130.3,
       "Monthly": 1130.3
-    }
+    },
+    "p": "1133",
+    "live_price": "1133",
+    "percent_change": "-0.04"
   },
   {
     "symbol": "ACCURACY",
@@ -1186,7 +1306,10 @@
       "Daily": 4.3,
       "Weekly": 4.3,
       "Monthly": 4.3
-    }
+    },
+    "p": "4.33",
+    "live_price": "4.33",
+    "percent_change": "1.65"
   },
   {
     "symbol": "ACE",
@@ -1215,7 +1338,10 @@
       "Daily": 1148.2,
       "Weekly": 1148.2,
       "Monthly": 1148.2
-    }
+    },
+    "p": "1125.40",
+    "live_price": "1125.40",
+    "percent_change": "-1.69"
   },
   {
     "symbol": "ACEINTEG",
@@ -1244,7 +1370,10 @@
       "Daily": 18.44,
       "Weekly": 18.44,
       "Monthly": 18.44
-    }
+    },
+    "p": "18.40",
+    "live_price": "18.40",
+    "percent_change": "8.11"
   },
   {
     "symbol": "ACGL",
@@ -1273,7 +1402,10 @@
       "Daily": 1788.0,
       "Weekly": 1788.0,
       "Monthly": 1788.0
-    }
+    },
+    "p": "1839",
+    "live_price": "1839",
+    "percent_change": "1.64"
   },
   {
     "symbol": "ACI",
@@ -1302,7 +1434,10 @@
       "Daily": 499.9,
       "Weekly": 499.9,
       "Monthly": 499.9
-    }
+    },
+    "p": "504.20",
+    "live_price": "504.20",
+    "percent_change": "1.72"
   },
   {
     "symbol": "ACL",
@@ -1331,7 +1466,10 @@
       "Daily": 43.41,
       "Weekly": 43.41,
       "Monthly": 43.41
-    }
+    },
+    "p": "43.36",
+    "live_price": "43.36",
+    "percent_change": "0.30"
   },
   {
     "symbol": "ACMESOLAR",
@@ -1360,7 +1498,10 @@
       "Daily": 409.0,
       "Weekly": 409.0,
       "Monthly": 409.0
-    }
+    },
+    "p": "418.00",
+    "live_price": "418.00",
+    "percent_change": "4.11"
   },
   {
     "symbol": "ACSTECH",
@@ -1389,7 +1530,10 @@
       "Daily": 51.1,
       "Weekly": 51.1,
       "Monthly": 51.1
-    }
+    },
+    "p": "51.83",
+    "live_price": "51.83",
+    "percent_change": "0.02"
   },
   {
     "symbol": "ACUTAAS",
@@ -1418,7 +1562,10 @@
       "Daily": 3190.0,
       "Weekly": 3190.0,
       "Monthly": 3190.0
-    }
+    },
+    "p": "3169",
+    "live_price": "3169",
+    "percent_change": "-1.09"
   },
   {
     "symbol": "ADANIENSOL",
@@ -1447,7 +1594,10 @@
       "Daily": 1401.5,
       "Weekly": 1401.5,
       "Monthly": 1401.5
-    }
+    },
+    "p": "1409.60",
+    "live_price": "1409.60",
+    "percent_change": "1.58"
   },
   {
     "symbol": "ADANIENT",
@@ -1476,7 +1626,10 @@
       "Daily": 2947.6,
       "Weekly": 2947.6,
       "Monthly": 2947.6
-    }
+    },
+    "p": "2938",
+    "live_price": "2938",
+    "percent_change": "1.73"
   },
   {
     "symbol": "ADANIGREEN",
@@ -1505,7 +1658,10 @@
       "Daily": 1295.1,
       "Weekly": 1295.1,
       "Monthly": 1295.1
-    }
+    },
+    "p": "1301.30",
+    "live_price": "1301.30",
+    "percent_change": "1.17"
   },
   {
     "symbol": "ADANIPORTS",
@@ -1534,7 +1690,10 @@
       "Daily": 1704.3,
       "Weekly": 1704.3,
       "Monthly": 1704.3
-    }
+    },
+    "p": "1707.30",
+    "live_price": "1707.30",
+    "percent_change": "1.33"
   },
   {
     "symbol": "ADANIPOWER",
@@ -1563,7 +1722,10 @@
       "Daily": 207.28,
       "Weekly": 207.28,
       "Monthly": 207.28
-    }
+    },
+    "p": "207.20",
+    "live_price": "207.20",
+    "percent_change": "-1.33"
   },
   {
     "symbol": "ADDIND",
@@ -1592,7 +1754,10 @@
       "Daily": 82.44,
       "Weekly": 82.44,
       "Monthly": 82.44
-    }
+    },
+    "p": "79.00",
+    "live_price": "79.00",
+    "percent_change": "7.88"
   },
   {
     "symbol": "ADFFOODS",
@@ -1621,7 +1786,10 @@
       "Daily": 263.4,
       "Weekly": 263.4,
       "Monthly": 263.4
-    }
+    },
+    "p": "266.85",
+    "live_price": "266.85",
+    "percent_change": "-0.62"
   },
   {
     "symbol": "ADL",
@@ -1650,7 +1818,10 @@
       "Daily": 74.8,
       "Weekly": 74.8,
       "Monthly": 74.8
-    }
+    },
+    "p": "72.00",
+    "live_price": "72.00",
+    "percent_change": "-6.95"
   },
   {
     "symbol": "ADOR",
@@ -1679,7 +1850,10 @@
       "Daily": 1678.0,
       "Weekly": 1678.0,
       "Monthly": 1678.0
-    }
+    },
+    "p": "1674.00",
+    "live_price": "1674.00",
+    "percent_change": "-0.64"
   },
   {
     "symbol": "ADROITINFO",
@@ -1708,7 +1882,10 @@
       "Daily": 10.33,
       "Weekly": 10.33,
       "Monthly": 10.33
-    }
+    },
+    "p": "10.30",
+    "live_price": "10.30",
+    "percent_change": "0.00"
   },
   {
     "symbol": "ADSL",
@@ -1737,7 +1914,10 @@
       "Daily": 104.77,
       "Weekly": 104.77,
       "Monthly": 104.77
-    }
+    },
+    "p": "104.13",
+    "live_price": "104.13",
+    "percent_change": "-0.24"
   },
   {
     "symbol": "ADVAIT",
@@ -1766,7 +1946,10 @@
       "Daily": 2205.9,
       "Weekly": 2205.9,
       "Monthly": 2205.9
-    }
+    },
+    "p": "2151.30",
+    "live_price": "2151.30",
+    "percent_change": "-2.65"
   },
   {
     "symbol": "ADVANCE",
@@ -1795,7 +1978,10 @@
       "Daily": 118.3,
       "Weekly": 118.3,
       "Monthly": 118.3
-    }
+    },
+    "p": "117.43",
+    "live_price": "117.43",
+    "percent_change": "-0.21"
   },
   {
     "symbol": "ADVANIHOTR",
@@ -1824,7 +2010,10 @@
       "Daily": 49.31,
       "Weekly": 49.31,
       "Monthly": 49.31
-    }
+    },
+    "p": "49.27",
+    "live_price": "49.27",
+    "percent_change": "2.12"
   },
   {
     "symbol": "ADVENTHTL",
