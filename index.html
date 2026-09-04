@@ -16,10 +16,11 @@
         .green { color: #00ff66; font-weight: bold; }
         .tv-link { color: #00bcd4; text-decoration: none; font-weight: bold; }
         .tv-link:hover { text-decoration: underline; }
-        .actions-bar { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .actions-bar { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .calc-box { background: #1a1a1a; padding: 15px; border: 1px solid #333; border-radius: 6px; margin-bottom: 20px; }
         .calc-box h3 { color: #00ffcc; margin-top: 0; font-size: 16px; }
         .calc-inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        #liveStatus { color: #ffbb00; font-size: 13px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -41,6 +42,8 @@
         <button onclick="downloadCSV()">Download CSV</button>
         <button onclick="showWatchlist()">View Watchlist</button>
         <button onclick="renderTable(stockData)">All Stocks</button>
+        <button onclick="fetchAllLivePrices()" style="background: #005555; color: #00ffcc;">🔄 Fetch Live Prices</button>
+        <span id="liveStatus"></span>
     </div>
 
     <div class="controls">
@@ -75,7 +78,7 @@
             </tr>
         </thead>
         <tbody>
-            </tbody>
+        </tbody>
     </table>
 
     <script>
@@ -86,6 +89,7 @@
             .then(data => {
                 stockData = data;
                 renderTable(stockData);
+                fetchAllLivePrices(); // Page load hote hi live prices fetch karega
             })
             .catch(error => {
                 console.error('Error loading stock data:', error);
@@ -111,10 +115,10 @@
 
                 const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${sym}`;
                 const isWatched = watchlist.includes(sym);
-                const row = `<tr>
+                const row = `<tr id="row-${sym}">
                     <td><strong>${sym}</strong></td>
                     <td>${cat}</td>
-                    <td class="green">₹${typeof price === 'number' ? price.toFixed(2) : price}</td>
+                    <td class="green price-cell">₹${typeof price === 'number' ? price.toFixed(2) : price}</td>
                     <td>${zone} (${pattern})</td>
                     <td>${strat}</td>
                     <td><a href="${tvUrl}" target="_blank" class="tv-link">TV Chart</a></td>
@@ -122,6 +126,40 @@
                 </tr>`;
                 tbody.innerHTML += row;
             });
+        }
+
+        async function fetchAllLivePrices() {
+            const statusSpan = document.getElementById('liveStatus');
+            statusSpan.innerText = "Fetching live prices...";
+            
+            let updatedCount = 0;
+            for (let stock of stockData) {
+                const sym = stock.s || stock.symbol || stock.Stock;
+                if (!sym) continue;
+
+                try {
+                    const url = `https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${sym}.NS?interval=1m`;
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    const livePrice = json.chart.result[0].meta.regularMarketPrice;
+
+                    if (livePrice) {
+                        stock.p = livePrice;
+                        const row = document.getElementById(`row-${sym}`);
+                        if (row) {
+                            const priceCell = row.querySelector('.price-cell');
+                            if (priceCell) {
+                                priceCell.innerText = `₹${livePrice.toFixed(2)}`;
+                            }
+                        }
+                        updatedCount++;
+                    }
+                } catch (err) {
+                    console.error(`Could not fetch live price for ${sym}`, err);
+                }
+            }
+            statusSpan.innerText = `Live prices updated! (${updatedCount} stocks)`;
+            setTimeout(() => { statusSpan.innerText = ""; }, 5000);
         }
 
         function filterStocks() {
