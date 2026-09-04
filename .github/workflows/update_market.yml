@@ -8,7 +8,12 @@ on:
 jobs:
   update-data:
     runs-on: ubuntu-latest
+
+    env:
+      INDIAN_API_KEY: ${{ secrets.INDIAN_API_KEY }}
+
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -20,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas yfinance requests
+          pip install requests
 
       - name: Run screener script
         run: python update_screener.py
@@ -31,7 +36,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git status
           git add stocks_data.json
-          git commit -m "Auto-update stock prices via GitHub Actions [skip ci]" || exit 0
-          git pull origin main --rebase || git rebase --abort
+          git commit -m "Auto-update stock prices [skip ci]" || exit 0
           git push origin main
-          
