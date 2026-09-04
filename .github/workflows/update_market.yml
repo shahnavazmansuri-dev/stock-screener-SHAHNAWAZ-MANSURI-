@@ -1,4 +1,4 @@
-jname: Automated Stock Screener Update
+name: Automated Stock Screener Update
 
 on:
   workflow_dispatch:
