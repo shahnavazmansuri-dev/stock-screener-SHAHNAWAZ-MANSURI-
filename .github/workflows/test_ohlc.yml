@@ -1,0 +1,26 @@
+name: Test OHLC Data
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ohlc:
+    runs-on: ubuntu-latest
+
+    env:
+      INDIAN_API_KEY: ${{ secrets.INDIAN_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Test Indian API OHLC
+        run: python test_ohlc.py
