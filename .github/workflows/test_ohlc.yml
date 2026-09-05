@@ -19,8 +19,9 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install requests
-        run: pip install requests
+      - name: Install dependencies
+        run: |
+          pip install requests pandas pyarrow
 
-      - name: Test Indian API OHLC
+      - name: Test OHLC Data
         run: python test_ohlc.py
