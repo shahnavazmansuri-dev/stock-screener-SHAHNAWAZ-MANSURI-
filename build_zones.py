@@ -23,12 +23,10 @@ TIMEFRAMES = [
     "YEARLY"
 ]
 
-# Pehle test ke liye 10 stocks.
-# Test successful hone ke baad ise None karenge.
+# Abhi test ke liye sirf 10 stocks
 TEST_LIMIT = 10
 
-# Current price se maximum distance.
-# 15% ke andar ke zones ko relevant maana jayega.
+# Current price se maximum 15% distance
 MAX_ZONE_DISTANCE = 0.15
 
 
@@ -252,7 +250,10 @@ def find_zones(df):
         .mean()
     )
 
-    for i in range(20, len(df) - 1):
+    for i in range(
+        20,
+        len(df) - 1
+    ):
 
         for base_count in [1, 2, 3]:
 
@@ -305,9 +306,13 @@ def find_zones(df):
 
                 continue
 
-            base_high = base["high"].max()
+            base_high = (
+                base["high"].max()
+            )
 
-            base_low = base["low"].min()
+            base_low = (
+                base["low"].min()
+            )
 
             demand = (
                 departure["close"]
@@ -329,9 +334,9 @@ def find_zones(df):
 
                 continue
 
-            # --------------------------
+            # -------------------------
             # Pattern
-            # --------------------------
+            # -------------------------
 
             previous = df.iloc[
                 base_start - 1
@@ -365,15 +370,19 @@ def find_zones(df):
 
                 pattern = "DBD"
 
-            # --------------------------
+            # -------------------------
             # Freshness
-            # --------------------------
+            # -------------------------
 
             fresh = True
 
-            zone_high = float(base_high)
+            zone_high = float(
+                base_high
+            )
 
-            zone_low = float(base_low)
+            zone_low = float(
+                base_low
+            )
 
             for j in range(
                 i + 2,
@@ -396,9 +405,9 @@ def find_zones(df):
 
                     break
 
-            # --------------------------
+            # -------------------------
             # Score
-            # --------------------------
+            # -------------------------
 
             score = 0
 
@@ -483,9 +492,13 @@ def find_zones(df):
                     .strftime("%Y-%m-%d")
                 ),
 
-                "fresh": bool(fresh),
+                "fresh": bool(
+                    fresh
+                ),
 
-                "score": int(score)
+                "score": int(
+                    score
+                )
 
             })
 
@@ -525,13 +538,16 @@ def overlap_ratio(a, b):
 
     return (
         overlap
-        / min(width_a, width_b)
+        / min(
+            width_a,
+            width_b
+        )
     )
 
 
 def clean_zones(
     zones,
-    current_price=None
+    current_price
 ):
 
     if not zones:
@@ -539,7 +555,7 @@ def clean_zones(
         return []
 
     # --------------------------------
-    # Strong zones only
+    # Score 7+ only
     # --------------------------------
 
     zones = [
@@ -548,117 +564,114 @@ def clean_zones(
         if z["score"] >= 7
     ]
 
+    # --------------------------------
+    # Fresh zones only
+    # --------------------------------
+
+    zones = [
+        z
+        for z in zones
+        if z["fresh"] is True
+    ]
+
     if not zones:
 
         return []
 
-    # --------------------------------
-    # Current price relevance
-    # --------------------------------
+    relevant = []
 
-    if (
-        current_price is not None
-        and current_price > 0
-    ):
+    for zone in zones:
 
-        relevant = []
+        zone_high = zone["high"]
 
-        for zone in zones:
+        zone_low = zone["low"]
 
-            zone_high = zone["high"]
+        zone_type = zone["type"]
 
-            zone_low = zone["low"]
+        # ============================
+        # DEMAND ZONE
+        # ============================
 
-            zone_type = zone["type"]
+        if zone_type == "DEMAND":
 
-            # ==========================
-            # DEMAND
-            # ==========================
-
-            if zone_type == "DEMAND":
-
-                # Price zone ke andar
-                if (
-                    zone_low
-                    <= current_price
-                    <= zone_high
-                ):
-
-                    distance = 0
-
-                # Demand zone price ke neeche
-                elif zone_high < current_price:
-
-                    distance = (
-                        current_price
-                        - zone_high
-                    ) / current_price
-
-                # Demand zone price ke upar hai
-                # Isko relevant demand nahi maanenge
-                else:
-
-                    continue
-
-            # ==========================
-            # SUPPLY
-            # ==========================
-
-            else:
-
-                # Price zone ke andar
-                if (
-                    zone_low
-                    <= current_price
-                    <= zone_high
-                ):
-
-                    distance = 0
-
-                # Supply zone price ke upar
-                elif zone_low > current_price:
-
-                    distance = (
-                        zone_low
-                        - current_price
-                    ) / current_price
-
-                # Supply zone price ke neeche hai
-                # Isko relevant supply nahi maanenge
-                else:
-
-                    continue
-
-            # --------------------------------
-            # Maximum distance filter
-            # --------------------------------
-
+            # Price zone ke andar
             if (
-                distance
-                <= MAX_ZONE_DISTANCE
+                zone_low
+                <= current_price
+                <= zone_high
             ):
 
-                zone["distance_percent"] = round(
-                    distance * 100,
-                    2
-                )
+                distance = 0
 
-                relevant.append(zone)
+            # Demand price ke neeche
+            elif zone_high < current_price:
 
-        zones = relevant
+                distance = (
+                    current_price
+                    - zone_high
+                ) / current_price
+
+            # Demand price ke upar
+            else:
+
+                continue
+
+        # ============================
+        # SUPPLY ZONE
+        # ============================
+
+        else:
+
+            # Price zone ke andar
+            if (
+                zone_low
+                <= current_price
+                <= zone_high
+            ):
+
+                distance = 0
+
+            # Supply price ke upar
+            elif zone_low > current_price:
+
+                distance = (
+                    zone_low
+                    - current_price
+                ) / current_price
+
+            # Supply price ke neeche
+            else:
+
+                continue
+
+        # --------------------------------
+        # Maximum 15% distance
+        # --------------------------------
+
+        if (
+            distance
+            <= MAX_ZONE_DISTANCE
+        ):
+
+            zone["distance_percent"] = round(
+                distance * 100,
+                2
+            )
+
+            relevant.append(zone)
+
+    if not relevant:
+
+        return []
 
     # --------------------------------
     # Fresh + score + nearest
     # --------------------------------
 
-    zones.sort(
+    relevant.sort(
         key=lambda z: (
-            z["fresh"],
             z["score"],
-            -z.get(
-                "distance_percent",
-                999
-            ),
+            -z["distance_percent"],
             z["date"]
         ),
         reverse=True
@@ -667,10 +680,10 @@ def clean_zones(
     selected = []
 
     # --------------------------------
-    # Duplicate / overlapping zones
+    # Remove overlapping duplicates
     # --------------------------------
 
-    for zone in zones:
+    for zone in relevant:
 
         duplicate = False
 
@@ -699,22 +712,20 @@ def clean_zones(
             selected.append(zone)
 
     # --------------------------------
-    # Final strongest 5 zones
+    # Final sort:
+    # nearest first,
+    # then highest score
     # --------------------------------
 
     selected.sort(
         key=lambda z: (
-            z["fresh"],
-            z["score"],
-            -z.get(
-                "distance_percent",
-                999
-            ),
+            z["distance_percent"],
+            -z["score"],
             z["date"]
-        ),
-        reverse=True
+        )
     )
 
+    # Maximum 5 zones
     return selected[:5]
 
 
@@ -731,7 +742,9 @@ def process_stock(symbol):
 
     print("=" * 50)
 
-    df = download_stock(symbol)
+    df = download_stock(
+        symbol
+    )
 
     if df is None:
 
@@ -742,10 +755,7 @@ def process_stock(symbol):
         len(df)
     )
 
-    # --------------------------------
-    # Reference / latest price
-    # --------------------------------
-
+    # Latest historical closing price
     current_price = float(
         df.iloc[-1]["close"]
     )
@@ -777,7 +787,9 @@ def process_stock(symbol):
     for timeframe in TIMEFRAMES:
 
         tf_df = (
-            timeframe_data[timeframe]
+            timeframe_data[
+                timeframe
+            ]
         )
 
         zones = find_zones(
@@ -931,7 +943,7 @@ output = {
     ),
 
     "zone_rule": (
-        "Strong zones score >= 7"
+        "Fresh zones with score >= 7"
     ),
 
     "max_zone_distance": (
@@ -978,7 +990,6 @@ for number, symbol in enumerate(
 
         failed += 1
 
-    # Small pause
     time.sleep(0.5)
 
 
