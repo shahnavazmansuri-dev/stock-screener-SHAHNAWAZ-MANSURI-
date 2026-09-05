@@ -5,6 +5,13 @@ on:
   schedule:
     - cron: "45 3 * * 1-5"
 
+permissions:
+  contents: write
+
+concurrency:
+  group: ema-scanner
+  cancel-in-progress: false
+
 jobs:
   ema-scanner:
     runs-on: ubuntu-latest
@@ -12,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,9 +36,35 @@ jobs:
         run: python ema_scanner.py
 
       - name: Commit EMA scanner data
+        shell: bash
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          set -e
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git rebase origin/main
+
           git add ema_scanner_data.json
-          git commit -m "Update EMA scanner data [skip ci]" || exit 0
-          git push origin HEAD:main
+
+          if git diff --cached --quiet; then
+            echo "No EMA scanner data changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update EMA scanner data [skip ci]"
+
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "EMA scanner data pushed successfully."
+              exit 0
+            fi
+
+            echo "Push rejected. Updating from origin/main and retrying..."
+            git fetch origin main
+            git rebase origin/main
+          done
+
+          echo "Failed to push EMA scanner data after 3 attempts."
+          exit 1
