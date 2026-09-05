@@ -3,7 +3,7 @@ import pandas as pd
 import json
 import time
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timezone
 
 STOCK_FILE = "stocks_data.json"
 OUTPUT_FILE = "zones_data.json"
@@ -23,9 +23,13 @@ TIMEFRAMES = [
     "YEARLY"
 ]
 
-# Production me pehle limited stocks test karenge.
-# Successful test ke baad ise None kar sakte hain.
+# Pehle test ke liye 10 stocks.
+# Test successful hone ke baad ise None karenge.
 TEST_LIMIT = 10
+
+# Current price se maximum distance.
+# 15% ke andar ke zones ko relevant maana jayega.
+MAX_ZONE_DISTANCE = 0.15
 
 
 def download_stock(symbol):
@@ -33,13 +37,25 @@ def download_stock(symbol):
     url = BASE_URL + symbol + ".parquet"
 
     try:
-        response = requests.get(url, timeout=60)
+
+        response = requests.get(
+            url,
+            timeout=60
+        )
 
         if response.status_code != 200:
-            print("Download failed:", symbol, response.status_code)
+
+            print(
+                "Download failed:",
+                symbol,
+                response.status_code
+            )
+
             return None
 
-        df = pd.read_parquet(BytesIO(response.content))
+        df = pd.read_parquet(
+            BytesIO(response.content)
+        )
 
         required = [
             "date",
@@ -51,30 +67,72 @@ def download_stock(symbol):
         ]
 
         for column in required:
+
             if column not in df.columns:
-                print("Missing column:", column, symbol)
+
+                print(
+                    "Missing column:",
+                    column,
+                    symbol
+                )
+
                 return None
 
         df = df[required].copy()
 
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df["date"] = pd.to_datetime(
+            df["date"],
+            errors="coerce"
+        )
 
-        for column in ["open", "high", "low", "close", "volume"]:
+        for column in [
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume"
+        ]:
+
             df[column] = pd.to_numeric(
                 df[column],
                 errors="coerce"
             )
 
         df = df.dropna(
-            subset=["date", "open", "high", "low", "close"]
+            subset=[
+                "date",
+                "open",
+                "high",
+                "low",
+                "close"
+            ]
         )
 
-        df = df.sort_values("date").reset_index(drop=True)
+        df = (
+            df
+            .sort_values("date")
+            .reset_index(drop=True)
+        )
+
+        if len(df) == 0:
+
+            print(
+                "No OHLC data:",
+                symbol
+            )
+
+            return None
 
         return df
 
     except Exception as e:
-        print("Error:", symbol, e)
+
+        print(
+            "Error:",
+            symbol,
+            e
+        )
+
         return None
 
 
@@ -125,11 +183,16 @@ def make_timeframes(df):
     )
 
     temp = df.copy()
+
     temp["year"] = temp["date"].dt.year
-    temp["half"] = ((temp["date"].dt.month - 1) // 6) + 1
+
+    temp["half"] = (
+        (temp["date"].dt.month - 1) // 6
+    ) + 1
 
     half_year = (
-        temp.groupby(["year", "half"])
+        temp
+        .groupby(["year", "half"])
         .agg({
             "date": "max",
             "open": "first",
@@ -170,12 +233,18 @@ def find_zones(df):
     zones = []
 
     if len(df) < 25:
+
         return zones
 
     df = df.copy()
 
-    df["body"] = (df["close"] - df["open"]).abs()
-    df["range"] = df["high"] - df["low"]
+    df["body"] = (
+        df["close"] - df["open"]
+    ).abs()
+
+    df["range"] = (
+        df["high"] - df["low"]
+    )
 
     df["avg_body"] = (
         df["body"]
@@ -187,30 +256,44 @@ def find_zones(df):
 
         for base_count in [1, 2, 3]:
 
-            base_start = i - base_count + 1
+            base_start = (
+                i - base_count + 1
+            )
+
             base_end = i
 
             if base_start < 1:
+
                 continue
 
-            base = df.iloc[base_start:base_end + 1]
+            base = df.iloc[
+                base_start:base_end + 1
+            ]
 
             base_range = (
                 base["high"].max()
                 - base["low"].min()
             )
 
-            current_range = df.iloc[i]["range"]
+            current_range = (
+                df.iloc[i]["range"]
+            )
 
             if current_range <= 0:
+
                 continue
 
-            if base_range > current_range * 1.20:
+            if (
+                base_range
+                > current_range * 1.20
+            ):
+
                 continue
 
             departure = df.iloc[i + 1]
 
             if departure["avg_body"] <= 0:
+
                 continue
 
             departure_strength = (
@@ -219,78 +302,134 @@ def find_zones(df):
             )
 
             if departure_strength < 1.30:
+
                 continue
 
             base_high = base["high"].max()
+
             base_low = base["low"].min()
 
             demand = (
-                departure["close"] > departure["open"]
-                and departure["close"] > base_high
+                departure["close"]
+                > departure["open"]
+                and
+                departure["close"]
+                > base_high
             )
 
             supply = (
-                departure["close"] < departure["open"]
-                and departure["close"] < base_low
+                departure["close"]
+                < departure["open"]
+                and
+                departure["close"]
+                < base_low
             )
 
             if not demand and not supply:
+
                 continue
 
+            # --------------------------
             # Pattern
-            previous = df.iloc[base_start - 1]
+            # --------------------------
 
-            if previous["close"] > previous["open"] and demand:
+            previous = df.iloc[
+                base_start - 1
+            ]
+
+            if (
+                previous["close"]
+                > previous["open"]
+                and demand
+            ):
+
                 pattern = "RBR"
 
-            elif previous["close"] < previous["open"] and demand:
+            elif (
+                previous["close"]
+                < previous["open"]
+                and demand
+            ):
+
                 pattern = "DBR"
 
-            elif previous["close"] > previous["open"] and supply:
+            elif (
+                previous["close"]
+                > previous["open"]
+                and supply
+            ):
+
                 pattern = "RBD"
 
             else:
+
                 pattern = "DBD"
 
+            # --------------------------
             # Freshness
+            # --------------------------
+
             fresh = True
 
             zone_high = float(base_high)
+
             zone_low = float(base_low)
 
-            for j in range(i + 2, len(df)):
+            for j in range(
+                i + 2,
+                len(df)
+            ):
 
                 future = df.iloc[j]
 
                 overlap = (
-                    future["low"] <= zone_high
-                    and future["high"] >= zone_low
+                    future["low"]
+                    <= zone_high
+                    and
+                    future["high"]
+                    >= zone_low
                 )
 
                 if overlap:
+
                     fresh = False
+
                     break
 
+            # --------------------------
             # Score
+            # --------------------------
+
             score = 0
 
             if departure_strength >= 2.0:
+
                 score += 3
+
             elif departure_strength >= 1.5:
+
                 score += 2
+
             else:
+
                 score += 1
 
             if base_count == 1:
+
                 score += 2
 
             elif base_count == 2:
+
                 score += 1
 
             if fresh:
+
                 score += 2
 
-            departure_range = departure["high"] - departure["low"]
+            departure_range = (
+                departure["high"]
+                - departure["low"]
+            )
 
             if departure_range > 0:
 
@@ -300,12 +439,17 @@ def find_zones(df):
                 )
 
                 if body_ratio >= 0.70:
+
                     score += 2
 
                 elif body_ratio >= 0.55:
+
                     score += 1
 
-            score = min(score, 10)
+            score = min(
+                score,
+                10
+            )
 
             zone_type = (
                 "DEMAND"
@@ -314,20 +458,35 @@ def find_zones(df):
             )
 
             zones.append({
+
                 "pattern": pattern,
+
                 "type": zone_type,
-                "high": round(zone_high, 2),
-                "low": round(zone_low, 2),
+
+                "high": round(
+                    zone_high,
+                    2
+                ),
+
+                "low": round(
+                    zone_low,
+                    2
+                ),
+
                 "date": (
                     df.iloc[base_start]["date"]
                     .strftime("%Y-%m-%d")
                 ),
+
                 "departure_date": (
                     departure["date"]
                     .strftime("%Y-%m-%d")
                 ),
+
                 "fresh": bool(fresh),
+
                 "score": int(score)
+
             })
 
     return zones
@@ -335,36 +494,171 @@ def find_zones(df):
 
 def overlap_ratio(a, b):
 
-    overlap_high = min(a["high"], b["high"])
-    overlap_low = max(a["low"], b["low"])
+    overlap_high = min(
+        a["high"],
+        b["high"]
+    )
+
+    overlap_low = max(
+        a["low"],
+        b["low"]
+    )
 
     if overlap_high <= overlap_low:
+
         return 0
 
-    overlap = overlap_high - overlap_low
+    overlap = (
+        overlap_high
+        - overlap_low
+    )
 
-    width_a = max(a["high"] - a["low"], 0.01)
-    width_b = max(b["high"] - b["low"], 0.01)
+    width_a = max(
+        a["high"] - a["low"],
+        0.01
+    )
 
-    return overlap / min(width_a, width_b)
+    width_b = max(
+        b["high"] - b["low"],
+        0.01
+    )
+
+    return (
+        overlap
+        / min(width_a, width_b)
+    )
 
 
-def clean_zones(zones):
+def clean_zones(
+    zones,
+    current_price=None
+):
 
     if not zones:
+
         return []
 
+    # --------------------------------
     # Strong zones only
+    # --------------------------------
+
     zones = [
-        z for z in zones
+        z
+        for z in zones
         if z["score"] >= 7
     ]
 
-    # Fresh zones first
+    if not zones:
+
+        return []
+
+    # --------------------------------
+    # Current price relevance
+    # --------------------------------
+
+    if (
+        current_price is not None
+        and current_price > 0
+    ):
+
+        relevant = []
+
+        for zone in zones:
+
+            zone_high = zone["high"]
+
+            zone_low = zone["low"]
+
+            zone_type = zone["type"]
+
+            # ==========================
+            # DEMAND
+            # ==========================
+
+            if zone_type == "DEMAND":
+
+                # Price zone ke andar
+                if (
+                    zone_low
+                    <= current_price
+                    <= zone_high
+                ):
+
+                    distance = 0
+
+                # Demand zone price ke neeche
+                elif zone_high < current_price:
+
+                    distance = (
+                        current_price
+                        - zone_high
+                    ) / current_price
+
+                # Demand zone price ke upar hai
+                # Isko relevant demand nahi maanenge
+                else:
+
+                    continue
+
+            # ==========================
+            # SUPPLY
+            # ==========================
+
+            else:
+
+                # Price zone ke andar
+                if (
+                    zone_low
+                    <= current_price
+                    <= zone_high
+                ):
+
+                    distance = 0
+
+                # Supply zone price ke upar
+                elif zone_low > current_price:
+
+                    distance = (
+                        zone_low
+                        - current_price
+                    ) / current_price
+
+                # Supply zone price ke neeche hai
+                # Isko relevant supply nahi maanenge
+                else:
+
+                    continue
+
+            # --------------------------------
+            # Maximum distance filter
+            # --------------------------------
+
+            if (
+                distance
+                <= MAX_ZONE_DISTANCE
+            ):
+
+                zone["distance_percent"] = round(
+                    distance * 100,
+                    2
+                )
+
+                relevant.append(zone)
+
+        zones = relevant
+
+    # --------------------------------
+    # Fresh + score + nearest
+    # --------------------------------
+
     zones.sort(
         key=lambda z: (
             z["fresh"],
             z["score"],
+            -z.get(
+                "distance_percent",
+                999
+            ),
             z["date"]
         ),
         reverse=True
@@ -372,27 +666,50 @@ def clean_zones(zones):
 
     selected = []
 
+    # --------------------------------
+    # Duplicate / overlapping zones
+    # --------------------------------
+
     for zone in zones:
 
         duplicate = False
 
         for existing in selected:
 
-            if zone["type"] != existing["type"]:
+            if (
+                zone["type"]
+                != existing["type"]
+            ):
+
                 continue
 
-            if overlap_ratio(zone, existing) >= 0.60:
+            if (
+                overlap_ratio(
+                    zone,
+                    existing
+                ) >= 0.60
+            ):
+
                 duplicate = True
+
                 break
 
         if not duplicate:
+
             selected.append(zone)
 
-    # Latest / strongest zones
+    # --------------------------------
+    # Final strongest 5 zones
+    # --------------------------------
+
     selected.sort(
         key=lambda z: (
             z["fresh"],
             z["score"],
+            -z.get(
+                "distance_percent",
+                999
+            ),
             z["date"]
         ),
         reverse=True
@@ -404,43 +721,97 @@ def clean_zones(zones):
 def process_stock(symbol):
 
     print()
+
     print("=" * 50)
-    print("STOCK:", symbol)
+
+    print(
+        "STOCK:",
+        symbol
+    )
+
     print("=" * 50)
 
     df = download_stock(symbol)
 
     if df is None:
+
         return None
 
-    print("Candles:", len(df))
+    print(
+        "Candles:",
+        len(df)
+    )
 
-    timeframe_data = make_timeframes(df)
+    # --------------------------------
+    # Reference / latest price
+    # --------------------------------
+
+    current_price = float(
+        df.iloc[-1]["close"]
+    )
+
+    latest_date = (
+        df.iloc[-1]["date"]
+        .strftime("%Y-%m-%d")
+    )
+
+    print(
+        "Reference price:",
+        round(
+            current_price,
+            2
+        )
+    )
+
+    print(
+        "Latest data:",
+        latest_date
+    )
+
+    timeframe_data = (
+        make_timeframes(df)
+    )
 
     result = {}
 
     for timeframe in TIMEFRAMES:
 
-        tf_df = timeframe_data[timeframe]
+        tf_df = (
+            timeframe_data[timeframe]
+        )
 
-        zones = find_zones(tf_df)
+        zones = find_zones(
+            tf_df
+        )
 
         demand = [
-            z for z in zones
+            z
+            for z in zones
             if z["type"] == "DEMAND"
         ]
 
         supply = [
-            z for z in zones
+            z
+            for z in zones
             if z["type"] == "SUPPLY"
         ]
 
-        demand = clean_zones(demand)
-        supply = clean_zones(supply)
+        demand = clean_zones(
+            demand,
+            current_price
+        )
+
+        supply = clean_zones(
+            supply,
+            current_price
+        )
 
         result[timeframe] = {
+
             "demand": demand,
+
             "supply": supply
+
         }
 
         print(
@@ -451,26 +822,59 @@ def process_stock(symbol):
             len(supply)
         )
 
-    return result
+    return {
+
+        "reference_price": round(
+            current_price,
+            2
+        ),
+
+        "reference_date": latest_date,
+
+        "timeframes": result
+
+    }
 
 
-# ==========================
+# ==================================
 # MAIN
-# ==========================
+# ==================================
 
 print()
+
 print("=" * 60)
-print("   DEMAND / SUPPLY ZONE BUILDER")
+
+print(
+    "   DEMAND / SUPPLY ZONE BUILDER"
+)
+
 print("=" * 60)
+
 print()
 
-with open(STOCK_FILE, "r", encoding="utf-8") as f:
+with open(
+    STOCK_FILE,
+    "r",
+    encoding="utf-8"
+) as f:
+
     stock_data = json.load(f)
 
-if isinstance(stock_data, dict):
-    stocks = stock_data.get("stocks", [])
+
+if isinstance(
+    stock_data,
+    dict
+):
+
+    stocks = stock_data.get(
+        "stocks",
+        []
+    )
+
 else:
+
     stocks = stock_data
+
 
 symbols = []
 
@@ -482,29 +886,75 @@ for stock in stocks:
     )
 
     if symbol:
-        symbols.append(symbol.upper())
+
+        symbols.append(
+            str(symbol).upper()
+        )
+
 
 # Remove duplicates
-symbols = list(dict.fromkeys(symbols))
+symbols = list(
+    dict.fromkeys(symbols)
+)
 
-print("Total stocks found:", len(symbols))
+
+print(
+    "Total stocks found:",
+    len(symbols)
+)
+
 
 if TEST_LIMIT:
-    symbols = symbols[:TEST_LIMIT]
-    print("TEST MODE:", len(symbols), "stocks")
+
+    symbols = symbols[
+        :TEST_LIMIT
+    ]
+
+    print(
+        "TEST MODE:",
+        len(symbols),
+        "stocks"
+    )
+
 
 output = {
-    "generated_at": datetime.utcnow().isoformat() + "Z",
-    "source": "Hugging Face indian-market-historical-ohlcv",
-    "zone_rule": "Strong zones score >= 7",
+
+    "generated_at": (
+        datetime.now(
+            timezone.utc
+        ).isoformat()
+    ),
+
+    "source": (
+        "Hugging Face "
+        "indian-market-historical-ohlcv"
+    ),
+
+    "zone_rule": (
+        "Strong zones score >= 7"
+    ),
+
+    "max_zone_distance": (
+        "15% from reference price"
+    ),
+
     "stocks": {}
+
 }
+
 
 success = 0
 
-for number, symbol in enumerate(symbols, start=1):
+failed = 0
+
+
+for number, symbol in enumerate(
+    symbols,
+    start=1
+):
 
     print()
+
     print(
         "Processing",
         number,
@@ -512,13 +962,21 @@ for number, symbol in enumerate(symbols, start=1):
         len(symbols)
     )
 
-    result = process_stock(symbol)
+    result = process_stock(
+        symbol
+    )
 
     if result is not None:
 
-        output["stocks"][symbol] = result
+        output["stocks"][symbol] = (
+            result
+        )
 
         success += 1
+
+    else:
+
+        failed += 1
 
     # Small pause
     time.sleep(0.5)
@@ -539,10 +997,33 @@ with open(
 
 
 print()
+
 print("=" * 60)
-print("           BUILD COMPLETE")
+
+print(
+    "           BUILD COMPLETE"
+)
+
 print("=" * 60)
-print("Successful:", success)
-print("Requested:", len(symbols))
-print("Output:", OUTPUT_FILE)
+
+print(
+    "Successful:",
+    success
+)
+
+print(
+    "Failed:",
+    failed
+)
+
+print(
+    "Requested:",
+    len(symbols)
+)
+
+print(
+    "Output:",
+    OUTPUT_FILE
+)
+
 print("=" * 60)
