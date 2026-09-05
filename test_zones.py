@@ -5,8 +5,12 @@ from io import BytesIO
 URL = "https://huggingface.co/datasets/vishnun0027/indian-market-historical-ohlcv/resolve/main/stocks/20MICRONS.parquet"
 
 print("================================")
-print("  20MICRONS DEMAND SUPPLY TEST")
+print("  20MICRONS ADVANCED ZONE TEST")
 print("================================")
+
+# ==================================
+# DOWNLOAD DATA
+# ==================================
 
 response = requests.get(URL, timeout=60)
 
@@ -20,25 +24,31 @@ df = pd.read_parquet(BytesIO(response.content))
 
 df["date"] = pd.to_datetime(df["date"])
 
-df = df[[
-    "date",
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume"
-]]
+df = df[
+    [
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+    ]
+]
 
 df = df.dropna(
     subset=["open", "high", "low", "close"]
 )
 
-df = df.sort_values("date")
+df = df.sort_values("date").reset_index(drop=True)
 
 
-def make_zones(data, timeframe):
+# ==================================
+# ZONE DETECTION
+# ==================================
 
-    data = data.copy()
+def find_zones(data, timeframe):
+
+    data = data.copy().reset_index(drop=True)
 
     data["body"] = (
         data["close"] - data["open"]
@@ -56,116 +66,263 @@ def make_zones(data, timeframe):
 
     zones = []
 
-    for i in range(20, len(data) - 1):
+    # --------------------------------
+    # BASE = 1 to 3 candles
+    # --------------------------------
 
-        base = data.iloc[i]
-        departure = data.iloc[i + 1]
+    for i in range(20, len(data) - 3):
 
-        if base["range"] <= 0:
-            continue
+        for base_count in [1, 2, 3]:
 
-        if pd.isna(departure["avg_body"]):
-            continue
+            if i + base_count >= len(data):
+                continue
 
-        # =========================
-        # DEMAND
-        # =========================
+            base = data.iloc[
+                i:i + base_count
+            ]
 
-        if (
-            departure["close"] > departure["open"]
-            and departure["body"] >
-                departure["avg_body"] * 1.3
-            and departure["close"] > base["high"]
-        ):
+            before = data.iloc[i - 1]
 
-            zones.append({
-                "timeframe": timeframe,
-                "type": "DEMAND",
-                "zone_high": round(
-                    base["high"], 2
-                ),
-                "zone_low": round(
-                    base["low"], 2
-                ),
-                "date": str(
-                    base["date"].date()
-                ),
-                "departure_date": str(
-                    departure["date"].date()
-                ),
-                "score": 5
-            })
+            departure = data.iloc[
+                i + base_count
+            ]
 
-        # =========================
-        # SUPPLY
-        # =========================
+            # Average base size
+            avg_range = base["range"].mean()
 
-        if (
-            departure["close"] < departure["open"]
-            and departure["body"] >
-                departure["avg_body"] * 1.3
-            and departure["close"] < base["low"]
-        ):
+            if avg_range <= 0:
+                continue
 
-            zones.append({
-                "timeframe": timeframe,
-                "type": "SUPPLY",
-                "zone_high": round(
-                    base["high"], 2
-                ),
-                "zone_low": round(
-                    base["low"], 2
-                ),
-                "date": str(
-                    base["date"].date()
-                ),
-                "departure_date": str(
-                    departure["date"].date()
-                ),
-                "score": 5
-            })
+            # Base should be relatively small
+            if (
+                avg_range >
+                data["range"].rolling(20).mean().iloc[i]
+                * 1.20
+            ):
+                continue
+
+            base_high = base["high"].max()
+            base_low = base["low"].min()
+
+            # ==================================
+            # DEPARTURE STRENGTH
+            # ==================================
+
+            if departure["avg_body"] <= 0:
+                continue
+
+            departure_strength = (
+                departure["body"]
+                / departure["avg_body"]
+            )
+
+            if departure_strength < 1.30:
+                continue
+
+            # ==================================
+            # DEMAND
+            # ==================================
+
+            demand = False
+
+            if (
+                departure["close"] >
+                departure["open"]
+                and
+                departure["close"] >
+                base_high
+            ):
+                demand = True
+
+            # ==================================
+            # SUPPLY
+            # ==================================
+
+            supply = False
+
+            if (
+                departure["close"] <
+                departure["open"]
+                and
+                departure["close"] <
+                base_low
+            ):
+                supply = True
+
+            if not demand and not supply:
+                continue
+
+            # ==================================
+            # PATTERN
+            # ==================================
+
+            if before["close"] > before["open"]:
+
+                if demand:
+                    pattern = "RBR"
+
+                else:
+                    pattern = "RBD"
+
+            else:
+
+                if demand:
+                    pattern = "DBR"
+
+                else:
+                    pattern = "DBD"
+
+            # ==================================
+            # FRESHNESS
+            # ==================================
+
+            fresh = True
+
+            future = data.iloc[
+                i + base_count + 1:
+            ]
+
+            for _, candle in future.iterrows():
+
+                # Zone touched again
+                if (
+                    candle["low"] <= base_high
+                    and
+                    candle["high"] >= base_low
+                ):
+                    fresh = False
+                    break
+
+            # ==================================
+            # SCORE 0-10
+            # ==================================
+
+            score = 0
+
+            # Strong departure
+            if departure_strength >= 2.0:
+                score += 3
+
+            elif departure_strength >= 1.5:
+                score += 2
+
+            else:
+                score += 1
+
+            # Base quality
+            if base_count == 1:
+                score += 2
+
+            elif base_count == 2:
+                score += 1
+
+            # Fresh zone
+            if fresh:
+                score += 2
+
+            # Clean departure
+            departure_range = (
+                departure["high"]
+                - departure["low"]
+            )
+
+            if departure_range > 0:
+
+                body_ratio = (
+                    departure["body"]
+                    / departure_range
+                )
+
+                if body_ratio >= 0.70:
+                    score += 2
+
+                elif body_ratio >= 0.55:
+                    score += 1
+
+            # Maximum 10
+            score = min(score, 10)
+
+            zones.append(
+                {
+                    "timeframe": timeframe,
+                    "pattern": pattern,
+                    "type":
+                        "DEMAND"
+                        if demand
+                        else "SUPPLY",
+                    "zone_high":
+                        round(base_high, 2),
+                    "zone_low":
+                        round(base_low, 2),
+                    "date":
+                        str(
+                            base.iloc[0]["date"].date()
+                        ),
+                    "departure_date":
+                        str(
+                            departure["date"].date()
+                        ),
+                    "fresh":
+                        "YES"
+                        if fresh
+                        else "NO",
+                    "score": score
+                }
+            )
+
+            # Only one zone for this base
+            break
 
     return zones
 
 
 # ==================================
-# CREATE TIMEFRAMES
+# TIMEFRAMES
 # ==================================
 
 daily = df.copy()
 
+weekly = (
+    df.set_index("date")
+    .resample("W-FRI")
+    .agg({
+        "open": "first",
+        "high": "max",
+        "low": "min",
+        "close": "last",
+        "volume": "sum"
+    })
+    .dropna()
+    .reset_index()
+)
 
-weekly = df.set_index("date").resample(
-    "W-FRI"
-).agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna().reset_index()
+monthly = (
+    df.set_index("date")
+    .resample("ME")
+    .agg({
+        "open": "first",
+        "high": "max",
+        "low": "min",
+        "close": "last",
+        "volume": "sum"
+    })
+    .dropna()
+    .reset_index()
+)
 
-
-monthly = df.set_index("date").resample(
-    "ME"
-).agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna().reset_index()
-
-
-quarterly = df.set_index("date").resample(
-    "QE-DEC"
-).agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna().reset_index()
+quarterly = (
+    df.set_index("date")
+    .resample("QE-DEC")
+    .agg({
+        "open": "first",
+        "high": "max",
+        "low": "min",
+        "close": "last",
+        "volume": "sum"
+    })
+    .dropna()
+    .reset_index()
+)
 
 
 # ==================================
@@ -180,43 +337,48 @@ temp["half"] = (
     (temp["date"].dt.month - 1) // 6
 ) + 1
 
+half_year = (
+    temp.groupby(["year", "half"])
+    .agg({
+        "date": "max",
+        "open": "first",
+        "high": "max",
+        "low": "min",
+        "close": "last",
+        "volume": "sum"
+    })
+    .reset_index()
+)
 
-half_year = temp.groupby(
-    ["year", "half"]
-).agg({
-    "date": "max",
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).reset_index()
-
-half_year = half_year[[
-    "date",
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume"
-]]
-
-half_year = half_year.dropna()
+half_year = half_year[
+    [
+        "date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+    ]
+].dropna()
 
 
 # ==================================
 # YEARLY
 # ==================================
 
-yearly = df.set_index("date").resample(
-    "YE-DEC"
-).agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna().reset_index()
+yearly = (
+    df.set_index("date")
+    .resample("YE-DEC")
+    .agg({
+        "open": "first",
+        "high": "max",
+        "low": "min",
+        "close": "last",
+        "volume": "sum"
+    })
+    .dropna()
+    .reset_index()
+)
 
 
 timeframes = {
@@ -230,7 +392,7 @@ timeframes = {
 
 
 # ==================================
-# FIND ZONES
+# RUN ALL TIMEFRAMES
 # ==================================
 
 all_zones = []
@@ -244,7 +406,7 @@ for name, data in timeframes.items():
 
     print("Candles:", len(data))
 
-    zones = make_zones(
+    zones = find_zones(
         data,
         name
     )
@@ -254,16 +416,19 @@ for name, data in timeframes.items():
         len(zones)
     )
 
-    for zone in zones[-5:]:
+    # Show latest 10
+    for zone in zones[-10:]:
 
         print(
+            zone["pattern"],
+            "|",
             zone["type"],
             "| High:",
             zone["zone_high"],
             "| Low:",
             zone["zone_low"],
-            "| Date:",
-            zone["date"],
+            "| Fresh:",
+            zone["fresh"],
             "| Score:",
             zone["score"]
         )
@@ -272,15 +437,15 @@ for name, data in timeframes.items():
 
 
 # ==================================
-# SUMMARY
+# FINAL SUMMARY
 # ==================================
 
 print()
 print("================================")
-print("       ZONE SUMMARY")
+print("       FINAL ZONE SUMMARY")
 print("================================")
 
-if len(all_zones) == 0:
+if not all_zones:
 
     print("No zones found.")
 
@@ -292,30 +457,58 @@ else:
 
     print()
     print("DEMAND ZONES")
+    print("--------------------------------")
 
     demand = result[
         result["type"] == "DEMAND"
     ]
 
     print(
-        demand.tail(10)
+        demand[
+            demand["score"] >= 7
+        ]
+        .tail(20)
         .to_string(index=False)
     )
 
     print()
     print("SUPPLY ZONES")
+    print("--------------------------------")
 
     supply = result[
         result["type"] == "SUPPLY"
     ]
 
     print(
-        supply.tail(10)
+        supply[
+            supply["score"] >= 7
+        ]
+        .tail(20)
         .to_string(index=False)
+    )
+
+    print()
+    print("ZONE COUNTS")
+    print("--------------------------------")
+
+    print(
+        result.groupby(
+            ["timeframe", "type"]
+        ).size()
+    )
+
+    print()
+    print("SCORE COUNTS")
+    print("--------------------------------")
+
+    print(
+        result["score"]
+        .value_counts()
+        .sort_index()
     )
 
 
 print()
 print("================================")
-print("      ZONE TEST COMPLETE")
+print("     ADVANCED ZONE TEST DONE")
 print("================================")
