@@ -6,190 +6,231 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+content="width=device-width, initial-scale=1.0">
 
 <title>Shahnawaz Mansuri Stock Screener</title>
 
 <style>
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #fff;
-    padding: 15px;
-    margin: 0;
+*{
+    box-sizing:border-box;
 }
 
-h2 {
-    text-align: center;
-    color: #00ffcc;
+body{
+    margin:0;
+    padding:15px;
+    background:#101010;
+    color:white;
+    font-family:Arial,sans-serif;
 }
 
-.controls,
-.actions-bar,
-.zone-controls {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: 10px;
+h1{
+    text-align:center;
+    color:#00ffcc;
+    margin:10px 0 20px;
 }
 
-select,
+h2{
+    color:#00ffcc;
+    font-size:20px;
+}
+
+.container{
+    width:100%;
+    max-width:1500px;
+    margin:auto;
+}
+
+.box{
+    background:#181818;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:15px;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
+}
+
 input,
-button {
-    padding: 8px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 4px;
-    cursor: pointer;
+select,
+button{
+    background:#222;
+    color:white;
+    border:1px solid #444;
+    border-radius:6px;
+    padding:10px;
+    font-size:14px;
 }
 
-button:hover {
-    background: #333;
-    color: #00ffcc;
+input{
+    min-width:180px;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #1e1e1e;
-    margin-top: 10px;
+button{
+    cursor:pointer;
+}
+
+button:hover{
+    background:#333;
+    color:#00ffcc;
+}
+
+.primary{
+    background:#005555;
+    color:#00ffcc;
+}
+
+.demand-btn{
+    background:#003d20;
+}
+
+.supply-btn{
+    background:#3d0000;
+}
+
+.status{
+    color:#ffcc00;
+    font-size:13px;
+    margin-top:8px;
+}
+
+.good{
+    color:#00ff66;
+    font-weight:bold;
+}
+
+.bad{
+    color:#ff5555;
+    font-weight:bold;
+}
+
+.blue{
+    color:#00bfff;
+    font-weight:bold;
+}
+
+.orange{
+    color:#ffaa00;
+    font-weight:bold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#181818;
+    margin-top:10px;
+}
+
+th{
+    background:#292929;
+    color:#00ffcc;
+    position:sticky;
+    top:0;
+    z-index:2;
 }
 
 th,
-td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #333;
-    font-size: 14px;
+td{
+    padding:9px;
+    border-bottom:1px solid #333;
+    text-align:left;
+    white-space:nowrap;
+    font-size:13px;
 }
 
-th {
-    background-color: #333;
-    color: #00ffcc;
+tr:hover{
+    background:#222;
 }
 
-.green {
-    color: #00ff66;
-    font-weight: bold;
+.table-wrap{
+    overflow:auto;
+    max-height:75vh;
 }
 
-.red {
-    color: #ff5555;
-    font-weight: bold;
+.tv-link{
+    color:#00bfff;
+    text-decoration:none;
+    font-weight:bold;
 }
 
-.yellow {
-    color: #ffcc00;
-    font-weight: bold;
+.tv-link:hover{
+    text-decoration:underline;
 }
 
-.blue {
-    color: #00bcd4;
-    font-weight: bold;
+.small{
+    font-size:12px;
+    color:#aaa;
 }
 
-.tv-link {
-    color: #00bcd4;
-    text-decoration: none;
-    font-weight: bold;
+.zone-title{
+    color:#00ffcc;
+    margin-bottom:10px;
 }
 
-.tv-link:hover {
-    text-decoration: underline;
+.hidden{
+    display:none;
 }
 
-.calc-box {
-    background: #1a1a1a;
-    padding: 15px;
-    border: 1px solid #333;
-    border-radius: 6px;
-    margin-bottom: 20px;
+.calc-result{
+    color:#00ff66;
+    font-weight:bold;
+    margin-top:10px;
+    line-height:1.8;
 }
 
-.calc-box h3 {
-    color: #00ffcc;
-    margin-top: 0;
-    font-size: 16px;
+.badge{
+    display:inline-block;
+    padding:4px 7px;
+    border-radius:5px;
+    font-size:11px;
+    font-weight:bold;
 }
 
-.calc-inputs {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
+.badge-demand{
+    background:#063;
+    color:#00ff88;
 }
 
-#liveStatus {
-    color: #ffbb00;
-    font-size: 13px;
-    font-weight: bold;
+.badge-supply{
+    background:#500;
+    color:#ff7777;
 }
 
-#zoneStatus {
-    color: #00ffcc;
-    font-size: 13px;
-    font-weight: bold;
+.badge-score{
+    background:#444;
+    color:#ffd000;
 }
 
-.zone-panel {
-    background: #181818;
-    border: 1px solid #333;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 15px;
+.badge-fresh{
+    background:#004466;
+    color:#66ddff;
 }
 
-.zone-title {
-    color: #00ffcc;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+@media(max-width:700px){
 
-.badge {
-    display: inline-block;
-    padding: 4px 7px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-}
+    body{
+        padding:8px;
+    }
 
-.badge-demand {
-    background: #064d2b;
-    color: #00ff66;
-}
+    h1{
+        font-size:20px;
+    }
 
-.badge-supply {
-    background: #5a1111;
-    color: #ff6666;
-}
-
-.badge-fresh {
-    background: #07505a;
-    color: #00ffff;
-}
-
-.badge-score {
-    background: #594900;
-    color: #ffdd55;
-}
-
-@media (max-width: 700px) {
-
-    table {
-        font-size: 12px;
+    input,
+    select,
+    button{
+        width:100%;
     }
 
     th,
-    td {
-        padding: 7px;
-        font-size: 12px;
-    }
-
-    body {
-        padding: 8px;
+    td{
+        font-size:12px;
+        padding:7px;
     }
 
 }
@@ -198,105 +239,115 @@ th {
 
 </head>
 
+
 <body>
 
-<h2>Shahnawaz Mansuri Stock Screener</h2>
+<div class="container">
+
+<h1>Shahnawaz Mansuri Stock Screener</h1>
 
 
-<!-- ========================================= -->
+<!-- ========================= -->
 <!-- RISK REWARD CALCULATOR -->
-<!-- ========================================= -->
+<!-- ========================= -->
 
-<div class="calc-box">
+<div class="box">
 
-<h3>Risk-Reward & Target Calculator</h3>
+<h2>Risk-Reward & Target Calculator</h2>
 
-<div class="calc-inputs">
-
-<input
-    type="number"
-    id="calcEntry"
-    placeholder="Entry Price (₹)"
-    style="width:140px;"
->
+<div class="controls">
 
 <input
-    type="number"
-    id="calcSL"
-    placeholder="Stop Loss (₹)"
-    style="width:140px;"
->
+type="number"
+id="calcEntry"
+placeholder="Entry Price ₹">
+
+<input
+type="number"
+id="calcSL"
+placeholder="Stop Loss ₹">
 
 <button onclick="calculateLevels()">
 Calculate Targets
 </button>
 
-<span
-    id="calcResult"
-    style="color:#00ff66;font-weight:bold;"
-></span>
+</div>
 
+<div id="calcResult"
+class="calc-result">
 </div>
 
 </div>
 
 
-<!-- ========================================= -->
+<!-- ========================= -->
 <!-- ACTIONS -->
-<!-- ========================================= -->
+<!-- ========================= -->
 
-<div class="actions-bar">
+<div class="box">
+
+<div class="controls">
 
 <input
-    type="file"
-    id="jsonFile"
-    accept=".json,.csv"
-    onchange="handleFileUpload(event)"
->
+type="file"
+id="jsonFile"
+accept=".json,.csv"
+onchange="handleFileUpload(event)">
 
 <button onclick="downloadCSV()">
 Download CSV
 </button>
 
 <button onclick="showWatchlist()">
-View Watchlist
+⭐ View Watchlist
 </button>
 
 <button onclick="showAllStocks()">
-All Stocks
+📊 All Stocks
 </button>
 
 <button
-    onclick="loadAllData()"
-    style="background:#005555;color:#00ffcc;"
->
+class="primary"
+onclick="loadAllData()">
 🔄 Refresh Data
 </button>
 
-<span id="liveStatus"></span>
+<button
+class="primary"
+onclick="fetchAllLivePrices()">
+💹 Fetch Live Prices
+</button>
 
-<span id="zoneStatus"></span>
+</div>
+
+<div id="status"
+class="status">
+Loading data...
+</div>
 
 </div>
 
 
-<!-- ========================================= -->
-<!-- NORMAL STOCK FILTERS -->
-<!-- ========================================= -->
+<!-- ========================= -->
+<!-- NORMAL FILTERS -->
+<!-- ========================= -->
+
+<div class="box">
+
+<h2>Stock Filters</h2>
 
 <div class="controls">
 
 <input
-    type="text"
-    id="searchInput"
-    placeholder="Search Stock..."
-    onkeyup="applyFilters()"
->
+type="text"
+id="searchInput"
+placeholder="Search Stock..."
+oninput="applyFilters()">
+
 
 <select
-    id="categorySelect"
-    onchange="applyFilters()"
->
+id="categorySelect"
+onchange="applyFilters()">
 
 <option value="ALL">
 All Categories
@@ -326,9 +377,8 @@ Nifty Shariah
 
 
 <select
-    id="strategySelect"
-    onchange="applyFilters()"
->
+id="strategySelect"
+onchange="applyFilters()">
 
 <option value="ALL">
 All Strategies / Zones
@@ -338,11 +388,11 @@ All Strategies / Zones
 9/20 EMA Crossover
 </option>
 
-<option value="DEMAND">
+<option value="Demand">
 Demand Zone
 </option>
 
-<option value="SUPPLY">
+<option value="Supply">
 Supply Zone
 </option>
 
@@ -350,31 +400,42 @@ Supply Zone
 Bollinger Squeeze / Breakout
 </option>
 
+<option value="Breakout">
+Breakout
+</option>
+
 <option value="MACD_CCI">
 MACD / CCI Cross
+</option>
+
+<option value="Shariah">
+Nifty Shariah
 </option>
 
 </select>
 
 </div>
 
-
-<!-- ========================================= -->
-<!-- ZONE FILTERS -->
-<!-- ========================================= -->
-
-<div class="zone-panel">
-
-<div class="zone-title">
-Demand / Supply Zone Scanner
 </div>
 
-<div class="zone-controls">
+
+<!-- ========================= -->
+<!-- ZONE FILTERS -->
+<!-- ========================= -->
+
+<div
+class="box"
+id="zoneControls">
+
+<h2 class="zone-title">
+Demand / Supply Zone Scanner
+</h2>
+
+<div class="controls">
 
 <select
-    id="timeframeSelect"
-    onchange="applyFilters()"
->
+id="timeframeSelect"
+onchange="applyFilters()">
 
 <option value="ALL">
 All Timeframes
@@ -408,9 +469,8 @@ Yearly
 
 
 <select
-    id="patternSelect"
-    onchange="applyFilters()"
->
+id="patternSelect"
+onchange="applyFilters()">
 
 <option value="ALL">
 All Patterns
@@ -436,9 +496,12 @@ DBD
 
 
 <select
-    id="scoreSelect"
-    onchange="applyFilters()"
->
+id="scoreSelect"
+onchange="applyFilters()">
+
+<option value="0">
+Score 0+
+</option>
 
 <option value="7">
 Score 7+
@@ -458,14 +521,33 @@ Score 10
 
 </select>
 
-</div>
+
+<select
+id="freshSelect"
+onchange="applyFilters()">
+
+<option value="FRESH">
+Fresh Only
+</option>
+
+<option value="ALL">
+Fresh + Old
+</option>
+
+</select>
 
 </div>
 
+</div>
 
-<!-- ========================================= -->
-<!-- STOCK TABLE -->
-<!-- ========================================= -->
+
+<!-- ========================= -->
+<!-- TABLE -->
+<!-- ========================= -->
+
+<div class="box">
+
+<div class="table-wrap">
 
 <table id="stockTable">
 
@@ -502,216 +584,223 @@ Score 10
 </thead>
 
 <tbody>
+
+<tr>
+
+<td colspan="12"
+style="text-align:center">
+
+Loading...
+
+</td>
+
+</tr>
+
 </tbody>
 
 </table>
+
+</div>
+
+</div>
+
+
+</div>
 
 
 <script>
 
 
-// =========================================
-// GLOBAL DATA
-// =========================================
+// =====================================================
+// GLOBAL VARIABLES
+// =====================================================
 
 let stockData = [];
 
 let zonesData = {};
 
-let currentRows = [];
-
 let watchlist =
-    JSON.parse(
-        localStorage.getItem("sm_watchlist")
-    ) || [];
+JSON.parse(
+localStorage.getItem("sm_watchlist") || "[]"
+);
 
 
-// =========================================
-// LOAD ALL DATA
-// =========================================
+// =====================================================
+// PAGE LOAD
+// =====================================================
 
-function loadAllData() {
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+    loadAllData();
+
+});
+
+
+// =====================================================
+// LOAD BOTH JSON FILES
+// =====================================================
+
+async function loadAllData(){
 
     const status =
-        document.getElementById(
-            "liveStatus"
-        );
-
-    const zoneStatus =
-        document.getElementById(
-            "zoneStatus"
-        );
+    document.getElementById("status");
 
     status.innerText =
-        "Loading stock data...";
+    "Loading stocks_data.json and zones_data.json...";
 
-    zoneStatus.innerText =
-        "Loading zones...";
+    try{
 
-
-    Promise.all([
-
-        fetch(
-            "stocks_data.json?t=" +
+        const stockResponse =
+        await fetch(
+            "stocks_data.json?ts=" +
             Date.now()
-        ).then(response => {
+        );
 
-            if (!response.ok) {
+        if(!stockResponse.ok){
+            throw new Error(
+                "stocks_data.json not found"
+            );
+        }
 
-                throw new Error(
-                    "stocks_data.json failed"
-                );
+        stockData =
+        await stockResponse.json();
 
-            }
 
-            return response.json();
-
-        }),
-
-        fetch(
-            "zones_data.json?t=" +
+        const zoneResponse =
+        await fetch(
+            "zones_data.json?ts=" +
             Date.now()
-        ).then(response => {
+        );
 
-            if (!response.ok) {
+        if(zoneResponse.ok){
 
-                throw new Error(
-                    "zones_data.json failed"
-                );
+            const zoneJson =
+            await zoneResponse.json();
 
-            }
+            zonesData =
+            zoneJson.stocks || {};
 
-            return response.json();
+        }else{
 
-        })
-
-    ])
-
-    .then(([stocks, zones]) => {
-
-        // STOCK DATA
-
-        if (Array.isArray(stocks)) {
-
-            stockData = stocks;
-
-        } else {
-
-            stockData =
-                stocks.stocks || [];
+            zonesData = {};
 
         }
 
 
-        // ZONE DATA
-
-        zonesData =
-            zones.stocks || {};
-
-
         status.innerText =
-            "Stock data loaded ✅";
-
-        zoneStatus.innerText =
-            "Zone data loaded ✅";
+        "Data loaded successfully! Stocks: " +
+        stockData.length +
+        " | Zone stocks: " +
+        Object.keys(zonesData).length;
 
 
         applyFilters();
 
+    }
 
-        setTimeout(() => {
-
-            status.innerText = "";
-            zoneStatus.innerText = "";
-
-        }, 4000);
-
-    })
-
-    .catch(error => {
+    catch(error){
 
         console.error(error);
 
-        status.innerText =
-            "Data loading failed ❌";
+        status.innerHTML =
+        `<span class="bad">
+        Error loading data. Please check JSON files.
+        </span>`;
 
-        zoneStatus.innerText =
-            error.message;
+        renderEmpty(
+            "Error loading stock/zone data."
+        );
 
-    });
+    }
 
 }
 
 
-// =========================================
-// PAGE LOAD
-// =========================================
+// =====================================================
+// GET SYMBOL
+// =====================================================
 
-loadAllData();
+function getSymbol(stock){
 
-
-// =========================================
-// GET STOCK SYMBOL
-// =========================================
-
-function getSymbol(stock) {
-
-    return (
-        stock.s ||
+    return String(
         stock.symbol ||
+        stock.s ||
+        stock.ticker ||
         stock.Stock ||
         stock.name ||
         ""
-    );
+    ).trim().toUpperCase();
 
 }
 
 
-// =========================================
+// =====================================================
 // GET CATEGORY
-// =========================================
+// =====================================================
 
-function getCategory(stock) {
+function getCategory(stock){
 
-    return (
-        stock.c ||
+    return String(
         stock.category ||
+        stock.c ||
         stock.Category ||
+        stock.cap ||
         "-"
     );
 
 }
 
 
-// =========================================
+// =====================================================
 // GET PRICE
-// =========================================
+// =====================================================
 
-function getPrice(stock) {
+function getPrice(stock){
 
-    return (
-        stock.p ??
-        stock.live_price ??
-        stock.currentPrice?.NSE ??
-        stock.price ??
-        stock.Price ??
-        stock.ltp ??
-        stock.close ??
-        0
-    );
+    const values = [
+
+        stock.live_price,
+        stock.currentPrice,
+        stock.p,
+        stock.price,
+        stock.ltp,
+        stock.close,
+        stock.Price
+
+    ];
+
+    for(const value of values){
+
+        const n =
+        Number(value);
+
+        if(
+            Number.isFinite(n) &&
+            n > 0
+        ){
+
+            return n;
+
+        }
+
+    }
+
+    return null;
 
 }
 
 
-// =========================================
-// NORMAL STOCK STRATEGY
-// =========================================
+// =====================================================
+// GET STRATEGY
+// =====================================================
 
-function getStrategy(stock) {
+function getStrategy(stock){
 
-    return (
-        stock.strat ||
+    return String(
         stock.strategy ||
+        stock.strat ||
         stock.Strategy ||
         ""
     );
@@ -719,527 +808,120 @@ function getStrategy(stock) {
 }
 
 
-// =========================================
-// IS ZONE MODE
-// =========================================
+// =====================================================
+// NORMAL STOCK TABLE
+// =====================================================
 
-function isZoneMode() {
-
-    const strategy =
-        document.getElementById(
-            "strategySelect"
-        ).value;
-
-    return (
-        strategy === "DEMAND" ||
-        strategy === "SUPPLY"
-    );
-
-}
-
-
-// =========================================
-// APPLY FILTERS
-// =========================================
-
-function applyFilters() {
-
-    if (isZoneMode()) {
-
-        renderZoneScanner();
-
-        return;
-
-    }
-
-
-    const search =
-        document.getElementById(
-            "searchInput"
-        ).value
-        .trim()
-        .toUpperCase();
-
-
-    const category =
-        document.getElementById(
-            "categorySelect"
-        ).value;
-
-
-    const strategy =
-        document.getElementById(
-            "strategySelect"
-        ).value;
-
-
-    let filtered =
-        stockData.filter(stock => {
-
-            const symbol =
-                getSymbol(stock)
-                .toUpperCase();
-
-
-            const cat =
-                getCategory(stock);
-
-
-            const strat =
-                getStrategy(stock);
-
-
-            const matchesSearch =
-                symbol.includes(search);
-
-
-            const matchesCategory =
-                category === "ALL" ||
-                cat === category;
-
-
-            let matchesStrategy = true;
-
-
-            if (
-                strategy === "EMA_CROSS"
-            ) {
-
-                matchesStrategy =
-                    strat.includes("9/20");
-
-            }
-
-            else if (
-                strategy === "Bollinger"
-            ) {
-
-                matchesStrategy =
-                    strat.includes(
-                        "Bollinger"
-                    );
-
-            }
-
-            else if (
-                strategy === "MACD_CCI"
-            ) {
-
-                matchesStrategy =
-                    strat.includes("MACD");
-
-            }
-
-
-            return (
-                matchesSearch &&
-                matchesCategory &&
-                matchesStrategy
-            );
-
-        });
-
-
-    renderNormalTable(filtered);
-
-}
-
-
-// =========================================
-// ZONE SCANNER
-// =========================================
-
-function renderZoneScanner() {
+function renderNormalTable(data){
 
     const tbody =
-        document.querySelector(
-            "#stockTable tbody"
-        );
+    document.querySelector(
+        "#stockTable tbody"
+    );
 
     tbody.innerHTML = "";
 
 
-    const search =
-        document.getElementById(
-            "searchInput"
-        ).value
-        .trim()
-        .toUpperCase();
+    if(
+        !data ||
+        data.length === 0
+    ){
 
-
-    const category =
-        document.getElementById(
-            "categorySelect"
-        ).value;
-
-
-    const strategy =
-        document.getElementById(
-            "strategySelect"
-        ).value;
-
-
-    const timeframe =
-        document.getElementById(
-            "timeframeSelect"
-        ).value;
-
-
-    const pattern =
-        document.getElementById(
-            "patternSelect"
-        ).value;
-
-
-    const minimumScore =
-        parseInt(
-            document.getElementById(
-                "scoreSelect"
-            ).value
+        renderEmpty(
+            "No stocks found."
         );
-
-
-    let rows = [];
-
-
-    Object.keys(zonesData).forEach(
-        symbol => {
-
-            const stock =
-                stockData.find(
-                    s =>
-                        getSymbol(s)
-                        .toUpperCase()
-                        === symbol.toUpperCase()
-                );
-
-
-            const categoryValue =
-                stock
-                ? getCategory(stock)
-                : "-";
-
-
-            const price =
-                stock
-                ? getPrice(stock)
-                : (
-                    zonesData[symbol]
-                    .reference_price || 0
-                );
-
-
-            if (
-                search &&
-                !symbol
-                    .toUpperCase()
-                    .includes(search)
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                category !== "ALL" &&
-                categoryValue !== category
-            ) {
-
-                return;
-
-            }
-
-
-            const stockZones =
-                zonesData[symbol]
-                .timeframes || {};
-
-
-            const timeframeList =
-                timeframe === "ALL"
-                ? Object.keys(stockZones)
-                : [timeframe];
-
-
-            timeframeList.forEach(tf => {
-
-                if (
-                    !stockZones[tf]
-                ) {
-
-                    return;
-
-                }
-
-
-                let zoneList = [];
-
-
-                if (
-                    strategy === "DEMAND"
-                ) {
-
-                    zoneList =
-                        stockZones[tf]
-                        .demand || [];
-
-                }
-
-                else if (
-                    strategy === "SUPPLY"
-                ) {
-
-                    zoneList =
-                        stockZones[tf]
-                        .supply || [];
-
-                }
-
-
-                zoneList.forEach(zone => {
-
-                    if (
-                        zone.score <
-                        minimumScore
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    if (
-                        zone.fresh !== true
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    if (
-                        pattern !== "ALL" &&
-                        zone.pattern !== pattern
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    rows.push({
-
-                        symbol:
-                            symbol,
-
-                        category:
-                            categoryValue,
-
-                        price:
-                            price,
-
-                        timeframe:
-                            tf,
-
-                        zone:
-                            zone,
-
-                    });
-
-                });
-
-            });
-
-        }
-    );
-
-
-    // =====================================
-    // SORT
-    // nearest distance first
-    // =====================================
-
-    rows.sort(
-        (a, b) => {
-
-            const da =
-                a.zone.distance_percent ??
-                999;
-
-            const db =
-                b.zone.distance_percent ??
-                999;
-
-            if (da !== db) {
-
-                return da - db;
-
-            }
-
-            return (
-                b.zone.score -
-                a.zone.score
-            );
-
-        }
-    );
-
-
-    currentRows = rows;
-
-
-    if (rows.length === 0) {
-
-        tbody.innerHTML =
-
-            `<tr>
-                <td colspan="12"
-                    style="text-align:center;color:#ff5555;">
-                    No Fresh Score 7+ Zones Found
-                </td>
-            </tr>`;
 
         return;
 
     }
 
 
-    rows.forEach(row => {
+    data.forEach(stock => {
 
-        const z =
-            row.zone;
+        const symbol =
+        getSymbol(stock);
 
+        const category =
+        getCategory(stock);
 
-        const isWatched =
-            watchlist.includes(
-                row.symbol
-            );
+        const price =
+        getPrice(stock);
 
-
-        const priceText =
-            Number.isFinite(
-                Number(row.price)
-            )
-            ? "₹" +
-              Number(row.price)
-              .toFixed(2)
-            : "-";
-
-
-        const distance =
-            z.distance_percent !==
-            undefined
-            ? z.distance_percent
-              .toFixed(2) + "%"
-            : "-";
-
-
-        const zoneBadge =
-            z.type === "DEMAND"
-            ? `<span class="badge badge-demand">
-                DEMAND
-               </span>`
-            : `<span class="badge badge-supply">
-                SUPPLY
-               </span>`;
-
-
-        const scoreBadge =
-            `<span class="badge badge-score">
-                ${z.score}/10
-             </span>`;
+        const strategy =
+        getStrategy(stock);
 
 
         const tvUrl =
-            "https://in.tradingview.com/chart/?symbol=NSE:" +
-            row.symbol;
+        "https://in.tradingview.com/chart/?symbol=NSE:" +
+        encodeURIComponent(symbol);
+
+
+        const watched =
+        watchlist.includes(symbol);
+
+
+        const priceText =
+        Number.isFinite(price)
+        ? "₹" + price.toFixed(2)
+        : "-";
 
 
         const tr =
-            document.createElement("tr");
+        document.createElement("tr");
 
 
         tr.innerHTML = `
 
-            <td>
-                <strong>
-                    ${row.symbol}
-                </strong>
-            </td>
+        <td>
+            <strong>${escapeHtml(symbol)}</strong>
+        </td>
 
-            <td>
-                ${row.category}
-            </td>
+        <td>
+            ${escapeHtml(category)}
+        </td>
 
-            <td class="green">
-                ${priceText}
-            </td>
+        <td class="good">
+            ${priceText}
+        </td>
 
-            <td>
-                <strong>
-                    ${formatTimeframe(
-                        row.timeframe
-                    )}
-                </strong>
-            </td>
+        <td>-</td>
 
-            <td>
-                ${zoneBadge}
-                <br>
-                <small>
-                    ${z.low} -
-                    ${z.high}
-                </small>
-            </td>
+        <td>-</td>
 
-            <td>
-                <strong>
-                    ${z.pattern}
-                </strong>
-            </td>
+        <td>-</td>
 
-            <td>
-                ₹${Number(z.high).toFixed(2)}
-            </td>
+        <td>-</td>
 
-            <td>
-                ₹${Number(z.low).toFixed(2)}
-            </td>
+        <td>-</td>
 
-            <td>
-                ${scoreBadge}
-            </td>
+        <td>-</td>
 
-            <td class="blue">
-                ${distance}
-            </td>
+        <td>-</td>
 
-            <td>
-                <a
-                    href="${tvUrl}"
-                    target="_blank"
-                    class="tv-link"
-                >
-                    TV Chart
-                </a>
-            </td>
+        <td>
+            <a
+                class="tv-link"
+                href="${tvUrl}"
+                target="_blank">
+                TV Chart
+            </a>
+        </td>
 
-            <td>
+        <td>
 
-                <button
-                    onclick="toggleWatchlist(
-                        '${row.symbol}'
-                    )"
-                >
-                    ${
-                        isWatched
-                        ? "★ Remove"
-                        : "☆ Watch"
-                    }
-                </button>
+            <button
+                onclick="toggleWatchlist('${escapeAttr(symbol)}')">
 
-            </td>
+                ${
+                    watched
+                    ? "★ Remove"
+                    : "☆ Watch"
+                }
+
+            </button>
+
+        </td>
+
         `;
 
 
@@ -1250,35 +932,487 @@ function renderZoneScanner() {
 }
 
 
-// =========================================
-// TIMEFRAME NAME
-// =========================================
+// =====================================================
+// APPLY FILTERS
+// =====================================================
 
-function formatTimeframe(tf) {
+function applyFilters(){
 
-    const names = {
-
-        DAILY: "Daily",
-
-        WEEKLY: "Weekly",
-
-        MONTHLY: "Monthly",
-
-        QUARTERLY: "Quarterly",
-
-        HALF_YEAR: "Half-Year",
-
-        YEARLY: "Yearly"
-
-    };
+    const search =
+    document
+    .getElementById("searchInput")
+    .value
+    .trim()
+    .toUpperCase();
 
 
-    return (
-        names[tf] ||
-        tf
-    );
+    const category =
+    document
+    .getElementById("categorySelect")
+    .value;
+
+
+    const strategy =
+    document
+    .getElementById("strategySelect")
+    .value;
+
+
+    if(
+        strategy === "Demand" ||
+        strategy === "Supply"
+    ){
+
+        renderZoneScanner(
+            strategy
+        );
+
+        return;
+
+    }
+
+
+    let filtered =
+    stockData.filter(stock => {
+
+        const symbol =
+        getSymbol(stock);
+
+        const cat =
+        getCategory(stock);
+
+        const strat =
+        getStrategy(stock);
+
+
+        const searchMatch =
+        !search ||
+        symbol.includes(search);
+
+
+        const categoryMatch =
+        category === "ALL" ||
+        cat === category;
+
+
+        let strategyMatch = true;
+
+
+        if(strategy === "EMA_CROSS"){
+
+            strategyMatch =
+            strat.toUpperCase()
+            .includes("EMA");
+
+        }
+
+
+        else if(strategy === "Bollinger"){
+
+            strategyMatch =
+            strat.toUpperCase()
+            .includes("BOLLINGER");
+
+        }
+
+
+        else if(strategy === "Breakout"){
+
+            strategyMatch =
+            strat.toUpperCase()
+            .includes("BREAKOUT");
+
+        }
+
+
+        else if(strategy === "MACD_CCI"){
+
+            const upper =
+            strat.toUpperCase();
+
+            strategyMatch =
+            upper.includes("MACD") ||
+            upper.includes("CCI");
+
+        }
+
+
+        else if(strategy === "Shariah"){
+
+            strategyMatch =
+            cat === "Shariah" ||
+            strat.toUpperCase()
+            .includes("SHARIAH");
+
+        }
+
+
+        return (
+            searchMatch &&
+            categoryMatch &&
+            strategyMatch
+        );
+
+    });
+
+
+    renderNormalTable(filtered);
 
 }
 
 
-// =============================
+// =====================================================
+// ZONE SCANNER
+// =====================================================
+
+function renderZoneScanner(zoneType){
+
+    const tbody =
+    document.querySelector(
+        "#stockTable tbody"
+    );
+
+    tbody.innerHTML = "";
+
+
+    const search =
+    document
+    .getElementById("searchInput")
+    .value
+    .trim()
+    .toUpperCase();
+
+
+    const category =
+    document
+    .getElementById("categorySelect")
+    .value;
+
+
+    const timeframe =
+    document
+    .getElementById("timeframeSelect")
+    .value;
+
+
+    const pattern =
+    document
+    .getElementById("patternSelect")
+    .value;
+
+
+    const minScore =
+    Number(
+        document
+        .getElementById("scoreSelect")
+        .value
+    );
+
+
+    const freshMode =
+    document
+    .getElementById("freshSelect")
+    .value;
+
+
+    const results = [];
+
+
+    Object.keys(zonesData)
+    .forEach(symbol => {
+
+        const stockZone =
+        zonesData[symbol];
+
+        if(!stockZone) return;
+
+
+        const stock =
+        stockData.find(
+            s => getSymbol(s) === symbol
+        );
+
+
+        const cat =
+        stock
+        ? getCategory(stock)
+        : "-";
+
+
+        const stockPrice =
+        stock
+        ? getPrice(stock)
+        : null;
+
+
+        const referencePrice =
+        Number(
+            stockZone.reference_price
+        );
+
+
+        const displayPrice =
+        Number.isFinite(referencePrice)
+        ? referencePrice
+        : stockPrice;
+
+
+        if(
+            category !== "ALL" &&
+            cat !== category
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            search &&
+            !symbol.includes(search)
+        ){
+
+            return;
+
+        }
+
+
+        const timeframes =
+        stockZone.timeframes || {};
+
+
+        Object.keys(timeframes)
+        .forEach(tf => {
+
+            if(
+                timeframe !== "ALL" &&
+                tf !== timeframe
+            ){
+
+                return;
+
+            }
+
+
+            const tfData =
+            timeframes[tf] || {};
+
+
+            const key =
+            zoneType === "Demand"
+            ? "demand"
+            : "supply";
+
+
+            const zones =
+            Array.isArray(tfData[key])
+            ? tfData[key]
+            : [];
+
+
+            zones.forEach(zone => {
+
+                const zonePattern =
+                String(
+                    zone.pattern || ""
+                );
+
+
+                const score =
+                Number(
+                    zone.score || 0
+                );
+
+
+                const fresh =
+                zone.fresh === true;
+
+
+                if(
+                    pattern !== "ALL" &&
+                    zonePattern !== pattern
+                ){
+
+                    return;
+
+                }
+
+
+                if(
+                    score < minScore
+                ){
+
+                    return;
+
+                }
+
+
+                if(
+                    freshMode === "FRESH" &&
+                    !fresh
+                ){
+
+                    return;
+
+                }
+
+
+                results.push({
+
+                    symbol,
+                    category:cat,
+                    price:displayPrice,
+                    timeframe:tf,
+                    zone:zone,
+                    type:zoneType
+
+                });
+
+            });
+
+        });
+
+    });
+
+
+    // ================================================
+    // SORT
+    // ================================================
+
+    results.sort((a,b) => {
+
+        const da =
+        Number(
+            a.zone.distance_percent || 999
+        );
+
+        const db =
+        Number(
+            b.zone.distance_percent || 999
+        );
+
+
+        if(da !== db){
+
+            return da - db;
+
+        }
+
+
+        return (
+            Number(b.zone.score || 0) -
+            Number(a.zone.score || 0)
+        );
+
+    });
+
+
+    if(results.length === 0){
+
+        renderEmpty(
+            "No matching " +
+            zoneType +
+            " zones found."
+        );
+
+        return;
+
+    }
+
+
+    results.forEach(item => {
+
+        const z =
+        item.zone;
+
+
+        const tvUrl =
+        "https://in.tradingview.com/chart/?symbol=NSE:" +
+        encodeURIComponent(item.symbol);
+
+
+        const watched =
+        watchlist.includes(
+            item.symbol
+        );
+
+
+        const zoneClass =
+        item.type === "Demand"
+        ? "badge-demand"
+        : "badge-supply";
+
+
+        const scoreClass =
+        "badge-score";
+
+
+        const freshHtml =
+        z.fresh
+        ? `<span class="badge badge-fresh">FRESH</span>`
+        : "";
+
+
+        const priceText =
+        Number.isFinite(item.price)
+        ? "₹" +
+          item.price.toFixed(2)
+        : "-";
+
+
+        const tr =
+        document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+        <td>
+            <strong>
+                ${escapeHtml(item.symbol)}
+            </strong>
+        </td>
+
+        <td>
+            ${escapeHtml(item.category)}
+        </td>
+
+        <td class="good">
+            ${priceText}
+        </td>
+
+        <td>
+            <strong>
+                ${escapeHtml(item.timeframe)}
+            </strong>
+        </td>
+
+        <td>
+            <span class="badge ${zoneClass}">
+                ${escapeHtml(item.type)}
+            </span>
+        </td>
+
+        <td>
+            <strong>
+                ${escapeHtml(z.pattern || "-")}
+            </strong>
+            ${freshHtml}
+        </td>
+
+        <td>
+            ₹${formatNumber(z.high)}
+        </td>
+
+        <td>
+            ₹${formatNumber(z.low)}
+        </td>
+
+        <td>
+            <span class="badge ${scoreClass}">
+                ${z.score || 0}/10
+            </span>
+        </td>
+
+        <td class="orange">
+            ${formatNumber(
+ 
