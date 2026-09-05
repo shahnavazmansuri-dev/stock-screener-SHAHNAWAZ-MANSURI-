@@ -1,24 +1,42 @@
-name: Test OHLC Data
+import requests
+import pandas as pd
+from io import BytesIO
 
-on:
-  workflow_dispatch:
+URL = "https://huggingface.co/datasets/vishnun0027/indian-market-historical-ohlcv/resolve/main/stocks/20MICRONS.parquet"
 
-jobs:
-  test-ohlc:
-    runs-on: ubuntu-latest
+print("================================")
+print("     20MICRONS OHLC TEST")
+print("================================")
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+r = requests.get(URL, timeout=60)
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+print("STATUS:", r.status_code)
+print("SIZE:", len(r.content), "bytes")
 
-      - name: Install dependencies
-        run: |
-          pip install requests pandas pyarrow
+if r.status_code != 200:
+    print("ERROR:")
+    print(r.text[:1000])
+    raise SystemExit
 
-      - name: Test OHLC Data
-        run: python test_ohlc.py
+df = pd.read_parquet(BytesIO(r.content))
+
+print("\nCOLUMNS:")
+print(df.columns.tolist())
+
+print("\nTOTAL CANDLES:", len(df))
+
+print("\nLAST 10 CANDLES:")
+print(df.tail(10).to_string(index=False))
+
+required = ["date", "open", "high", "low", "close", "volume"]
+
+print("\nCHECK:")
+for col in required:
+    if col in df.columns:
+        print("OK  :", col)
+    else:
+        print("MISS:", col)
+
+print("\n================================")
+print("          TEST COMPLETE")
+print("================================")
