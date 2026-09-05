@@ -8,7 +8,6 @@ print("================================")
 print("  20MICRONS DEMAND SUPPLY TEST")
 print("================================")
 
-# Download OHLCV
 response = requests.get(URL, timeout=60)
 
 print("STATUS:", response.status_code)
@@ -19,178 +18,220 @@ if response.status_code != 200:
 
 df = pd.read_parquet(BytesIO(response.content))
 
-# Required columns
-df = df[["date", "open", "high", "low", "close", "volume"]]
-
-# Date
 df["date"] = pd.to_datetime(df["date"])
 
-# Remove incomplete candles
-df = df.dropna(subset=["open", "high", "low", "close"])
+df = df[[
+    "date",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume"
+]]
 
-# Sort
-df = df.sort_values("date").reset_index(drop=True)
+df = df.dropna(
+    subset=["open", "high", "low", "close"]
+)
+
+df = df.sort_values("date")
 
 
-def find_zones(data, timeframe):
-
-    zones = []
+def make_zones(data, timeframe):
 
     data = data.copy()
 
-    data["body"] = abs(data["close"] - data["open"])
-    data["range"] = data["high"] - data["low"]
+    data["body"] = (
+        data["close"] - data["open"]
+    ).abs()
 
-    # Average body used to identify strong departure candles
-    data["avg_body"] = data["body"].rolling(20).mean()
+    data["range"] = (
+        data["high"] - data["low"]
+    )
 
-    for i in range(20, len(data) - 3):
+    data["avg_body"] = (
+        data["body"]
+        .rolling(20)
+        .mean()
+    )
+
+    zones = []
+
+    for i in range(20, len(data) - 1):
 
         base = data.iloc[i]
+        departure = data.iloc[i + 1]
 
-        # Avoid very large base candle
         if base["range"] <= 0:
             continue
 
-        # -------------------------
-        # DEMAND ZONE
-        # -------------------------
+        if pd.isna(departure["avg_body"]):
+            continue
 
-        for base_count in [1, 2, 3]:
+        # =========================
+        # DEMAND
+        # =========================
 
-            if i + base_count >= len(data):
-                continue
+        if (
+            departure["close"] > departure["open"]
+            and departure["body"] >
+                departure["avg_body"] * 1.3
+            and departure["close"] > base["high"]
+        ):
 
-            base_data = data.iloc[i:i + base_count]
-            departure = data.iloc[i + base_count]
+            zones.append({
+                "timeframe": timeframe,
+                "type": "DEMAND",
+                "zone_high": round(
+                    base["high"], 2
+                ),
+                "zone_low": round(
+                    base["low"], 2
+                ),
+                "date": str(
+                    base["date"].date()
+                ),
+                "departure_date": str(
+                    departure["date"].date()
+                ),
+                "score": 5
+            })
 
-            base_high = base_data["high"].max()
-            base_low = base_data["low"].min()
+        # =========================
+        # SUPPLY
+        # =========================
 
-            # Strong bullish departure
-            if (
-                departure["close"] > departure["open"]
-                and departure["body"] > departure["avg_body"] * 1.3
-                and departure["close"] > base_high
-            ):
+        if (
+            departure["close"] < departure["open"]
+            and departure["body"] >
+                departure["avg_body"] * 1.3
+            and departure["close"] < base["low"]
+        ):
 
-                zones.append({
-                    "timeframe": timeframe,
-                    "type": "DEMAND",
-                    "zone_high": round(base_high, 2),
-                    "zone_low": round(base_low, 2),
-                    "date": str(base_data.iloc[0]["date"].date()),
-                    "departure_date": str(departure["date"].date()),
-                    "score": 5
-                })
-
-                break
-
-        # -------------------------
-        # SUPPLY ZONE
-        # -------------------------
-
-        for base_count in [1, 2, 3]:
-
-            if i + base_count >= len(data):
-                continue
-
-            base_data = data.iloc[i:i + base_count]
-            departure = data.iloc[i + base_count]
-
-            base_high = base_data["high"].max()
-            base_low = base_data["low"].min()
-
-            # Strong bearish departure
-            if (
-                departure["close"] < departure["open"]
-                and departure["body"] > departure["avg_body"] * 1.3
-                and departure["close"] < base_low
-            ):
-
-                zones.append({
-                    "timeframe": timeframe,
-                    "type": "SUPPLY",
-                    "zone_high": round(base_high, 2),
-                    "zone_low": round(base_low, 2),
-                    "date": str(base_data.iloc[0]["date"].date()),
-                    "departure_date": str(departure["date"].date()),
-                    "score": 5
-                })
-
-                break
+            zones.append({
+                "timeframe": timeframe,
+                "type": "SUPPLY",
+                "zone_high": round(
+                    base["high"], 2
+                ),
+                "zone_low": round(
+                    base["low"], 2
+                ),
+                "date": str(
+                    base["date"].date()
+                ),
+                "departure_date": str(
+                    departure["date"].date()
+                ),
+                "score": 5
+            })
 
     return zones
 
 
-# =========================
+# ==================================
 # CREATE TIMEFRAMES
-# =========================
+# ==================================
 
-df_index = df.set_index("date")
+daily = df.copy()
 
 
-timeframes = {}
-
-# Daily
-timeframes["DAILY"] = df_index.copy()
-
-# Weekly
-timeframes["WEEKLY"] = df_index.resample("W-FRI").agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna()
-
-# Monthly
-timeframes["MONTHLY"] = df_index.resample("ME").agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna()
-
-# Quarterly
-timeframes["QUARTERLY"] = df_index.resample("QE-DEC").agg({
-    "open": "first",
-    "high": "max",
-    "low": "min",
-    "close": "last",
-    "volume": "sum"
-}).dropna()
-
-# Half Year
-temp = df_index.copy()
-
-temp["year"] = temp.index.year
-temp["half"] = ((temp.index.month - 1) // 6) + 1
-
-timeframes["HALF_YEAR"] = temp.groupby(
-    ["year", "half"]
+weekly = df.set_index("date").resample(
+    "W-FRI"
 ).agg({
     "open": "first",
     "high": "max",
     "low": "min",
     "close": "last",
     "volume": "sum"
-}).dropna()
+}).dropna().reset_index()
 
-# Yearly
-timeframes["YEARLY"] = df_index.resample("YE-DEC").agg({
+
+monthly = df.set_index("date").resample(
+    "ME"
+).agg({
     "open": "first",
     "high": "max",
     "low": "min",
     "close": "last",
     "volume": "sum"
-}).dropna()
+}).dropna().reset_index()
 
 
-# =========================
+quarterly = df.set_index("date").resample(
+    "QE-DEC"
+).agg({
+    "open": "first",
+    "high": "max",
+    "low": "min",
+    "close": "last",
+    "volume": "sum"
+}).dropna().reset_index()
+
+
+# ==================================
+# HALF YEAR
+# ==================================
+
+temp = df.copy()
+
+temp["year"] = temp["date"].dt.year
+
+temp["half"] = (
+    (temp["date"].dt.month - 1) // 6
+) + 1
+
+
+half_year = temp.groupby(
+    ["year", "half"]
+).agg({
+    "date": "max",
+    "open": "first",
+    "high": "max",
+    "low": "min",
+    "close": "last",
+    "volume": "sum"
+}).reset_index()
+
+half_year = half_year[[
+    "date",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume"
+]]
+
+half_year = half_year.dropna()
+
+
+# ==================================
+# YEARLY
+# ==================================
+
+yearly = df.set_index("date").resample(
+    "YE-DEC"
+).agg({
+    "open": "first",
+    "high": "max",
+    "low": "min",
+    "close": "last",
+    "volume": "sum"
+}).dropna().reset_index()
+
+
+timeframes = {
+    "DAILY": daily,
+    "WEEKLY": weekly,
+    "MONTHLY": monthly,
+    "QUARTERLY": quarterly,
+    "HALF_YEAR": half_year,
+    "YEARLY": yearly
+}
+
+
+# ==================================
 # FIND ZONES
-# =========================
+# ==================================
 
 all_zones = []
 
@@ -201,58 +242,78 @@ for name, data in timeframes.items():
     print(name)
     print("--------------------------------")
 
-    zones = find_zones(data.reset_index(), name)
+    print("Candles:", len(data))
 
-    print("Zones found:", len(zones))
+    zones = make_zones(
+        data,
+        name
+    )
+
+    print(
+        "Zones found:",
+        len(zones)
+    )
 
     for zone in zones[-5:]:
+
         print(
             zone["type"],
-            "|",
-            "High:", zone["zone_high"],
-            "|",
-            "Low:", zone["zone_low"],
-            "|",
-            "Date:", zone["date"],
-            "|",
-            "Score:", zone["score"]
+            "| High:",
+            zone["zone_high"],
+            "| Low:",
+            zone["zone_low"],
+            "| Date:",
+            zone["date"],
+            "| Score:",
+            zone["score"]
         )
 
     all_zones.extend(zones)
 
 
-# =========================
+# ==================================
 # SUMMARY
-# =========================
-
-result = pd.DataFrame(all_zones)
+# ==================================
 
 print()
 print("================================")
 print("       ZONE SUMMARY")
 print("================================")
 
-if len(result) == 0:
+if len(all_zones) == 0:
 
     print("No zones found.")
 
 else:
 
+    result = pd.DataFrame(
+        all_zones
+    )
+
     print()
-    print("DEMAND ZONES:")
+    print("DEMAND ZONES")
+
+    demand = result[
+        result["type"] == "DEMAND"
+    ]
+
     print(
-        result[result["type"] == "DEMAND"]
-        .tail(10)
+        demand.tail(10)
         .to_string(index=False)
     )
 
     print()
-    print("SUPPLY ZONES:")
+    print("SUPPLY ZONES")
+
+    supply = result[
+        result["type"] == "SUPPLY"
+    ]
+
     print(
-        result[result["type"] == "SUPPLY"]
-        .tail(10)
+        supply.tail(10)
         .to_string(index=False)
     )
+
 
 print()
 print("================================")
