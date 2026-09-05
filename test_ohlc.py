@@ -1,29 +1,42 @@
 import requests
-import os
+import pandas as pd
+from io import BytesIO
 
-API_KEY = os.environ.get("INDIAN_API_KEY")
+URL = "https://huggingface.co/datasets/vishnun0027/indian-market-historical-ohlcv/resolve/main/stocks/20MICRONS.parquet"
 
-headers = {
-    "x-api-key": API_KEY,
-    "accept": "application/json"
-}
+print("================================")
+print("     20MICRONS OHLC TEST")
+print("================================")
 
-url = "https://stock.indianapi.in/historical_data"
+r = requests.get(URL, timeout=60)
 
-params = {
-    "stock_name": "20MICRONS",
-    "period": "1yr",
-    "filter": "price"
-}
+print("STATUS:", r.status_code)
+print("SIZE:", len(r.content), "bytes")
 
-response = requests.get(
-    url,
-    headers=headers,
-    params=params,
-    timeout=30
-)
+if r.status_code != 200:
+    print("ERROR:")
+    print(r.text[:1000])
+    raise SystemExit
 
-print("STATUS:", response.status_code)
-print("CONTENT-TYPE:", response.headers.get("content-type"))
-print("RESPONSE:")
-print(response.text[:5000])
+df = pd.read_parquet(BytesIO(r.content))
+
+print("\nCOLUMNS:")
+print(df.columns.tolist())
+
+print("\nTOTAL CANDLES:", len(df))
+
+print("\nLAST 10 CANDLES:")
+print(df.tail(10).to_string(index=False))
+
+required = ["date", "open", "high", "low", "close", "volume"]
+
+print("\nCHECK:")
+for col in required:
+    if col in df.columns:
+        print("OK  :", col)
+    else:
+        print("MISS:", col)
+
+print("\n================================")
+print("          TEST COMPLETE")
+print("================================")
