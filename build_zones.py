@@ -23,10 +23,13 @@ TIMEFRAMES = [
     "YEARLY"
 ]
 
-# Abhi test ke liye sirf 10 stocks
-TEST_LIMIT = 10
+# ==================================
+# ALL STOCKS MODE
+# ==================================
+# None = stocks_data.json ke saare stocks process honge
+TEST_LIMIT = None
 
-# Current price se maximum 15% distance
+# Current/reference price se maximum 15% distance
 MAX_ZONE_DISTANCE = 0.15
 
 
@@ -916,7 +919,12 @@ print(
 )
 
 
-if TEST_LIMIT:
+# ==================================
+# TEST LIMIT
+# ==================================
+# None hone par saare stocks process honge
+
+if TEST_LIMIT is not None:
 
     symbols = symbols[
         :TEST_LIMIT
@@ -924,6 +932,14 @@ if TEST_LIMIT:
 
     print(
         "TEST MODE:",
+        len(symbols),
+        "stocks"
+    )
+
+else:
+
+    print(
+        "ALL STOCKS MODE:",
         len(symbols),
         "stocks"
     )
@@ -990,6 +1006,7 @@ for number, symbol in enumerate(
 
         failed += 1
 
+    # Small pause
     time.sleep(0.5)
 
 
