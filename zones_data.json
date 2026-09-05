@@ -1,3260 +1,1894 @@
 {
-  "generated_at": "2026-09-05T04:23:13.877363Z",
+  "generated_at": "2026-09-05T04:41:50.578739+00:00",
   "source": "Hugging Face indian-market-historical-ohlcv",
   "zone_rule": "Strong zones score >= 7",
+  "max_zone_distance": "15% from reference price",
   "stocks": {
     "20MICRONS": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 188.0,
-            "low": 183.01,
-            "date": "2026-08-12",
-            "departure_date": "2026-08-14",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 140.84,
-            "low": 129.61,
-            "date": "2026-03-30",
-            "departure_date": "2026-04-01",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 40.15,
-            "low": 39.0,
-            "date": "2021-05-07",
-            "departure_date": "2021-05-10",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "DEMAND",
-            "high": 16.4,
-            "low": 15.05,
-            "date": "2009-08-28",
-            "departure_date": "2009-08-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 9.12,
-            "low": 8.5,
-            "date": "2009-04-20",
-            "departure_date": "2009-04-21",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 212.41,
-            "low": 204.16,
-            "date": "2026-06-24",
-            "departure_date": "2026-06-25",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 182.26,
-            "low": 175.15,
-            "date": "2026-05-14",
-            "departure_date": "2026-05-15",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 159.74,
-            "low": 153.21,
-            "date": "2026-03-18",
-            "departure_date": "2026-03-19",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 220.98,
-            "low": 214.0,
-            "date": "2025-11-04",
-            "departure_date": "2025-11-06",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 228.0,
-            "low": 223.65,
-            "date": "2025-09-25",
-            "departure_date": "2025-09-26",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 103.0,
-            "low": 96.4,
-            "date": "2023-07-21",
-            "departure_date": "2023-07-28",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 16.65,
-            "low": 15.05,
-            "date": "2009-08-28",
-            "departure_date": "2009-09-04",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 13.5,
-            "low": 12.02,
-            "date": "2009-08-14",
-            "departure_date": "2009-08-21",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 193.0,
-            "low": 182.0,
-            "date": "2026-08-14",
-            "departure_date": "2026-08-21",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 59.0,
-            "low": 53.6,
-            "date": "2021-12-24",
-            "departure_date": "2021-12-31",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 283.93,
-            "low": 256.41,
-            "date": "2025-07-25",
-            "departure_date": "2025-08-01",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 228.7,
-            "low": 208.41,
-            "date": "2026-01-02",
-            "departure_date": "2026-01-09",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 91.9,
-            "low": 88.25,
-            "date": "2023-01-20",
-            "departure_date": "2023-01-27",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 102.0,
-            "low": 93.8,
-            "date": "2022-12-16",
-            "departure_date": "2022-12-23",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 42.0,
-            "low": 39.55,
-            "date": "2021-01-08",
-            "departure_date": "2021-01-15",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 119.3,
-            "low": 105.5,
-            "date": "2023-08-31",
-            "departure_date": "2023-09-30",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 40.5,
-            "low": 33.05,
-            "date": "2021-04-30",
-            "departure_date": "2021-05-31",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 104.1,
-            "low": 89.5,
-            "date": "2023-06-30",
-            "departure_date": "2023-07-31",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 171.69,
-            "low": 129.61,
-            "date": "2026-03-31",
-            "departure_date": "2026-04-30",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 81.9,
-            "low": 60.35,
-            "date": "2022-06-30",
-            "departure_date": "2022-07-31",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 82.68,
-            "low": 62.5,
-            "date": "2013-01-31",
-            "departure_date": "2013-02-28",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 104.1,
-            "low": 73.15,
-            "date": "2023-06-30",
-            "departure_date": "2023-09-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 42.0,
-            "low": 28.2,
-            "date": "2021-03-31",
-            "departure_date": "2021-06-30",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 183.2,
-            "low": 132.0,
-            "date": "2024-03-31",
-            "departure_date": "2024-06-30",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 237.4,
-            "low": 182.6,
-            "date": "2025-12-31",
-            "departure_date": "2026-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 104.1,
-            "low": 63.05,
-            "date": "2023-06-30",
-            "departure_date": "2023-12-29",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 211.36,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 188.0,
+              "low": 183.01,
+              "date": "2026-08-12",
+              "departure_date": "2026-08-14",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 11.05
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 208.0,
+              "low": 202.73,
+              "date": "2026-08-21",
+              "departure_date": "2026-08-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.59
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 202.01,
+              "low": 188.0,
+              "date": "2025-03-28",
+              "departure_date": "2025-04-01",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 4.42
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 190.7,
+              "low": 185.5,
+              "date": "2024-06-20",
+              "departure_date": "2024-06-21",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 9.77
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 186.0,
+              "low": 175.79,
+              "date": "2025-03-05",
+              "departure_date": "2025-03-06",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.0
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 212.41,
+              "low": 204.16,
+              "date": "2026-06-24",
+              "departure_date": "2026-06-25",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 216.97,
+              "low": 213.5,
+              "date": "2025-10-17",
+              "departure_date": "2025-10-20",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.01
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 230.0,
+              "low": 215.0,
+              "date": "2025-04-29",
+              "departure_date": "2025-04-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.72
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 235.6,
+              "low": 225.05,
+              "date": "2025-04-24",
+              "departure_date": "2025-04-25",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 6.48
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 193.0,
+              "low": 182.0,
+              "date": "2026-08-14",
+              "departure_date": "2026-08-21",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 8.69
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 233.7,
+              "low": 201.42,
+              "date": "2024-07-19",
+              "departure_date": "2024-07-26",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 228.7,
+              "low": 208.41,
+              "date": "2026-01-02",
+              "departure_date": "2026-01-09",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [],
+          "supply": []
+        },
+        "QUARTERLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 183.2,
+              "low": 132.0,
+              "date": "2024-03-31",
+              "departure_date": "2024-06-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 13.32
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 237.4,
+              "low": 182.6,
+              "date": "2025-12-31",
+              "departure_date": "2026-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "21STCENMGM": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 15.4,
-            "low": 15.2,
-            "date": "2021-06-01",
-            "departure_date": "2021-06-02",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 43.9,
-            "low": 43.05,
-            "date": "2026-08-21",
-            "departure_date": "2026-08-24",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "DEMAND",
-            "high": 37.35,
-            "low": 36.77,
-            "date": "2025-11-26",
-            "departure_date": "2025-11-27",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "DEMAND",
-            "high": 62.32,
-            "low": 61.5,
-            "date": "2025-07-07",
-            "departure_date": "2025-07-08",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "DEMAND",
-            "high": 94.95,
-            "low": 93.59,
-            "date": "2024-12-02",
-            "departure_date": "2024-12-03",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 41.84,
-            "low": 40.34,
-            "date": "2026-08-31",
-            "departure_date": "2026-09-02",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 53.79,
-            "low": 51.69,
-            "date": "2025-12-29",
-            "departure_date": "2025-12-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 88.0,
-            "low": 84.84,
-            "date": "2025-01-23",
-            "departure_date": "2025-01-24",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 97.86,
-            "low": 95.9,
-            "date": "2024-12-11",
-            "departure_date": "2024-12-12",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 121.44,
-            "low": 121.0,
-            "date": "2024-11-07",
-            "departure_date": "2024-11-08",
-            "fresh": true,
-            "score": 7
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 26.7,
-            "low": 24.75,
-            "date": "2023-12-08",
-            "departure_date": "2023-12-15",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 24.3,
-            "low": 22.8,
-            "date": "2023-12-01",
-            "departure_date": "2023-12-08",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 22.5,
-            "low": 20.9,
-            "date": "2023-11-24",
-            "departure_date": "2023-12-01",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 20.5,
-            "low": 19.4,
-            "date": "2023-11-17",
-            "departure_date": "2023-11-24",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 16.25,
-            "low": 14.9,
-            "date": "2021-06-04",
-            "departure_date": "2021-06-11",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 80.7,
-            "low": 76.5,
-            "date": "2025-04-25",
-            "departure_date": "2025-05-02",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 141.4,
-            "low": 131.52,
-            "date": "2024-09-13",
-            "departure_date": "2024-09-20",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 46.61,
-            "low": 43.76,
-            "date": "2026-01-16",
-            "departure_date": "2026-01-23",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 52.74,
-            "low": 49.7,
-            "date": "2025-12-26",
-            "departure_date": "2026-01-02",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 47.89,
-            "low": 45.31,
-            "date": "2025-11-07",
-            "departure_date": "2025-11-14",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 23.85,
-            "low": 17.7,
-            "date": "2023-11-30",
-            "departure_date": "2023-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 15.6,
-            "low": 11.9,
-            "date": "2021-05-31",
-            "departure_date": "2021-06-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 82.96,
-            "low": 67.91,
-            "date": "2024-07-31",
-            "departure_date": "2024-08-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 66.58,
-            "low": 47.65,
-            "date": "2024-06-30",
-            "departure_date": "2024-07-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 54.5,
-            "low": 42.7,
-            "date": "2024-05-31",
-            "departure_date": "2024-06-30",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 49.1,
-            "low": 43.55,
-            "date": "2022-01-31",
-            "departure_date": "2022-02-28",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 22.95,
-            "low": 18.1,
-            "date": "2023-09-30",
-            "departure_date": "2023-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 53.6,
-            "low": 29.85,
-            "date": "2024-03-31",
-            "departure_date": "2024-06-30",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 122.64,
-            "low": 87.4,
-            "date": "2024-12-31",
-            "departure_date": "2025-03-31",
-            "fresh": true,
-            "score": 9
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 38.85,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBD",
+              "type": "DEMAND",
+              "high": 38.0,
+              "low": 37.65,
+              "date": "2018-05-24",
+              "departure_date": "2018-05-25",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 2.19
+            },
+            {
+              "pattern": "DBD",
+              "type": "DEMAND",
+              "high": 37.35,
+              "low": 36.77,
+              "date": "2025-11-26",
+              "departure_date": "2025-11-27",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.86
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 41.84,
+              "low": 40.34,
+              "date": "2026-08-31",
+              "departure_date": "2026-09-02",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 3.84
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 40.95,
+              "low": 39.4,
+              "date": "2018-08-09",
+              "departure_date": "2018-08-10",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.42
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 42.7,
+              "low": 41.25,
+              "date": "2018-05-11",
+              "departure_date": "2018-05-14",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 6.18
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 43.27,
+              "low": 42.4,
+              "date": "2025-11-17",
+              "departure_date": "2025-11-18",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 9.14
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 45.25,
+              "low": 43.6,
+              "date": "2024-03-19",
+              "departure_date": "2024-03-20",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.23
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 33.72,
+              "low": 31.02,
+              "date": "2026-07-17",
+              "departure_date": "2026-07-24",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 13.2
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 37.11,
+              "low": 33.8,
+              "date": "2026-07-24",
+              "departure_date": "2026-07-31",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 4.48
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 40.6,
+              "low": 37.6,
+              "date": "2021-09-17",
+              "departure_date": "2021-09-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 46.95,
+              "low": 43.27,
+              "date": "2025-11-14",
+              "departure_date": "2025-11-21",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 11.38
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 48.25,
+              "low": 34.2,
+              "date": "2021-09-30",
+              "departure_date": "2021-10-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 33.55,
+              "low": 23.0,
+              "date": "2021-08-31",
+              "departure_date": "2021-09-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 13.64
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 49.1,
+              "low": 43.55,
+              "date": "2022-01-31",
+              "departure_date": "2022-02-28",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.1
+            }
+          ]
+        },
+        "QUARTERLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 53.6,
+              "low": 29.85,
+              "date": "2024-03-31",
+              "departure_date": "2024-06-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": []
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "360ONE": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 1098.9,
-            "low": 1072.3,
-            "date": "2026-07-23",
-            "departure_date": "2026-07-24",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 457.1,
-            "low": 451.45,
-            "date": "2023-06-30",
-            "departure_date": "2023-07-03",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 344.95,
-            "low": 337.4,
-            "date": "2022-06-24",
-            "departure_date": "2022-06-27",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 580.0,
-            "low": 555.7,
-            "date": "2023-11-30",
-            "departure_date": "2023-12-01",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 257.5,
-            "low": 249.12,
-            "date": "2021-01-29",
-            "departure_date": "2021-02-01",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1311.35,
-            "low": 1290.15,
-            "date": "2025-01-03",
-            "departure_date": "2025-01-06",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1208.0,
-            "low": 1193.9,
-            "date": "2026-08-28",
-            "departure_date": "2026-08-31",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1154.0,
-            "low": 1126.4,
-            "date": "2026-07-07",
-            "departure_date": "2026-07-08",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1132.0,
-            "low": 1096.5,
-            "date": "2026-04-21",
-            "departure_date": "2026-04-22",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1055.0,
-            "low": 1034.6,
-            "date": "2026-03-20",
-            "departure_date": "2026-03-23",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 558.45,
-            "low": 534.3,
-            "date": "2023-11-24",
-            "departure_date": "2023-12-01",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 461.4,
-            "low": 436.5,
-            "date": "2023-06-30",
-            "departure_date": "2023-07-07",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 346.58,
-            "low": 308.95,
-            "date": "2022-06-24",
-            "departure_date": "2022-07-01",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 260.48,
-            "low": 247.46,
-            "date": "2021-01-29",
-            "departure_date": "2021-02-05",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 231.74,
-            "low": 220.51,
-            "date": "2020-11-06",
-            "departure_date": "2020-11-13",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1088.5,
-            "low": 1010.3,
-            "date": "2026-03-20",
-            "departure_date": "2026-03-27",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1200.1,
-            "low": 1143.6,
-            "date": "2025-10-24",
-            "departure_date": "2025-10-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1227.0,
-            "low": 1176.4,
-            "date": "2025-07-18",
-            "departure_date": "2025-07-25",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1050.0,
-            "low": 968.0,
-            "date": "2025-02-07",
-            "departure_date": "2025-02-14",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1311.35,
-            "low": 1221.75,
-            "date": "2025-01-03",
-            "departure_date": "2025-01-10",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 580.0,
-            "low": 518.1,
-            "date": "2023-11-30",
-            "departure_date": "2023-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 555.2,
-            "low": 487.55,
-            "date": "2023-10-31",
-            "departure_date": "2023-11-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 470.5,
-            "low": 415.0,
-            "date": "2023-06-30",
-            "departure_date": "2023-07-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 300.25,
-            "low": 275.26,
-            "date": "2021-06-30",
-            "departure_date": "2021-07-31",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 423.9,
-            "low": 398.0,
-            "date": "2023-05-31",
-            "departure_date": "2023-06-30",
-            "fresh": true,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "QUARTERLY": {
-        "demand": [],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1217.9,
-            "low": 1013.0,
-            "date": "2025-12-31",
-            "departure_date": "2026-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 1181.3,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 1098.9,
+              "low": 1072.3,
+              "date": "2026-07-23",
+              "departure_date": "2026-07-24",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 6.98
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 1203.8,
+              "low": 1173.0,
+              "date": "2024-12-13",
+              "departure_date": "2024-12-16",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 1166.5,
+              "low": 1121.5,
+              "date": "2024-12-09",
+              "departure_date": "2024-12-10",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.25
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 1119.4,
+              "low": 1092.6,
+              "date": "2025-12-10",
+              "departure_date": "2025-12-11",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 5.24
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 1082.4,
+              "low": 1058.4,
+              "date": "2025-08-19",
+              "departure_date": "2025-08-20",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 8.37
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 1311.35,
+              "low": 1290.15,
+              "date": "2025-01-03",
+              "departure_date": "2025-01-06",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 9.21
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 1208.0,
+              "low": 1193.9,
+              "date": "2026-08-28",
+              "departure_date": "2026-08-31",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 1.07
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 1197.1,
+              "low": 1170.3,
+              "date": "2026-01-08",
+              "departure_date": "2026-01-09",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 1225.95,
+              "low": 1121.5,
+              "date": "2024-12-13",
+              "departure_date": "2024-12-20",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 1022.0,
+              "low": 906.05,
+              "date": "2026-04-10",
+              "departure_date": "2026-04-17",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 13.49
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 1200.1,
+              "low": 1143.6,
+              "date": "2025-10-24",
+              "departure_date": "2025-10-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 1227.0,
+              "low": 1176.4,
+              "date": "2025-07-18",
+              "departure_date": "2025-07-25",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 1311.35,
+              "low": 1221.75,
+              "date": "2025-01-03",
+              "departure_date": "2025-01-10",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.42
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 1037.7,
+              "low": 882.6,
+              "date": "2025-05-31",
+              "departure_date": "2025-06-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.16
+            }
+          ],
+          "supply": []
+        },
+        "QUARTERLY": {
+          "demand": [],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 1217.9,
+              "low": 1013.0,
+              "date": "2025-12-31",
+              "departure_date": "2026-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "3BBLACKBIO": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 1313.0,
-            "low": 1266.3,
-            "date": "2026-08-26",
-            "departure_date": "2026-08-28",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 1278.0,
-            "low": 1191.4,
-            "date": "2026-08-24",
-            "departure_date": "2026-08-26",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 1225.0,
-            "low": 1130.0,
-            "date": "2026-08-21",
-            "departure_date": "2026-08-24",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1256.6,
-            "low": 1218.0,
-            "date": "2026-08-04",
-            "departure_date": "2026-08-05",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1287.5,
-            "low": 1249.1,
-            "date": "2026-06-16",
-            "departure_date": "2026-06-17",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [],
-        "supply": []
-      },
-      "MONTHLY": {
-        "demand": [],
-        "supply": []
-      },
-      "QUARTERLY": {
-        "demand": [],
-        "supply": []
-      },
-      "HALF_YEAR": {
-        "demand": [],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 1478.6,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 1313.0,
+              "low": 1266.3,
+              "date": "2026-08-26",
+              "departure_date": "2026-08-28",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 11.2
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 1278.0,
+              "low": 1191.4,
+              "date": "2026-08-24",
+              "departure_date": "2026-08-26",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 13.57
+            }
+          ],
+          "supply": []
+        },
+        "WEEKLY": {
+          "demand": [],
+          "supply": []
+        },
+        "MONTHLY": {
+          "demand": [],
+          "supply": []
+        },
+        "QUARTERLY": {
+          "demand": [],
+          "supply": []
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "3IINFOLTD": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 19.35,
-            "low": 18.53,
-            "date": "2026-07-21",
-            "departure_date": "2026-07-22",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 15.86,
-            "low": 15.36,
-            "date": "2026-04-10",
-            "departure_date": "2026-04-13",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 14.43,
-            "low": 13.88,
-            "date": "2026-04-01",
-            "departure_date": "2026-04-02",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 20.23,
-            "low": 19.41,
-            "date": "2026-07-24",
-            "departure_date": "2026-07-27",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 13.04,
-            "low": 12.7,
-            "date": "2026-03-17",
-            "departure_date": "2026-03-18",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 29.94,
-            "low": 28.67,
-            "date": "2025-02-10",
-            "departure_date": "2025-02-11",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 31.7,
-            "low": 30.12,
-            "date": "2025-02-06",
-            "departure_date": "2025-02-07",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 35.55,
-            "low": 35.0,
-            "date": "2024-08-30",
-            "departure_date": "2024-09-02",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 68.5,
-            "low": 66.05,
-            "date": "2022-04-13",
-            "departure_date": "2022-04-18",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 143.5,
-            "low": 139.0,
-            "date": "2012-05-03",
-            "departure_date": "2012-05-04",
-            "fresh": true,
-            "score": 9
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 20.9,
-            "low": 18.53,
-            "date": "2026-07-24",
-            "departure_date": "2026-07-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 15.93,
-            "low": 14.83,
-            "date": "2026-04-10",
-            "departure_date": "2026-04-17",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 14.15,
-            "low": 13.0,
-            "date": "2026-03-27",
-            "departure_date": "2026-04-03",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 23.32,
-            "low": 19.5,
-            "date": "2026-07-31",
-            "departure_date": "2026-08-07",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 29.38,
-            "low": 28.32,
-            "date": "2024-12-06",
-            "departure_date": "2024-12-13",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 31.7,
-            "low": 28.08,
-            "date": "2025-02-07",
-            "departure_date": "2025-02-14",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 437.5,
-            "low": 405.0,
-            "date": "2011-07-29",
-            "departure_date": "2011-08-05",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 579.5,
-            "low": 545.5,
-            "date": "2011-01-21",
-            "departure_date": "2011-01-28",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 721.5,
-            "low": 653.5,
-            "date": "2010-11-12",
-            "departure_date": "2010-11-19",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1598.0,
-            "low": 1390.5,
-            "date": "2008-01-11",
-            "departure_date": "2008-01-18",
-            "fresh": true,
-            "score": 9
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 18.3,
-            "low": 16.25,
-            "date": "2026-06-30",
-            "departure_date": "2026-07-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 14.15,
-            "low": 12.68,
-            "date": "2026-03-31",
-            "departure_date": "2026-04-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 51.9,
-            "low": 42.7,
-            "date": "2023-12-31",
-            "departure_date": "2024-01-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 37.0,
-            "low": 29.0,
-            "date": "2020-11-30",
-            "departure_date": "2020-12-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 17.0,
-            "low": 13.5,
-            "date": "2020-05-31",
-            "departure_date": "2020-06-30",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 96.9,
-            "low": 73.7,
-            "date": "2022-01-31",
-            "departure_date": "2022-02-28",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 490.0,
-            "low": 405.0,
-            "date": "2011-07-31",
-            "departure_date": "2011-08-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 119.3,
-            "low": 89.7,
-            "date": "2021-12-31",
-            "departure_date": "2022-01-31",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 61.2,
-            "low": 44.85,
-            "date": "2024-02-29",
-            "departure_date": "2024-03-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 25.0,
-            "low": 19.0,
-            "date": "2020-02-29",
-            "departure_date": "2020-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 41.0,
-            "low": 22.0,
-            "date": "2020-09-30",
-            "departure_date": "2020-12-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 49.0,
-            "low": 36.0,
-            "date": "2017-09-30",
-            "departure_date": "2017-12-31",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "HALF_YEAR": {
-        "demand": [],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 22.43,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 19.35,
+              "low": 18.53,
+              "date": "2026-07-21",
+              "departure_date": "2026-07-22",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 13.73
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 20.23,
+              "low": 19.41,
+              "date": "2026-07-24",
+              "departure_date": "2026-07-27",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 9.81
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 22.5,
+              "low": 21.5,
+              "date": "2020-02-06",
+              "departure_date": "2020-02-07",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 24.03,
+              "low": 22.25,
+              "date": "2025-03-25",
+              "departure_date": "2025-03-26",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 25.7,
+              "low": 25.02,
+              "date": "2025-06-18",
+              "departure_date": "2025-06-19",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 11.55
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 26.5,
+              "low": 25.5,
+              "date": "2020-07-22",
+              "departure_date": "2020-07-23",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 13.69
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 20.9,
+              "low": 18.53,
+              "date": "2026-07-24",
+              "departure_date": "2026-07-31",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 6.82
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 23.32,
+              "low": 19.5,
+              "date": "2026-07-31",
+              "departure_date": "2026-08-07",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 24.5,
+              "low": 22.0,
+              "date": "2020-08-07",
+              "departure_date": "2020-08-14",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 25.0,
+              "low": 23.22,
+              "date": "2026-08-28",
+              "departure_date": "2026-09-04",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 3.52
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 27.8,
+              "low": 25.14,
+              "date": "2026-08-14",
+              "departure_date": "2026-08-21",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 12.08
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 25.0,
+              "low": 19.0,
+              "date": "2020-02-29",
+              "departure_date": "2020-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "QUARTERLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 41.0,
+              "low": 22.0,
+              "date": "2020-09-30",
+              "departure_date": "2020-12-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": []
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "3MINDIA": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 29600.0,
-            "low": 29130.0,
-            "date": "2026-04-07",
-            "departure_date": "2026-04-08",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 25319.0,
-            "low": 24617.9,
-            "date": "2023-05-31",
-            "departure_date": "2023-06-01",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 23500.0,
-            "low": 23312.75,
-            "date": "2023-05-18",
-            "departure_date": "2023-05-19",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 22580.0,
-            "low": 22356.0,
-            "date": "2023-05-02",
-            "departure_date": "2023-05-03",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 13897.0,
-            "low": 13800.0,
-            "date": "2017-08-22",
-            "departure_date": "2017-08-23",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 34840.0,
-            "low": 34130.0,
-            "date": "2026-08-28",
-            "departure_date": "2026-08-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 18119.0,
-            "low": 17880.0,
-            "date": "2022-05-25",
-            "departure_date": "2022-05-26",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 36390.0,
-            "low": 35760.0,
-            "date": "2026-08-12",
-            "departure_date": "2026-08-14",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 35280.0,
-            "low": 34750.0,
-            "date": "2026-08-17",
-            "departure_date": "2026-08-19",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 34300.0,
-            "low": 33185.0,
-            "date": "2026-05-25",
-            "departure_date": "2026-05-26",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 24600.0,
-            "low": 23823.85,
-            "date": "2023-05-26",
-            "departure_date": "2023-06-02",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 14524.2,
-            "low": 14001.15,
-            "date": "2017-10-27",
-            "departure_date": "2017-11-03",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 11598.0,
-            "low": 11265.0,
-            "date": "2017-05-05",
-            "departure_date": "2017-05-12",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 8900.0,
-            "low": 8100.0,
-            "date": "2015-07-31",
-            "departure_date": "2015-08-07",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 7199.95,
-            "low": 6500.0,
-            "date": "2015-02-13",
-            "departure_date": "2015-02-20",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 34840.0,
-            "low": 33340.0,
-            "date": "2026-08-28",
-            "departure_date": "2026-09-04",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 37300.0,
-            "low": 35000.0,
-            "date": "2026-08-14",
-            "departure_date": "2026-08-21",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 40642.95,
-            "low": 38500.0,
-            "date": "2024-08-02",
-            "departure_date": "2024-08-09",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 33250.0,
-            "low": 31150.05,
-            "date": "2023-09-08",
-            "departure_date": "2023-09-15",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 26943.0,
-            "low": 22126.65,
-            "date": "2022-02-11",
-            "departure_date": "2022-02-18",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 23409.95,
-            "low": 22125.25,
-            "date": "2023-04-30",
-            "departure_date": "2023-05-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 12231.0,
-            "low": 11400.0,
-            "date": "2017-04-30",
-            "departure_date": "2017-05-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 5250.0,
-            "low": 4501.0,
-            "date": "2014-07-31",
-            "departure_date": "2014-08-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 1894.0,
-            "low": 1750.0,
-            "date": "2010-01-31",
-            "departure_date": "2010-02-28",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 3340.0,
-            "low": 3090.35,
-            "date": "2013-11-30",
-            "departure_date": "2013-12-31",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 38030.0,
-            "low": 33840.0,
-            "date": "2026-02-28",
-            "departure_date": "2026-03-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 26459.2,
-            "low": 23220.0,
-            "date": "2018-08-31",
-            "departure_date": "2018-09-30",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 13520.0,
-            "low": 12883.9,
-            "date": "2016-10-31",
-            "departure_date": "2016-11-30",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 11569.4,
-            "low": 10355.1,
-            "date": "2015-12-31",
-            "departure_date": "2016-01-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 4222.0,
-            "low": 3900.1,
-            "date": "2013-01-31",
-            "departure_date": "2013-02-28",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 14900.0,
-            "low": 12950.0,
-            "date": "2017-09-30",
-            "departure_date": "2017-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 4750.0,
-            "low": 3411.05,
-            "date": "2014-06-30",
-            "departure_date": "2014-09-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 6858.8,
-            "low": 5880.05,
-            "date": "2014-12-31",
-            "departure_date": "2015-03-31",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 2397.0,
-            "low": 1750.0,
-            "date": "2010-03-31",
-            "departure_date": "2010-06-30",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 1440.0,
-            "low": 867.1,
-            "date": "2009-06-30",
-            "departure_date": "2009-09-30",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 27800.0,
-            "low": 23760.0,
-            "date": "2021-12-31",
-            "departure_date": "2022-03-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1745.0,
-            "low": 1366.85,
-            "date": "2008-09-30",
-            "departure_date": "2008-12-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 14999.0,
-            "low": 10705.0,
-            "date": "2017-06-30",
-            "departure_date": "2017-12-29",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 4750.0,
-            "low": 3411.05,
-            "date": "2014-06-30",
-            "departure_date": "2014-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 25209.0,
-            "low": 21126.05,
-            "date": "2022-12-30",
-            "departure_date": "2023-06-30",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 6858.8,
-            "low": 4501.0,
-            "date": "2014-12-31",
-            "departure_date": "2015-06-30",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 3700.0,
-            "low": 2880.0,
-            "date": "2013-12-31",
-            "departure_date": "2014-06-30",
-            "fresh": true,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 26943.0,
-            "low": 17273.0,
-            "date": "2022-12-31",
-            "departure_date": "2023-12-31",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": []
+      "reference_price": 32820.0,
+      "reference_date": "2026-09-03",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 29600.0,
+              "low": 29130.0,
+              "date": "2026-04-07",
+              "departure_date": "2026-04-08",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 9.81
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 32615.0,
+              "low": 31435.0,
+              "date": "2026-06-16",
+              "departure_date": "2026-06-17",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0.62
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 31489.85,
+              "low": 31078.1,
+              "date": "2023-12-26",
+              "departure_date": "2023-12-27",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 4.05
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 31085.0,
+              "low": 29490.0,
+              "date": "2025-11-03",
+              "departure_date": "2025-11-04",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 5.29
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 29199.0,
+              "low": 28498.95,
+              "date": "2024-05-15",
+              "departure_date": "2024-05-16",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 11.03
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 34840.0,
+              "low": 34130.0,
+              "date": "2026-08-28",
+              "departure_date": "2026-08-31",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 3.99
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 36390.0,
+              "low": 35760.0,
+              "date": "2026-08-12",
+              "departure_date": "2026-08-14",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 8.96
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 33249.85,
+              "low": 32385.05,
+              "date": "2023-09-11",
+              "departure_date": "2023-09-12",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 34300.0,
+              "low": 33185.0,
+              "date": "2026-05-25",
+              "departure_date": "2026-05-26",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.11
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 35280.0,
+              "low": 34750.0,
+              "date": "2026-08-17",
+              "departure_date": "2026-08-19",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 5.88
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 31699.9,
+              "low": 30469.55,
+              "date": "2023-12-22",
+              "departure_date": "2023-12-29",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.41
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 30250.0,
+              "low": 29380.0,
+              "date": "2025-10-31",
+              "departure_date": "2025-11-07",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 7.83
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 34840.0,
+              "low": 33340.0,
+              "date": "2026-08-28",
+              "departure_date": "2026-09-04",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 1.58
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 37300.0,
+              "low": 35000.0,
+              "date": "2026-08-14",
+              "departure_date": "2026-08-21",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 6.64
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 33250.0,
+              "low": 31150.05,
+              "date": "2023-09-08",
+              "departure_date": "2023-09-15",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 38030.0,
+              "low": 33840.0,
+              "date": "2026-02-28",
+              "departure_date": "2026-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.11
+            }
+          ]
+        },
+        "QUARTERLY": {
+          "demand": [],
+          "supply": []
+        },
+        "HALF_YEAR": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 31685.85,
+              "low": 25718.15,
+              "date": "2025-06-30",
+              "departure_date": "2025-12-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.46
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 28500.0,
+              "low": 21300.45,
+              "date": "2023-06-30",
+              "departure_date": "2023-12-29",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 13.16
+            }
+          ],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "3PLAND": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 10.65,
-            "low": 10.1,
-            "date": "2021-05-05",
-            "departure_date": "2021-05-06",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 6.85,
-            "low": 6.55,
-            "date": "2020-11-11",
-            "departure_date": "2020-11-12",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 3.85,
-            "low": 3.7,
-            "date": "2020-04-08",
-            "departure_date": "2020-04-09",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 3.7,
-            "low": 3.55,
-            "date": "2020-04-07",
-            "departure_date": "2020-04-08",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 3.55,
-            "low": 3.4,
-            "date": "2020-04-03",
-            "departure_date": "2020-04-07",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 32.8,
-            "low": 31.79,
-            "date": "2026-06-16",
-            "departure_date": "2026-06-17",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 34.45,
-            "low": 32.25,
-            "date": "2026-02-27",
-            "departure_date": "2026-03-02",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 41.0,
-            "low": 39.0,
-            "date": "2025-12-01",
-            "departure_date": "2025-12-02",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 47.5,
-            "low": 45.0,
-            "date": "2025-09-11",
-            "departure_date": "2025-09-12",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 48.7,
-            "low": 47.64,
-            "date": "2025-07-24",
-            "departure_date": "2025-07-25",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 11.0,
-            "low": 9.5,
-            "date": "2021-04-30",
-            "departure_date": "2021-05-07",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 6.5,
-            "low": 6.2,
-            "date": "2020-11-06",
-            "departure_date": "2020-11-13",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 3.8,
-            "low": 3.4,
-            "date": "2020-04-03",
-            "departure_date": "2020-04-10",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 36.1,
-            "low": 31.0,
-            "date": "2026-04-10",
-            "departure_date": "2026-04-17",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 33.0,
-            "low": 28.51,
-            "date": "2026-04-03",
-            "departure_date": "2026-04-10",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 52.9,
-            "low": 46.15,
-            "date": "2025-08-22",
-            "departure_date": "2025-08-29",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 22.0,
-            "low": 20.15,
-            "date": "2023-06-16",
-            "departure_date": "2023-06-23",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 32.0,
-            "low": 28.4,
-            "date": "2023-01-20",
-            "departure_date": "2023-01-27",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 5.15,
-            "low": 4.75,
-            "date": "2020-02-21",
-            "departure_date": "2020-02-28",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 7.25,
-            "low": 6.3,
-            "date": "2020-02-07",
-            "departure_date": "2020-02-14",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 21.9,
-            "low": 19.0,
-            "date": "2023-08-31",
-            "departure_date": "2023-09-30",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 11.0,
-            "low": 8.1,
-            "date": "2021-04-30",
-            "departure_date": "2021-05-31",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 6.85,
-            "low": 5.8,
-            "date": "2020-10-31",
-            "departure_date": "2020-11-30",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 28.65,
-            "low": 24.05,
-            "date": "2023-12-31",
-            "departure_date": "2024-01-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 4.75,
-            "low": 3.55,
-            "date": "2020-03-31",
-            "departure_date": "2020-04-30",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 62.9,
-            "low": 46.5,
-            "date": "2025-01-31",
-            "departure_date": "2025-02-28",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 7.65,
-            "low": 5.7,
-            "date": "2020-01-31",
-            "departure_date": "2020-02-29",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 25.4,
-            "low": 18.65,
-            "date": "2016-01-31",
-            "departure_date": "2016-02-29",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 14.3,
-            "low": 11.15,
-            "date": "2013-02-28",
-            "departure_date": "2013-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 11.7,
-            "low": 7.65,
-            "date": "2021-03-31",
-            "departure_date": "2021-06-30",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 16.0,
-            "low": 12.0,
-            "date": "2015-09-30",
-            "departure_date": "2015-12-31",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "HALF_YEAR": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 31.4,
-            "low": 18.35,
-            "date": "2023-12-29",
-            "departure_date": "2024-06-28",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 32.75,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 32.25,
+              "low": 31.4,
+              "date": "2026-08-31",
+              "departure_date": "2026-09-02",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 1.53
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 35.0,
+              "low": 32.5,
+              "date": "2024-01-12",
+              "departure_date": "2024-01-15",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 31.0,
+              "low": 29.65,
+              "date": "2024-04-29",
+              "departure_date": "2024-04-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 5.34
+            },
+            {
+              "pattern": "DBD",
+              "type": "DEMAND",
+              "high": 30.4,
+              "low": 27.85,
+              "date": "2008-04-25",
+              "departure_date": "2008-04-28",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 7.18
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 27.9,
+              "low": 25.5,
+              "date": "2010-11-10",
+              "departure_date": "2010-11-11",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 14.81
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 32.8,
+              "low": 31.79,
+              "date": "2026-06-16",
+              "departure_date": "2026-06-17",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 34.45,
+              "low": 32.25,
+              "date": "2026-02-27",
+              "departure_date": "2026-03-02",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 38.87,
+              "low": 35.21,
+              "date": "2024-07-22",
+              "departure_date": "2024-07-23",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 7.51
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 36.1,
+              "low": 31.0,
+              "date": "2026-04-10",
+              "departure_date": "2026-04-17",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 33.0,
+              "low": 28.51,
+              "date": "2026-04-03",
+              "departure_date": "2026-04-10",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 30.55,
+              "low": 27.0,
+              "date": "2024-03-29",
+              "departure_date": "2024-04-05",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 6.72
+            }
+          ],
+          "supply": []
+        },
+        "MONTHLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 28.65,
+              "low": 24.05,
+              "date": "2023-12-31",
+              "departure_date": "2024-01-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.52
+            }
+          ],
+          "supply": []
+        },
+        "QUARTERLY": {
+          "demand": [],
+          "supply": []
+        },
+        "HALF_YEAR": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 31.4,
+              "low": 18.35,
+              "date": "2023-12-29",
+              "departure_date": "2024-06-28",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 4.12
+            }
+          ],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "5PAISA": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 179.0,
-            "low": 171.85,
-            "date": "2020-06-19",
-            "departure_date": "2020-06-22",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 332.0,
-            "low": 320.05,
-            "date": "2026-06-19",
-            "departure_date": "2026-06-22",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 273.0,
-            "low": 251.0,
-            "date": "2026-04-01",
-            "departure_date": "2026-04-02",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 200.9,
-            "low": 192.0,
-            "date": "2020-06-23",
-            "departure_date": "2020-06-24",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 145.0,
-            "low": 131.95,
-            "date": "2020-05-22",
-            "departure_date": "2020-05-26",
-            "fresh": true,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 482.5,
-            "low": 473.0,
-            "date": "2025-01-03",
-            "departure_date": "2025-01-06",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 516.45,
-            "low": 504.0,
-            "date": "2024-12-11",
-            "departure_date": "2024-12-12",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 592.25,
-            "low": 560.6,
-            "date": "2024-10-17",
-            "departure_date": "2024-10-18",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 456.1,
-            "low": 445.4,
-            "date": "2025-01-09",
-            "departure_date": "2025-01-10",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 570.0,
-            "low": 526.2,
-            "date": "2024-10-18",
-            "departure_date": "2024-10-21",
-            "fresh": true,
-            "score": 8
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 332.4,
-            "low": 311.95,
-            "date": "2026-06-19",
-            "departure_date": "2026-06-26",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 190.0,
-            "low": 160.0,
-            "date": "2020-06-19",
-            "departure_date": "2020-06-26",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 293.99,
-            "low": 245.5,
-            "date": "2026-04-03",
-            "departure_date": "2026-04-10",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 359.75,
-            "low": 326.0,
-            "date": "2026-06-26",
-            "departure_date": "2026-07-03",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 310.0,
-            "low": 275.7,
-            "date": "2026-04-10",
-            "departure_date": "2026-04-17",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 487.7,
-            "low": 460.6,
-            "date": "2025-01-03",
-            "departure_date": "2025-01-10",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 607.05,
-            "low": 526.2,
-            "date": "2024-10-18",
-            "departure_date": "2024-10-25",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 385.55,
-            "low": 365.0,
-            "date": "2026-08-28",
-            "departure_date": "2026-09-04",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 519.0,
-            "low": 488.45,
-            "date": "2024-12-13",
-            "departure_date": "2024-12-20",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 341.5,
-            "low": 315.25,
-            "date": "2026-05-29",
-            "departure_date": "2026-06-05",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 177.0,
-            "low": 131.95,
-            "date": "2020-05-31",
-            "departure_date": "2020-06-30",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 317.8,
-            "low": 245.5,
-            "date": "2026-03-31",
-            "departure_date": "2026-04-30",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 357.05,
-            "low": 310.5,
-            "date": "2026-02-28",
-            "departure_date": "2026-03-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 198.0,
-            "low": 155.0,
-            "date": "2020-02-29",
-            "departure_date": "2020-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 607.05,
-            "low": 460.6,
-            "date": "2024-12-31",
-            "departure_date": "2025-03-31",
-            "fresh": true,
-            "score": 7
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 336.55,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 332.0,
+              "low": 320.05,
+              "date": "2026-06-19",
+              "departure_date": "2026-06-22",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 1.35
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 344.8,
+              "low": 334.9,
+              "date": "2026-06-23",
+              "departure_date": "2026-06-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 323.9,
+              "low": 315.25,
+              "date": "2026-05-25",
+              "departure_date": "2026-05-26",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.76
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 316.75,
+              "low": 305.05,
+              "date": "2023-01-02",
+              "departure_date": "2023-01-03",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 5.88
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 342.5,
+              "low": 328.0,
+              "date": "2025-12-02",
+              "departure_date": "2025-12-03",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 372.0,
+              "low": 335.75,
+              "date": "2020-12-08",
+              "departure_date": "2020-12-09",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 390.0,
+              "low": 372.0,
+              "date": "2020-09-18",
+              "departure_date": "2020-09-21",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 10.53
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 404.45,
+              "low": 385.0,
+              "date": "2022-01-21",
+              "departure_date": "2022-01-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 14.4
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 332.4,
+              "low": 311.95,
+              "date": "2026-06-19",
+              "departure_date": "2026-06-26",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 1.23
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 293.99,
+              "low": 245.5,
+              "date": "2026-04-03",
+              "departure_date": "2026-04-10",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 12.65
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 359.75,
+              "low": 326.0,
+              "date": "2026-06-26",
+              "departure_date": "2026-07-03",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 310.0,
+              "low": 275.7,
+              "date": "2026-04-10",
+              "departure_date": "2026-04-17",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 7.89
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 385.55,
+              "low": 365.0,
+              "date": "2026-08-28",
+              "departure_date": "2026-09-04",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 8.45
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 341.5,
+              "low": 315.25,
+              "date": "2026-05-29",
+              "departure_date": "2026-06-05",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 317.8,
+              "low": 245.5,
+              "date": "2026-03-31",
+              "departure_date": "2026-04-30",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 5.57
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 357.05,
+              "low": 310.5,
+              "date": "2026-02-28",
+              "departure_date": "2026-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "QUARTERLY": {
+          "demand": [],
+          "supply": []
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "63MOONS": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 820.0,
-            "low": 775.0,
-            "date": "2026-09-02",
-            "departure_date": "2026-09-03",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 577.1,
-            "low": 525.0,
-            "date": "2026-04-13",
-            "departure_date": "2026-04-15",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 234.85,
-            "low": 227.75,
-            "date": "2023-08-07",
-            "departure_date": "2023-08-08",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 173.65,
-            "low": 167.1,
-            "date": "2023-06-22",
-            "departure_date": "2023-06-23",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 82.8,
-            "low": 79.15,
-            "date": "2021-04-13",
-            "departure_date": "2021-04-15",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1076.3,
-            "low": 1030.0,
-            "date": "2025-07-25",
-            "departure_date": "2025-07-28",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1392.5,
-            "low": 1366.0,
-            "date": "2010-09-23",
-            "departure_date": "2010-09-24",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1577.0,
-            "low": 1538.0,
-            "date": "2010-05-03",
-            "departure_date": "2010-05-04",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 2225.0,
-            "low": 2170.25,
-            "date": "2008-02-27",
-            "departure_date": "2008-02-28",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 2529.0,
-            "low": 2450.0,
-            "date": "2008-01-09",
-            "departure_date": "2008-01-10",
-            "fresh": true,
-            "score": 8
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 567.8,
-            "low": 486.4,
-            "date": "2026-04-10",
-            "departure_date": "2026-04-17",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 341.95,
-            "low": 324.9,
-            "date": "2024-08-30",
-            "departure_date": "2024-09-06",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 173.7,
-            "low": 163.45,
-            "date": "2023-06-16",
-            "departure_date": "2023-06-23",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 121.7,
-            "low": 103.05,
-            "date": "2021-12-03",
-            "departure_date": "2021-12-10",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 63.9,
-            "low": 54.9,
-            "date": "2020-06-05",
-            "departure_date": "2020-06-12",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 1454.15,
-            "low": 1355.5,
-            "date": "2010-09-17",
-            "departure_date": "2010-09-24",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1598.8,
-            "low": 1512.2,
-            "date": "2010-04-30",
-            "departure_date": "2010-05-07",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 2699.8,
-            "low": 2555.0,
-            "date": "2008-01-04",
-            "departure_date": "2008-01-11",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 703.5,
-            "low": 625.95,
-            "date": "2026-01-16",
-            "departure_date": "2026-01-23",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 785.95,
-            "low": 698.2,
-            "date": "2025-02-07",
-            "departure_date": "2025-02-14",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 695.0,
-            "low": 604.0,
-            "date": "2026-06-30",
-            "departure_date": "2026-07-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 449.0,
-            "low": 340.05,
-            "date": "2024-09-30",
-            "departure_date": "2024-10-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 290.15,
-            "low": 239.05,
-            "date": "2023-10-31",
-            "departure_date": "2023-11-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 184.0,
-            "low": 162.0,
-            "date": "2023-05-31",
-            "departure_date": "2023-06-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 135.8,
-            "low": 91.85,
-            "date": "2021-11-30",
-            "departure_date": "2021-12-31",
-            "fresh": true,
-            "score": 9
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 463.7,
-            "low": 379.85,
-            "date": "2024-04-30",
-            "departure_date": "2024-05-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 552.7,
-            "low": 415.0,
-            "date": "2024-02-29",
-            "departure_date": "2024-03-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 111.35,
-            "low": 88.1,
-            "date": "2020-02-29",
-            "departure_date": "2020-03-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 808.9,
-            "low": 513.95,
-            "date": "2013-07-31",
-            "departure_date": "2013-08-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 1198.0,
-            "low": 1108.25,
-            "date": "2013-01-31",
-            "departure_date": "2013-02-28",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 449.0,
-            "low": 316.0,
-            "date": "2024-09-30",
-            "departure_date": "2024-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 219.9,
-            "low": 158.0,
-            "date": "2023-03-31",
-            "departure_date": "2023-06-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 114.8,
-            "low": 87.2,
-            "date": "2021-09-30",
-            "departure_date": "2021-12-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 780.0,
-            "low": 476.35,
-            "date": "2026-06-30",
-            "departure_date": "2026-09-30",
-            "fresh": true,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 937.65,
-            "low": 705.0,
-            "date": "2025-12-31",
-            "departure_date": "2026-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 780.0,
-            "low": 467.0,
-            "date": "2026-06-30",
-            "departure_date": "2026-09-03",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 255.9,
-            "low": 158.0,
-            "date": "2023-06-30",
-            "departure_date": "2023-12-29",
-            "fresh": true,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 552.7,
-            "low": 314.65,
-            "date": "2024-06-28",
-            "departure_date": "2024-12-31",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 851.25,
+      "reference_date": "2026-09-03",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 820.0,
+              "low": 775.0,
+              "date": "2026-09-02",
+              "departure_date": "2026-09-03",
+              "fresh": true,
+              "score": 9,
+              "distance_percent": 3.67
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 784.0,
+              "low": 768.55,
+              "date": "2026-09-01",
+              "departure_date": "2026-09-02",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 7.9
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 902.0,
+              "low": 843.1,
+              "date": "2025-06-23",
+              "departure_date": "2025-06-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 844.9,
+              "low": 831.0,
+              "date": "2011-06-06",
+              "departure_date": "2011-06-07",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0.75
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 834.7,
+              "low": 821.0,
+              "date": "2011-06-28",
+              "departure_date": "2011-06-29",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.94
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 862.85,
+              "low": 838.35,
+              "date": "2012-08-22",
+              "departure_date": "2012-08-23",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 874.75,
+              "low": 849.0,
+              "date": "2012-03-07",
+              "departure_date": "2012-03-09",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 917.6,
+              "low": 872.95,
+              "date": "2024-12-11",
+              "departure_date": "2024-12-12",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 2.55
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 944.95,
+              "low": 911.65,
+              "date": "2013-02-25",
+              "departure_date": "2013-02-26",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 7.1
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 1000.1,
+              "low": 955.0,
+              "date": "2010-11-23",
+              "departure_date": "2010-11-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.19
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 822.0,
+              "low": 739.1,
+              "date": "2026-08-28",
+              "departure_date": "2026-09-04",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 3.44
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 924.4,
+              "low": 832.65,
+              "date": "2012-09-21",
+              "departure_date": "2012-09-28",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 767.5,
+              "low": 716.75,
+              "date": "2025-11-21",
+              "departure_date": "2025-11-28",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 9.84
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 742.9,
+              "low": 686.0,
+              "date": "2026-07-24",
+              "departure_date": "2026-07-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.73
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 1261.0,
+              "low": 960.5,
+              "date": "2008-10-03",
+              "departure_date": "2008-10-10",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.83
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 734.0,
+              "low": 625.0,
+              "date": "2009-04-30",
+              "departure_date": "2009-05-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 13.77
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 1545.0,
+              "low": 960.5,
+              "date": "2008-09-30",
+              "departure_date": "2008-10-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 12.83
+            }
+          ]
+        },
+        "QUARTERLY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 780.0,
+              "low": 476.35,
+              "date": "2026-06-30",
+              "departure_date": "2026-09-30",
+              "fresh": true,
+              "score": 7,
+              "distance_percent": 8.37
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 937.65,
+              "low": 705.0,
+              "date": "2025-12-31",
+              "departure_date": "2026-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "HALF_YEAR": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 780.0,
+              "low": 467.0,
+              "date": "2026-06-30",
+              "departure_date": "2026-09-03",
+              "fresh": true,
+              "score": 8,
+              "distance_percent": 8.37
+            }
+          ],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     },
     "A2ZINFRA": {
-      "DAILY": {
-        "demand": [
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 9.0,
-            "low": 8.25,
-            "date": "2023-10-26",
-            "departure_date": "2023-10-27",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 6.85,
-            "low": 6.75,
-            "date": "2023-08-10",
-            "departure_date": "2023-08-11",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 6.6,
-            "low": 6.25,
-            "date": "2023-05-29",
-            "departure_date": "2023-05-30",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 3.8,
-            "low": 3.65,
-            "date": "2021-04-30",
-            "departure_date": "2021-05-03",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 13.26,
-            "low": 12.32,
-            "date": "2026-07-29",
-            "departure_date": "2026-07-30",
-            "fresh": true,
-            "score": 8
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 32.1,
-            "low": 30.35,
-            "date": "2018-03-16",
-            "departure_date": "2018-03-19",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 44.7,
-            "low": 43.0,
-            "date": "2018-01-15",
-            "departure_date": "2018-01-16",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 55.2,
-            "low": 53.05,
-            "date": "2013-01-17",
-            "departure_date": "2013-01-18",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 72.25,
-            "low": 70.6,
-            "date": "2012-10-15",
-            "departure_date": "2012-10-16",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 114.25,
-            "low": 108.1,
-            "date": "2012-07-06",
-            "departure_date": "2012-07-09",
-            "fresh": true,
-            "score": 9
-          }
-        ]
-      },
-      "WEEKLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 13.09,
-            "low": 12.0,
-            "date": "2026-07-24",
-            "departure_date": "2026-07-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 11.7,
-            "low": 11.1,
-            "date": "2023-12-29",
-            "departure_date": "2024-01-05",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 7.1,
-            "low": 6.7,
-            "date": "2023-08-11",
-            "departure_date": "2023-08-18",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 15.0,
-            "low": 13.73,
-            "date": "2025-12-19",
-            "departure_date": "2025-12-26",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 8.55,
-            "low": 7.05,
-            "date": "2023-08-18",
-            "departure_date": "2023-08-25",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 62.7,
-            "low": 56.1,
-            "date": "2013-01-11",
-            "departure_date": "2013-01-18",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 35.65,
-            "low": 34.2,
-            "date": "2018-03-02",
-            "departure_date": "2018-03-09",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 46.4,
-            "low": 42.6,
-            "date": "2018-01-12",
-            "departure_date": "2018-01-19",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 115.95,
-            "low": 108.0,
-            "date": "2012-07-06",
-            "departure_date": "2012-07-13",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 286.5,
-            "low": 255.7,
-            "date": "2011-07-29",
-            "departure_date": "2011-08-05",
-            "fresh": true,
-            "score": 8
-          }
-        ]
-      },
-      "MONTHLY": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 7.4,
-            "low": 6.65,
-            "date": "2023-07-31",
-            "departure_date": "2023-08-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 13.5,
-            "low": 9.3,
-            "date": "2019-01-31",
-            "departure_date": "2019-02-28",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 41.7,
-            "low": 33.65,
-            "date": "2016-09-30",
-            "departure_date": "2016-10-31",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBR",
-            "type": "DEMAND",
-            "high": 27.1,
-            "low": 22.35,
-            "date": "2016-05-31",
-            "departure_date": "2016-06-30",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 17.6,
-            "low": 12.0,
-            "date": "2015-06-30",
-            "departure_date": "2015-07-31",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 38.65,
-            "low": 31.25,
-            "date": "2018-02-28",
-            "departure_date": "2018-03-31",
-            "fresh": true,
-            "score": 9
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 14.8,
-            "low": 10.1,
-            "date": "2022-05-31",
-            "departure_date": "2022-06-30",
-            "fresh": false,
-            "score": 7
-          },
-          {
-            "pattern": "RBD",
-            "type": "SUPPLY",
-            "high": 23.8,
-            "low": 19.8,
-            "date": "2018-08-31",
-            "departure_date": "2018-09-30",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "QUARTERLY": {
-        "demand": [],
-        "supply": [
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 44.3,
-            "low": 35.4,
-            "date": "2017-12-31",
-            "departure_date": "2018-03-31",
-            "fresh": true,
-            "score": 8
-          },
-          {
-            "pattern": "DBD",
-            "type": "SUPPLY",
-            "high": 26.52,
-            "low": 15.75,
-            "date": "2024-12-31",
-            "departure_date": "2025-03-31",
-            "fresh": false,
-            "score": 7
-          }
-        ]
-      },
-      "HALF_YEAR": {
-        "demand": [
-          {
-            "pattern": "DBR",
-            "type": "DEMAND",
-            "high": 12.45,
-            "low": 6.65,
-            "date": "2023-12-29",
-            "departure_date": "2024-06-28",
-            "fresh": false,
-            "score": 7
-          }
-        ],
-        "supply": []
-      },
-      "YEARLY": {
-        "demand": [],
-        "supply": []
+      "reference_price": 16.4,
+      "reference_date": "2026-09-02",
+      "timeframes": {
+        "DAILY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 16.5,
+              "low": 14.76,
+              "date": "2025-12-23",
+              "departure_date": "2025-12-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 17.15,
+              "low": 15.55,
+              "date": "2019-03-14",
+              "departure_date": "2019-03-15",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 15.2,
+              "low": 13.5,
+              "date": "2014-05-21",
+              "departure_date": "2014-05-22",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 7.32
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 16.65,
+              "low": 15.4,
+              "date": "2025-03-25",
+              "departure_date": "2025-03-26",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 17.1,
+              "low": 16.4,
+              "date": "2015-04-23",
+              "departure_date": "2015-04-24",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0.0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 18.0,
+              "low": 16.9,
+              "date": "2019-03-12",
+              "departure_date": "2019-03-13",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 3.05
+            },
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 19.2,
+              "low": 17.5,
+              "date": "2019-04-18",
+              "departure_date": "2019-04-22",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 6.71
+            }
+          ]
+        },
+        "WEEKLY": {
+          "demand": [
+            {
+              "pattern": "RBR",
+              "type": "DEMAND",
+              "high": 23.8,
+              "low": 15.2,
+              "date": "2015-07-10",
+              "departure_date": "2015-07-17",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 15.95,
+              "low": 12.25,
+              "date": "2026-07-31",
+              "departure_date": "2026-08-07",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 2.74
+            }
+          ],
+          "supply": [
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 17.7,
+              "low": 15.76,
+              "date": "2026-08-07",
+              "departure_date": "2026-08-14",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            },
+            {
+              "pattern": "RBD",
+              "type": "SUPPLY",
+              "high": 20.1,
+              "low": 16.6,
+              "date": "2018-09-21",
+              "departure_date": "2018-09-28",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 1.22
+            }
+          ]
+        },
+        "MONTHLY": {
+          "demand": [
+            {
+              "pattern": "DBR",
+              "type": "DEMAND",
+              "high": 17.6,
+              "low": 12.0,
+              "date": "2015-06-30",
+              "departure_date": "2015-07-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ],
+          "supply": []
+        },
+        "QUARTERLY": {
+          "demand": [],
+          "supply": [
+            {
+              "pattern": "DBD",
+              "type": "SUPPLY",
+              "high": 26.52,
+              "low": 15.75,
+              "date": "2024-12-31",
+              "departure_date": "2025-03-31",
+              "fresh": false,
+              "score": 7,
+              "distance_percent": 0
+            }
+          ]
+        },
+        "HALF_YEAR": {
+          "demand": [],
+          "supply": []
+        },
+        "YEARLY": {
+          "demand": [],
+          "supply": []
+        }
       }
     }
   }
