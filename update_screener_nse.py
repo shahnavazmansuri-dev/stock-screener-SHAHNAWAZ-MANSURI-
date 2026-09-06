@@ -6,143 +6,176 @@ from pathlib import Path
 
 JSON_FILE = "stocks_data.json"
 
+
 def find_bhavcopy_zip():
-files = sorted(
-Path(".").glob("BhavCopy_NSE_CM_0_0_0_*_F_0000.csv.zip"),
-reverse=True
-)
+    files = sorted(
+        Path(".").glob("BhavCopy_NSE_CM_0_0_0_*_F_0000.csv.zip"),
+        reverse=True,
+    )
 
-if not files:  
-    raise RuntimeError(  
-        "Repo root me NSE Bhavcopy ZIP nahi mila. "  
-        "Expected: BhavCopy_NSE_CM_0_0_0_YYYYMMDD_F_0000.csv.zip"  
-    )  
+    if not files:
+        raise RuntimeError(
+            "Repo root me NSE Bhavcopy ZIP nahi mila. "
+            "Expected: BhavCopy_NSE_CM_0_0_0_YYYYMMDD_F_0000.csv.zip"
+        )
 
-print("Using Bhavcopy file:", files[0].name)  
-return files[0]
+    print("Using Bhavcopy file:", files[0].name)
+    return files[0]
+
 
 def read_bhavcopy(zip_path):
-with zipfile.ZipFile(zip_path, "r") as z:
-csv_names = [n for n in z.namelist() if n.lower().endswith(".csv")]
+    with zipfile.ZipFile(zip_path, "r") as z:
+        csv_names = [
+            name for name in z.namelist()
+            if name.lower().endswith(".csv")
+        ]
 
-if not csv_names:  
-        raise RuntimeError("Bhavcopy ZIP ke andar CSV nahi mila.")  
+        if not csv_names:
+            raise RuntimeError("Bhavcopy ZIP ke andar CSV nahi mila.")
 
-    with z.open(csv_names[0]) as f:  
-        text = io.TextIOWrapper(f, encoding="utf-8-sig")  
-        rows = list(csv.DictReader(text))  
+        with z.open(csv_names[0]) as f:
+            text = io.TextIOWrapper(f, encoding="utf-8-sig")
+            rows = list(csv.DictReader(text))
 
-# IMPORTANT:  
-# EQ-only filter nahi lagana hai.  
-# Kuch NSE stocks BE/other series me ho sakte hain.  
-return [  
-    row for row in rows  
-    if (row.get("TckrSymb") or "").strip()  
-]
+    # EQ-only filter nahi lagana hai.
+    # Kuch NSE stocks BE/other series me ho sakte hain.
+    return [
+        row for row in rows
+        if (row.get("TckrSymb") or "").strip()
+    ]
+
 
 def number(value):
-try:
-value = str(value).strip().replace(",", "")
-if value in ("", "-", "NA", "N/A"):
-return None
-return float(value)
-except Exception:
-return None
+    try:
+        value = str(value).strip().replace(",", "")
+
+        if value in ("", "-", "NA", "N/A"):
+            return None
+
+        return float(value)
+
+    except Exception:
+        return None
+
 
 def main():
-with open(JSON_FILE, "r", encoding="utf-8") as f:
-data = json.load(f)
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-stocks = data.get("stocks", []) if isinstance(data, dict) else data  
+    if isinstance(data, dict):
+        stocks = data.get("stocks", [])
+    else:
+        stocks = data
 
-print("==============================")  
-print(" NSE BHAVCOPY LOCAL UPDATE")  
-print("==============================")  
-print("Screener stocks:", len(stocks))  
+    print("==============================")
+    print(" NSE BHAVCOPY LOCAL UPDATE")
+    print("==============================")
+    print("Screener stocks:", len(stocks))
 
-zip_path = find_bhavcopy_zip()  
-rows = read_bhavcopy(zip_path)  
+    zip_path = find_bhavcopy_zip()
+    rows = read_bhavcopy(zip_path)
 
-bhav = {}  
+    bhav = {}
 
-for row in rows:  
-    symbol = (row.get("TckrSymb") or "").strip().upper()  
-    if not symbol:  
-        continue  
+    for row in rows:
+        symbol = (row.get("TckrSymb") or "").strip().upper()
 
-    last_price = number(row.get("LastPric"))  
-    close_price = number(row.get("ClsPric"))  
-    previous_close = number(row.get("PrvsClsgPric"))  
+        if not symbol:
+            continue
 
-    # Last traded price preferred; close as fallback.  
-    market_price = last_price if last_price is not None else close_price  
+        last_price = number(row.get("LastPric"))
+        close_price = number(row.get("ClsPric"))
+        previous_close = number(row.get("PrvsClsgPric"))
 
-    if market_price is None:  
-        continue  
+        # Last traded price preferred; close as fallback.
+        market_price = (
+            last_price
+            if last_price is not None
+            else close_price
+        )
 
-    pct = None  
-    if previous_close not in (None, 0):  
-        pct = round(  
-            (market_price - previous_close) / previous_close * 100,  
-            2  
-        )  
+        if market_price is None:
+            continue
 
-    bhav[symbol] = {  
-        "price": market_price,  
-        "close": close_price if close_price is not None else market_price,  
-        "percent_change": pct,  
-    }  
+        pct = None
 
-success = 0  
-missing = []  
+        if previous_close not in (None, 0):
+            pct = round(
+                (market_price - previous_close)
+                / previous_close
+                * 100,
+                2,
+            )
 
-for stock in stocks:  
-    symbol = (  
-        stock.get("symbol")  
-        or stock.get("s")  
-        or ""  
-    ).strip().upper()  
+        bhav[symbol] = {
+            "price": market_price,
+            "close": (
+                close_price
+                if close_price is not None
+                else market_price
+            ),
+            "percent_change": pct,
+        }
 
-    if not symbol:  
-        continue  
+    success = 0
+    missing = []
 
-    item = bhav.get(symbol)  
+    for stock in stocks:
+        symbol = (
+            stock.get("symbol")
+            or stock.get("s")
+            or ""
+        ).strip().upper()
 
-    if not item:  
-        missing.append(symbol)  
-        continue  
+        if not symbol:
+            continue
 
-    price = item["price"]  
+        item = bhav.get(symbol)
 
-    # Existing frontend uses these fields.  
-    stock["price"] = price  
-    stock["ltp"] = price  
-    stock["currentPrice"] = price  
-    stock["p"] = price  
-    stock["live_price"] = price  
-    stock["close"] = item["close"]  
+        if not item:
+            missing.append(symbol)
+            continue
 
-    if item["percent_change"] is not None:  
-        stock["percent_change"] = item["percent_change"]  
+        price = item["price"]
 
-    success += 1  
+        # Keep all price fields synchronized.
+        stock["price"] = price
+        stock["ltp"] = price
+        stock["currentPrice"] = price
+        stock["p"] = price
+        stock["live_price"] = price
+        stock["close"] = item["close"]
 
-with open(JSON_FILE, "w", encoding="utf-8") as f:  
-    json.dump(data, f, indent=2, ensure_ascii=False)  
+        if item["percent_change"] is not None:
+            stock["percent_change"] = item["percent_change"]
 
-print()  
-print("==============================")  
-print(" UPDATE COMPLETE")  
-print("==============================")  
-print("Bhavcopy file:", zip_path.name)  
-print("NSE rows:", len(rows))  
-print("Updated stocks:", success)  
-print("Missing stocks:", len(missing))  
+        success += 1
 
-if missing:  
-    print("First missing symbols:", ", ".join(missing[:30]))  
+    with open(JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            data,
+            f,
+            indent=2,
+            ensure_ascii=False,
+        )
 
-print("==============================")
+    print()
+    print("==============================")
+    print(" UPDATE COMPLETE")
+    print("==============================")
+    print("Bhavcopy file:", zip_path.name)
+    print("NSE rows:", len(rows))
+    print("Updated stocks:", success)
+    print("Missing stocks:", len(missing))
 
-if name == "main":
-main()
+    if missing:
+        print(
+            "First missing symbols:",
+            ", ".join(missing[:30]),
+        )
+
+    print("==============================")
+
+
+if __name__ == "__main__":
+    main()
