@@ -1,44 +1,30 @@
 import csv
-import io
 import json
-import zipfile
 from pathlib import Path
 
 JSON_FILE = "stocks_data.json"
 
 
-def find_bhavcopy_zip():
+def find_bhavcopy_csv():
     files = sorted(
-        Path(".").glob("BhavCopy_NSE_CM_0_0_0_*_F_0000.csv.zip"),
+        Path(".").glob("BhavCopy_NSE_CM_0_0_0_*_F_0000.csv"),
         reverse=True,
     )
 
     if not files:
         raise RuntimeError(
-            "Repo root me NSE Bhavcopy ZIP nahi mila. "
-            "Expected: BhavCopy_NSE_CM_0_0_0_YYYYMMDD_F_0000.csv.zip"
+            "Repo root me NSE Bhavcopy CSV nahi mila. "
+            "Expected: BhavCopy_NSE_CM_0_0_0_YYYYMMDD_F_0000.csv"
         )
 
     print("Using Bhavcopy file:", files[0].name)
     return files[0]
 
 
-def read_bhavcopy(zip_path):
-    with zipfile.ZipFile(zip_path, "r") as z:
-        csv_names = [
-            name for name in z.namelist()
-            if name.lower().endswith(".csv")
-        ]
+def read_bhavcopy(csv_path):
+    with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
 
-        if not csv_names:
-            raise RuntimeError("Bhavcopy ZIP ke andar CSV nahi mila.")
-
-        with z.open(csv_names[0]) as f:
-            text = io.TextIOWrapper(f, encoding="utf-8-sig")
-            rows = list(csv.DictReader(text))
-
-    # EQ-only filter nahi lagana hai.
-    # Kuch NSE stocks BE/other series me ho sakte hain.
     return [
         row for row in rows
         if (row.get("TckrSymb") or "").strip()
@@ -59,6 +45,7 @@ def number(value):
 
 
 def main():
+
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -68,16 +55,17 @@ def main():
         stocks = data
 
     print("==============================")
-    print(" NSE BHAVCOPY LOCAL UPDATE")
+    print(" NSE BHAVCOPY CSV UPDATE")
     print("==============================")
     print("Screener stocks:", len(stocks))
 
-    zip_path = find_bhavcopy_zip()
-    rows = read_bhavcopy(zip_path)
+    csv_path = find_bhavcopy_csv()
+    rows = read_bhavcopy(csv_path)
 
     bhav = {}
 
     for row in rows:
+
         symbol = (row.get("TckrSymb") or "").strip().upper()
 
         if not symbol:
@@ -87,7 +75,7 @@ def main():
         close_price = number(row.get("ClsPric"))
         previous_close = number(row.get("PrvsClsgPric"))
 
-        # Last traded price preferred; close as fallback.
+        # Prefer LastPric; if unavailable use ClsPric.
         market_price = (
             last_price
             if last_price is not None
@@ -102,8 +90,7 @@ def main():
         if previous_close not in (None, 0):
             pct = round(
                 (market_price - previous_close)
-                / previous_close
-                * 100,
+                / previous_close * 100,
                 2,
             )
 
@@ -121,6 +108,7 @@ def main():
     missing = []
 
     for stock in stocks:
+
         symbol = (
             stock.get("symbol")
             or stock.get("s")
@@ -138,7 +126,7 @@ def main():
 
         price = item["price"]
 
-        # Keep all price fields synchronized.
+        # Update all commonly used price fields.
         stock["price"] = price
         stock["ltp"] = price
         stock["currentPrice"] = price
@@ -163,7 +151,7 @@ def main():
     print("==============================")
     print(" UPDATE COMPLETE")
     print("==============================")
-    print("Bhavcopy file:", zip_path.name)
+    print("Bhavcopy file:", csv_path.name)
     print("NSE rows:", len(rows))
     print("Updated stocks:", success)
     print("Missing stocks:", len(missing))
@@ -171,7 +159,7 @@ def main():
     if missing:
         print(
             "First missing symbols:",
-            ", ".join(missing[:30]),
+            ", ".join(missing[:30])
         )
 
     print("==============================")
