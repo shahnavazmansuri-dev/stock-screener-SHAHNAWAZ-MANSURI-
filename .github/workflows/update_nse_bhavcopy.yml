@@ -1,0 +1,32 @@
+name: NSE Bhavcopy Stock Price Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 16:30 IST = 11:00 UTC, Monday-Friday
+    - cron: '0 11 * * 1-5'
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run NSE Bhavcopy update
+        run: python update_screener_nse.py
+
+      - name: Commit and push updated stocks_data.json
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add stocks_data.json
+          git commit -m "Update stock prices from NSE Bhavcopy [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push origin main
