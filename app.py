@@ -1,34 +1,54 @@
 import os
 import csv
 import io
+from datetime import date, timedelta
+
 import requests
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+
+# =========================================================
+# FLASK APP
+# =========================================================
+
 app = Flask(__name__)
 CORS(app)
 
+
 # =========================================================
-# Dhan Configuration
+# DHAN CONFIGURATION
 # =========================================================
 
 DHAN_API_BASE = "https://api.dhan.co/v2"
+
 DHAN_LTP_URL = f"{DHAN_API_BASE}/marketfeed/ltp"
 DHAN_PROFILE_URL = f"{DHAN_API_BASE}/profile"
-DHAN_MASTER_URL = "https://images.dhan.co/api-data/api-scrip-master.csv"
+
+DHAN_HISTORICAL_URL = f"{DHAN_API_BASE}/charts/historical"
+
+DHAN_MASTER_URL = (
+    "https://images.dhan.co/api-data/api-scrip-master.csv"
+)
 
 DHAN_CLIENT_ID = os.getenv("DHAN_CLIENT_ID")
 DHAN_ACCESS_TOKEN = os.getenv("DHAN_ACCESS_TOKEN")
+
+
+# =========================================================
+# GLOBAL INSTRUMENT CACHE
+# =========================================================
 
 instrument_map = None
 
 
 # =========================================================
-# Load Dhan Instrument Master
+# LOAD DHAN INSTRUMENT MASTER
 # =========================================================
 
 def load_instruments():
+
     global instrument_map
 
     if instrument_map is not None:
@@ -74,19 +94,24 @@ def load_instruments():
             or ""
         ).strip()
 
+        # Only NSE Equity
         if (
             exchange == "NSE"
             and segment == "E"
             and symbol
             and security_id
         ):
+
             clean_symbol = symbol
 
             if clean_symbol.endswith("-EQ"):
                 clean_symbol = clean_symbol[:-3]
 
             try:
-                mapping[clean_symbol] = int(security_id)
+                mapping[clean_symbol] = int(
+                    security_id
+                )
+
             except ValueError:
                 pass
 
@@ -96,36 +121,45 @@ def load_instruments():
 
 
 # =========================================================
-# Basic Routes
+# HOME
 # =========================================================
 
 @app.route("/")
 def home():
+
     return jsonify({
         "status": "OK",
-        "message": "Shahnawaz Mansuri Dhan Live Price Backend",
-        "version": "diagnostic-v1"
+        "message":
+            "Shahnawaz Mansuri Dhan Live Price + NSE Data Backend",
+        "version": "all-nse-v1"
     })
 
 
+# =========================================================
+# HEALTH
+# =========================================================
+
 @app.route("/health")
 def health():
+
     return jsonify({
         "status": "healthy"
     })
 
 
 # =========================================================
-# Dhan Profile Test
+# PROFILE TEST
 # =========================================================
 
 @app.route("/api/profile-test")
 def profile_test():
 
     if not DHAN_ACCESS_TOKEN:
+
         return jsonify({
             "status": "error",
-            "message": "DHAN_ACCESS_TOKEN is missing in Render Environment Variables"
+            "message":
+                "DHAN_ACCESS_TOKEN is missing in Render Environment Variables"
         }), 500
 
     headers = {
@@ -143,12 +177,13 @@ def profile_test():
 
         try:
             data = response.json()
+
         except Exception:
             data = {
-                "raw_response": response.text[:1000]
+                "raw_response":
+                    response.text[:1000]
             }
 
-        # Never expose token
         safe_data = {}
 
         if isinstance(data, dict):
@@ -164,47 +199,52 @@ def profile_test():
             ]
 
             for field in allowed_fields:
+
                 if field in data:
                     safe_data[field] = data[field]
 
         return jsonify({
             "status": "profile_test",
-            "http_status": response.status_code,
-            "profile": safe_data
+            "http_status":
+                response.status_code,
+            "profile":
+                safe_data
         })
 
     except Exception as e:
 
         return jsonify({
             "status": "error",
-            "message": "Profile request failed",
-            "details": str(e)
+            "message":
+                "Profile request failed",
+            "details":
+                str(e)
         }), 500
 
 
 # =========================================================
-# HARD-CODED TCS TEST
-# Dhan official example:
-# NSE_EQ -> 11536
+# TCS TEST
 # =========================================================
 
 @app.route("/api/tcs-test")
 def tcs_test():
 
     if not DHAN_CLIENT_ID:
+
         return jsonify({
             "status": "error",
-            "message": "DHAN_CLIENT_ID is missing in Render Environment Variables"
+            "message":
+                "DHAN_CLIENT_ID is missing"
         }), 500
 
     if not DHAN_ACCESS_TOKEN:
+
         return jsonify({
             "status": "error",
-            "message": "DHAN_ACCESS_TOKEN is missing in Render Environment Variables"
+            "message":
+                "DHAN_ACCESS_TOKEN is missing"
         }), 500
 
-    # IMPORTANT:
-    # Exactly as Dhan official documentation example
     dhan_body = {
         "NSE_EQ": [11536]
     }
@@ -227,30 +267,36 @@ def tcs_test():
 
         try:
             data = response.json()
+
         except Exception:
             data = {
-                "raw_response": response.text[:2000]
+                "raw_response":
+                    response.text[:2000]
             }
 
         return jsonify({
             "status": "tcs_test",
-            "request_sent": dhan_body,
-            "http_status": response.status_code,
-            "dhan_response": data
+            "request_sent":
+                dhan_body,
+            "http_status":
+                response.status_code,
+            "dhan_response":
+                data
         })
 
     except Exception as e:
 
         return jsonify({
             "status": "error",
-            "message": "TCS request failed",
-            "details": str(e)
+            "message":
+                "TCS request failed",
+            "details":
+                str(e)
         }), 500
 
 
 # =========================================================
-# FULL DIAGNOSTIC
-# Profile + TCS LTP
+# DIAGNOSTIC
 # =========================================================
 
 @app.route("/api/diagnostic")
@@ -263,13 +309,14 @@ def diagnostic():
     }
 
     # -----------------------------------------------------
-    # 1. PROFILE
+    # PROFILE
     # -----------------------------------------------------
 
     if not DHAN_ACCESS_TOKEN:
 
         result["profile"] = {
-            "error": "DHAN_ACCESS_TOKEN missing"
+            "error":
+                "DHAN_ACCESS_TOKEN missing"
         }
 
     else:
@@ -288,8 +335,12 @@ def diagnostic():
             )
 
             try:
-                profile_data = profile_response.json()
+                profile_data = (
+                    profile_response.json()
+                )
+
             except Exception:
+
                 profile_data = {
                     "raw_response":
                         profile_response.text[:1000]
@@ -297,7 +348,10 @@ def diagnostic():
 
             safe_profile = {}
 
-            if isinstance(profile_data, dict):
+            if isinstance(
+                profile_data,
+                dict
+            ):
 
                 for field in [
                     "dhanClientId",
@@ -310,7 +364,9 @@ def diagnostic():
                 ]:
 
                     if field in profile_data:
-                        safe_profile[field] = profile_data[field]
+                        safe_profile[field] = (
+                            profile_data[field]
+                        )
 
             result["profile"] = {
                 "http_status":
@@ -322,17 +378,19 @@ def diagnostic():
         except Exception as e:
 
             result["profile"] = {
-                "error": str(e)
+                "error":
+                    str(e)
             }
 
     # -----------------------------------------------------
-    # 2. TCS LTP
+    # TCS LTP
     # -----------------------------------------------------
 
     if not DHAN_CLIENT_ID:
 
         result["tcs_ltp"] = {
-            "error": "DHAN_CLIENT_ID missing"
+            "error":
+                "DHAN_CLIENT_ID missing"
         }
 
         return jsonify(result)
@@ -340,7 +398,8 @@ def diagnostic():
     if not DHAN_ACCESS_TOKEN:
 
         result["tcs_ltp"] = {
-            "error": "DHAN_ACCESS_TOKEN missing"
+            "error":
+                "DHAN_ACCESS_TOKEN missing"
         }
 
         return jsonify(result)
@@ -366,15 +425,20 @@ def diagnostic():
         )
 
         try:
-            tcs_data = tcs_response.json()
+            tcs_data = (
+                tcs_response.json()
+            )
+
         except Exception:
+
             tcs_data = {
                 "raw_response":
                     tcs_response.text[:2000]
             }
 
         result["tcs_ltp"] = {
-            "request": tcs_body,
+            "request":
+                tcs_body,
             "http_status":
                 tcs_response.status_code,
             "response":
@@ -384,27 +448,32 @@ def diagnostic():
     except Exception as e:
 
         result["tcs_ltp"] = {
-            "error": str(e)
+            "error":
+                str(e)
         }
 
     return jsonify(result)
 
 
 # =========================================================
-# General LTP API
+# GENERAL LTP API
 # =========================================================
 
 @app.route("/api/ltp")
 def get_ltp():
 
     if not DHAN_CLIENT_ID:
+
         return jsonify({
-            "error": "DHAN_CLIENT_ID is not configured"
+            "error":
+                "DHAN_CLIENT_ID is not configured"
         }), 500
 
     if not DHAN_ACCESS_TOKEN:
+
         return jsonify({
-            "error": "DHAN_ACCESS_TOKEN is not configured"
+            "error":
+                "DHAN_ACCESS_TOKEN is not configured"
         }), 500
 
     symbols_text = request.args.get(
@@ -415,7 +484,8 @@ def get_ltp():
     if not symbols_text:
 
         return jsonify({
-            "error": "Please provide symbols",
+            "error":
+                "Please provide symbols",
             "example":
                 "/api/ltp?symbols=RELIANCE,TCS,INFY"
         }), 400
@@ -438,7 +508,9 @@ def get_ltp():
             clean_symbol = symbol
 
             if clean_symbol.endswith("-EQ"):
-                clean_symbol = clean_symbol[:-3]
+                clean_symbol = (
+                    clean_symbol[:-3]
+                )
 
             security_id = instruments.get(
                 clean_symbol
@@ -446,9 +518,9 @@ def get_ltp():
 
             if security_id is not None:
 
-                security_ids[clean_symbol] = int(
-                    security_id
-                )
+                security_ids[
+                    clean_symbol
+                ] = int(security_id)
 
             else:
 
@@ -459,108 +531,22 @@ def get_ltp():
         if not security_ids:
 
             return jsonify({
-                "error": "No valid NSE symbols found",
-                "not_found": not_found
+                "error":
+                    "No valid NSE symbols found",
+                "not_found":
+                    not_found
             }), 404
 
         dhan_body = {
             "NSE_EQ":
-                list(security_ids.values())
+                list(
+                    security_ids.values()
+                )
         }
 
         headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "access-token": DHAN_ACCESS_TOKEN,
-            "client-id": DHAN_CLIENT_ID
-        }
-
-        response = requests.post(
-            DHAN_LTP_URL,
-            headers=headers,
-            json=dhan_body,
-            timeout=15
-        )
-
-        try:
-            dhan_data = response.json()
-        except Exception:
-            dhan_data = {
-                "raw_response":
-                    response.text[:2000]
-            }
-
-        if response.status_code != 200:
-
-            return jsonify({
-                "error": "Dhan API error",
-                "status_code":
-                    response.status_code,
-                "request_sent":
-                    dhan_body,
-                "details":
-                    dhan_data
-            }), response.status_code
-
-        result = {}
-
-        nse_data = (
-            dhan_data
-            .get("data", {})
-            .get("NSE_EQ", {})
-        )
-
-        reverse_map = {
-            str(security_id): symbol
-            for symbol, security_id
-            in security_ids.items()
-        }
-
-        for security_id, data in nse_data.items():
-
-            symbol = reverse_map.get(
-                str(security_id)
-            )
-
-            if symbol:
-
-                result[symbol] = {
-                    "symbol": symbol,
-                    "security_id":
-                        str(security_id),
-                    "ltp":
-                        data.get("last_price")
-                }
-
-        return jsonify({
-            "status": "success",
-            "count": len(result),
-            "prices": result,
-            "not_found": not_found
-        })
-
-    except Exception as e:
-
-        return jsonify({
-            "error": "Backend error",
-            "details": str(e)
-        }), 500
-
-
-# =========================================================
-# Start Server
-# =========================================================
-
-if __name__ == "__main__":
-
-    port = int(
-        os.environ.get(
-            "PORT",
-            10000
-        )
-    )
-
-    app.run(
-        host="0.0.0.0",
-        port=port
-    )
+            "Accept":
+                "application/json",
+            "Content-Type":
+                "application/json",
+           
