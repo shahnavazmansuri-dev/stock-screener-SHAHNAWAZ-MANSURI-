@@ -343,7 +343,8 @@ def get_access_token(force_refresh=False):
 # DHAN LTP
 # ============================================================
 
-def dhan_ltp_request(security_ids):
+def _dhan_market_request(url, security_ids, label):
+    """Safe shared request helper for Dhan market-feed endpoints."""
     global _last_quote_time
 
     if not security_ids:
@@ -355,35 +356,22 @@ def dhan_ltp_request(security_ids):
             time.sleep(1.1 - elapsed)
 
         token = get_access_token()
-
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "access-token": token,
             "client-id": DHAN_CLIENT_ID,
         }
-
         body = {"NSE_EQ": [int(x) for x in security_ids]}
 
-        response = requests.post(
-            DHAN_LTP_URL,
-            headers=headers,
-            json=body,
-            timeout=20,
-        )
+        response = requests.post(url, headers=headers, json=body, timeout=20)
         _last_quote_time = time.time()
 
         if response.status_code in (401, 403):
-            print("Dhan token rejected. Refreshing...")
+            print("Dhan token rejected on", label, "- refreshing automatically...")
             token = get_access_token(force_refresh=True)
             headers["access-token"] = token
-
-            response = requests.post(
-                DHAN_LTP_URL,
-                headers=headers,
-                json=body,
-                timeout=20,
-            )
+            response = requests.post(url, headers=headers, json=body, timeout=20)
             _last_quote_time = time.time()
 
         if response.status_code >= 400:
@@ -392,13 +380,25 @@ def dhan_ltp_request(security_ids):
             except ValueError:
                 error_data = response.text[:1000]
             raise RuntimeError(
-                "Dhan LTP error "
-                + str(response.status_code)
-                + ": "
-                + str(error_data)
+                "Dhan " + label + " error " + str(response.status_code) + ": " + str(error_data)
             )
 
-        return response.json()
+        try:
+            return response.json()
+        except ValueError:
+            raise RuntimeError("Dhan " + label + " returned invalid JSON")
+
+
+def dhan_ltp_request(security_ids):
+    return _dhan_market_request(DHAN_LTP_URL, security_ids, "LTP")
+
+
+def dhan_ohlc_request(security_ids):
+    return _dhan_market_request(DHAN_OHLC_URL, security_ids, "OHLC")
+
+
+def dhan_quote_request(security_ids):
+    return _dhan_market_request(DHAN_QUOTE_URL, security_ids, "QUOTE")
 
 
 # ============================================================
@@ -899,10 +899,7 @@ def get_ltp():
     if not symbols_text:
         return jsonify({
             "status": "error",
-            "message": (
-                "Please provide symbols. Example: "
-                "/api/ltp?symbols=RELIANCE,TCS,INFY"
-            ),
+            "message": "Please provide symbols. Example: /api/ltp?symbols=RELIANCE,TCS,INFY",
         }), 400
 
     requested_symbols = []
@@ -912,17 +909,13 @@ def get_ltp():
             requested_symbols.append(symbol)
 
     if not requested_symbols:
-        return jsonify({
-            "status": "error",
-            "message": "No valid symbols supplied",
-        }), 400
+        return jsonify({"status": "error", "message": "No valid symbols supplied"}), 400
 
     if not instrument_map:
         load_instruments()
 
     security_ids = {}
     not_found = []
-
     for symbol in requested_symbols:
         security_id = instrument_map.get(symbol)
         if security_id is None:
@@ -939,35 +932,79 @@ def get_ltp():
 
     try:
         prices = {}
+        source_used = "Dhan Market Quote"
         symbols = list(security_ids.keys())
         batch_size = 1000
 
-        for start in range(0, len(symbols), batch_size):
-            batch_symbols = symbols[start:start + batch_size]
+        for start_idx in range(0, len(symbols), batch_size):
+            batch_symbols = symbols[start_idx:start_idx + batch_size]
             batch_ids = [security_ids[s] for s in batch_symbols]
+            reverse_map = {str(security_ids[s]): s for s in batch_symbols}
+
+            # Primary: real-time Market Quote LTP.
             data = dhan_ltp_request(batch_ids)
-
-            market_data = data.get("data", {})
-            nse_data = market_data.get("NSE_EQ", {})
-
-            reverse_map = {
-                str(security_ids[s]): s for s in batch_symbols
-            }
+            market_data = data.get("data", {}) if isinstance(data, dict) else {}
+            nse_data = market_data.get("NSE_EQ", {}) if isinstance(market_data, dict) else {}
+            if not isinstance(nse_data, dict):
+                nse_data = {}
 
             for security_id, quote in nse_data.items():
                 symbol = reverse_map.get(str(security_id))
                 if not symbol or not isinstance(quote, dict):
                     continue
-
                 last_price = safe_float(quote.get("last_price"))
-                if last_price is None or last_price <= 0:
-                    continue
+                if last_price is not None and last_price > 0:
+                    prices[symbol] = {
+                        "symbol": symbol,
+                        "security_id": int(security_id),
+                        "ltp": last_price,
+                    }
 
-                prices[symbol] = {
-                    "symbol": symbol,
-                    "security_id": int(security_id),
-                    "ltp": last_price,
-                }
+            # Safe fallback: Dhan OHLC also returns last_price.
+            missing_symbols = [s for s in batch_symbols if s not in prices]
+            if missing_symbols:
+                missing_ids = [security_ids[s] for s in missing_symbols]
+                ohlc = dhan_ohlc_request(missing_ids)
+                ohlc_data = ohlc.get("data", {}) if isinstance(ohlc, dict) else {}
+                ohlc_nse = ohlc_data.get("NSE_EQ", {}) if isinstance(ohlc_data, dict) else {}
+                if not isinstance(ohlc_nse, dict):
+                    ohlc_nse = {}
+
+                for security_id, quote in ohlc_nse.items():
+                    symbol = reverse_map.get(str(security_id))
+                    if not symbol or not isinstance(quote, dict):
+                        continue
+                    last_price = safe_float(quote.get("last_price"))
+                    if last_price is not None and last_price > 0:
+                        prices[symbol] = {
+                            "symbol": symbol,
+                            "security_id": int(security_id),
+                            "ltp": last_price,
+                        }
+                        source_used = "Dhan OHLC fallback"
+
+            # Final fallback: full Quote endpoint also contains last_price.
+            missing_symbols = [s for s in batch_symbols if s not in prices]
+            if missing_symbols:
+                missing_ids = [security_ids[s] for s in missing_symbols]
+                quote_data = dhan_quote_request(missing_ids)
+                quote_root = quote_data.get("data", {}) if isinstance(quote_data, dict) else {}
+                quote_nse = quote_root.get("NSE_EQ", {}) if isinstance(quote_root, dict) else {}
+                if not isinstance(quote_nse, dict):
+                    quote_nse = {}
+
+                for security_id, quote in quote_nse.items():
+                    symbol = reverse_map.get(str(security_id))
+                    if not symbol or not isinstance(quote, dict):
+                        continue
+                    last_price = safe_float(quote.get("last_price"))
+                    if last_price is not None and last_price > 0:
+                        prices[symbol] = {
+                            "symbol": symbol,
+                            "security_id": int(security_id),
+                            "ltp": last_price,
+                        }
+                        source_used = "Dhan Quote fallback"
 
         return jsonify({
             "status": "success",
@@ -975,7 +1012,7 @@ def get_ltp():
             "not_found": not_found,
             "requested": len(requested_symbols),
             "returned": len(prices),
-            "source": "Dhan Market Quote",
+            "source": source_used,
         })
 
     except Exception as e:
@@ -988,16 +1025,7 @@ def get_ltp():
 
 @app.route("/api/technical-scan")
 def technical_scan():
-    """
-    Final paginated technical scanner.
-
-    Small batches are used so Render does not timeout while
-    Dhan historical data is being requested.
-
-    Examples:
-      /api/technical-scan?symbols=TCS,INFY,RELIANCE
-      /api/technical-scan?symbols=TCS,INFY,RELIANCE&offset=0&limit=40
-    """
+    """ Final paginated technical scanner. Small batches are used so Render does not timeout while Dhan historical data is being requested. Examples: /api/technical-scan?symbols=TCS,INFY,RELIANCE /api/technical-scan?symbols=TCS,INFY,RELIANCE&offset=0&limit=40 """
     symbols_text = request.args.get("symbols", "").strip()
 
     try:
