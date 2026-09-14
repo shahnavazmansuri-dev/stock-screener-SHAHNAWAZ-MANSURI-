@@ -1174,6 +1174,30 @@ def tcs_test():
         }), 500
 
 
+@app.route("/api/tcs-hard-test")
+def tcs_hard_test():
+    """Safe diagnostic: test TCS directly with known NSE security ID 11536.
+    No credentials or tokens are returned.
+    """
+    security_id = 11536
+    result = {
+        "status": "success",
+        "symbol": "TCS",
+        "security_id": security_id,
+        "mapped_security_id": instrument_map.get("TCS"),
+        "tests": {}
+    }
+
+    for label, fn in (("LTP", dhan_ltp_request), ("OHLC", dhan_ohlc_request), ("QUOTE", dhan_quote_request)):
+        try:
+            raw = fn([security_id])
+            result["tests"][label] = raw
+        except Exception as e:
+            result["tests"][label] = {"error": str(e)}
+
+    return jsonify(result)
+
+
 # ============================================================
 # START SERVER
 # ============================================================
