@@ -4,18 +4,18 @@ import io
 import time
 import math
 import threading
-import asyncio
 import struct
 import json
+from urllib.parse import quote as urlquote
 from datetime import datetime, timedelta, timezone
 
 import requests
 import pyotp
 
 try:
-    import websockets
+    import websocket
 except ImportError:
-    websockets = None
+    websocket = None
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -89,11 +89,6 @@ _ws_connected = False
 _ws_last_error = ""
 _ws_last_packet_time = 0.0
 _ws_started_at = None
-# The live socket and its asyncio loop are kept globally so an HTTP request
-# can subscribe a new instrument immediately, exactly like DhanHQ-py's
-# official subscribe_symbols() flow.
-_ws_socket = None
-_ws_loop = None
 
 
 # ============================================================
@@ -342,28 +337,22 @@ def generate_access_token():
 
 
 def get_access_token(force_refresh=False):
+    """Return the manually supplied 24-hour Dhan token.
+
+    Manual-token mode is intentionally preferred so the backend never tries
+    the TOTP endpoint unless this function is explicitly changed later.
+    The token is supplied through Render environment variables and is never
+    printed or returned by any diagnostic endpoint.
+    """
     global _token, _token_expiry
 
     with _token_lock:
-        token_valid = (
-            _token
-            and _token_expiry
-            and utc_now() < _token_expiry - timedelta(minutes=5)
-        )
-
-        if token_valid and not force_refresh:
-            return _token
-
-        if DHAN_CLIENT_ID and DHAN_PIN and DHAN_TOTP_SECRET:
-            _token, _token_expiry = generate_access_token()
-            return _token
-
         if DHAN_ACCESS_TOKEN:
             return DHAN_ACCESS_TOKEN
 
         raise RuntimeError(
             "Dhan authentication is not configured. "
-            "Set DHAN_CLIENT_ID, DHAN_PIN and DHAN_TOTP_SECRET in Render."
+            "Set DHAN_CLIENT_ID and DHAN_ACCESS_TOKEN in Render."
         )
 
 
@@ -434,9 +423,9 @@ def dhan_quote_request(security_ids):
 # ============================================================
 
 def _ws_subscription_message(security_ids):
-    ids = list(dict.fromkeys(int(x) for x in security_ids))
+    ids = list(security_ids)
     return {
-        "RequestCode": 15,  # Dhan Ticker subscription
+        "RequestCode": 15,
         "InstrumentCount": len(ids),
         "InstrumentList": [
             {"ExchangeSegment": "NSE_EQ", "SecurityId": str(x)}
@@ -445,65 +434,19 @@ def _ws_subscription_message(security_ids):
     }
 
 
-async def _ws_send_subscription_async(ws, security_ids):
+def _ws_send_subscriptions(ws, security_ids):
     ids = list(dict.fromkeys(int(x) for x in security_ids))
     for start in range(0, len(ids), 100):
         batch = ids[start:start + 100]
         if not batch:
             continue
-        message = _ws_subscription_message(batch)
-        await ws.send(json.dumps(message))
+        ws.send(json.dumps(_ws_subscription_message(batch)))
         with _ws_lock:
             _ws_subscribed_ids.update(batch)
-        print(
-            "[WS] subscription sent: RequestCode=15 count="
-            + str(len(batch))
-            + " ids="
-            + ",".join(str(x) for x in batch[:10]),
-            flush=True,
-        )
-
-
-def _ws_send_subscriptions(ws, security_ids):
-    """Compatibility helper for synchronous callers."""
-    ids = list(dict.fromkeys(int(x) for x in security_ids))
-    if not ids:
-        return
-    with _ws_lock:
-        loop = _ws_loop
-    if loop is not None and loop.is_running():
-        future = asyncio.run_coroutine_threadsafe(
-            _ws_send_subscription_async(ws, ids), loop
-        )
-        # Do not block the Flask request for long. The worker's event loop
-        # owns the actual WebSocket send.
-        try:
-            future.result(timeout=3)
-        except Exception as exc:
-            with _ws_lock:
-                global _ws_last_error
-                _ws_last_error = "subscription send: " + str(exc)
-            print("[WS] subscription send error:", repr(exc), flush=True)
-    else:
-        print("[WS] subscription skipped: feed loop not running", flush=True)
-
-
-def _ws_request_subscribe(security_ids):
-    """Immediately subscribe new IDs on the already-open Dhan socket."""
-    ids = list(dict.fromkeys(int(x) for x in security_ids if x is not None))
-    if not ids:
-        return False
-    with _ws_lock:
-        ws = _ws_socket
-        connected = _ws_connected
-    if not connected or ws is None:
-        return False
-    _ws_send_subscriptions(ws, ids)
-    return True
 
 
 def _ws_parse_packet(packet):
-    global _ws_last_packet_time, _ws_last_error
+    global _ws_last_packet_time
 
     if not isinstance(packet, (bytes, bytearray)) or len(packet) < 8:
         return
@@ -542,67 +485,60 @@ def _ws_parse_packet(packet):
             _ws_last_error = "packet parse: " + str(exc)
 
 
-async def _ws_async_worker():
-    """Dhan live feed worker using the official v2 subscription protocol."""
-    global _ws_connected, _ws_last_error, _ws_socket, _ws_loop
-    _ws_loop = asyncio.get_running_loop()
+def _ws_worker():
+    global _ws_connected, _ws_last_error, _ws_thread, _ws_started_at
+
+    if websocket is None:
+        with _ws_lock:
+            _ws_last_error = "websocket-client package is not installed"
+        return
+
+    _ws_started_at = time.time()
 
     while not _ws_stop.is_set():
         ws = None
         try:
-            print("[WS] getting Dhan access token", flush=True)
             token = get_access_token()
-            print("[WS] token ready; connecting to Dhan feed", flush=True)
-
             ws_url = (
-                "wss://api-feed.dhan.co?version=2&token="
-                + str(token)
+                "wss://api-feed.dhan.co/?version=2&token="
+                + urlquote(str(token), safe="")
                 + "&clientId="
-                + str(DHAN_CLIENT_ID)
+                + urlquote(DHAN_CLIENT_ID, safe="")
                 + "&authType=2"
             )
 
-            # This follows Dhan's current official Python client approach:
-            # asyncio + websockets + v2 URL + JSON subscription packets.
-            ws = await asyncio.wait_for(
-                websockets.connect(
-                    ws_url,
-                    ping_interval=20,
-                    ping_timeout=20,
-                    close_timeout=5,
-                    max_size=None,
-                ),
-                timeout=15,
+            ws = websocket.create_connection(
+                ws_url,
+                timeout=20,
+                enable_multithread=True,
             )
+            ws.settimeout(5)
 
-            print("[WS] Dhan WebSocket connected", flush=True)
             with _ws_lock:
                 _ws_connected = True
                 _ws_last_error = ""
                 _ws_subscribed_ids.clear()
-                _ws_socket = ws
                 desired = list(_ws_desired_ids)
 
-            # Official DhanHQ v2 behavior: subscribe immediately after the
-            # WebSocket opens, using RequestCode 15 and NSE_EQ SecurityId.
             if desired:
-                await _ws_send_subscription_async(ws, desired)
-                print("[WS] subscribed instruments:", len(_ws_subscribed_ids), flush=True)
+                _ws_send_subscriptions(ws, desired)
 
             while not _ws_stop.is_set():
                 with _ws_lock:
                     pending = list(_ws_desired_ids - _ws_subscribed_ids)
-
                 if pending:
-                    # Keep the official SDK behavior for instruments added
-                    # after connection: send the subscription immediately.
-                    await _ws_send_subscription_async(ws, pending)
+                    _ws_send_subscriptions(ws, pending)
 
                 try:
-                    packet = await asyncio.wait_for(ws.recv(), timeout=5)
-                except asyncio.TimeoutError:
-                    # Keep the socket alive and check for newly requested symbols.
-                    continue
+                    packet = ws.recv()
+                except Exception as recv_exc:
+                    # websocket-client raises a timeout exception for an idle
+                    # socket; simply continue so new subscriptions can be checked.
+                    if websocket is not None and isinstance(
+                        recv_exc, websocket.WebSocketTimeoutException
+                    ):
+                        continue
+                    raise
 
                 if packet is None:
                     raise RuntimeError("Dhan WebSocket closed the connection")
@@ -611,55 +547,33 @@ async def _ws_async_worker():
                     _ws_parse_packet(packet)
 
         except Exception as exc:
-            print("[WS] connection error:", repr(exc), flush=True)
             with _ws_lock:
                 _ws_connected = False
                 _ws_last_error = str(exc)
                 _ws_subscribed_ids.clear()
-                _ws_socket = None
 
             if not _ws_stop.is_set():
                 # Refresh only after a failed connection; normal operation
-                # keeps the existing token and does not hit token endpoint.
+                # keeps the existing token and does not hit the token endpoint.
                 try:
                     get_access_token(force_refresh=True)
                 except Exception as token_exc:
                     with _ws_lock:
                         _ws_last_error = str(token_exc)
-                await asyncio.sleep(3)
+                time.sleep(3)
         finally:
             with _ws_lock:
                 _ws_connected = False
-                _ws_socket = None
             try:
                 if ws is not None:
-                    await ws.close()
+                    ws.close()
             except Exception:
                 pass
 
 
-def _ws_worker():
-    global _ws_last_error, _ws_started_at
-
-    if websockets is None:
-        with _ws_lock:
-            _ws_last_error = "websockets package is not installed"
-        return
-
-    _ws_started_at = time.time()
-    print("[WS] asyncio worker started", flush=True)
-    try:
-        asyncio.run(_ws_async_worker())
-    except Exception as exc:
-        print("[WS] worker stopped:", repr(exc), flush=True)
-        with _ws_lock:
-            _ws_last_error = str(exc)
-            _ws_connected = False
-
-
 def start_live_feed():
     global _ws_thread
-    if websockets is None:
+    if websocket is None:
         return False
     with _ws_lock:
         if _ws_thread is not None and _ws_thread.is_alive():
@@ -675,23 +589,12 @@ def start_live_feed():
 
 
 def ensure_live_feed_symbols(security_ids):
-    ids = list(dict.fromkeys(int(x) for x in security_ids if x is not None))
+    ids = [int(x) for x in security_ids if x is not None]
     if not ids:
         return
-
     with _ws_lock:
-        new_ids = [x for x in ids if x not in _ws_desired_ids]
         _ws_desired_ids.update(ids)
-        connected = _ws_connected
-
     start_live_feed()
-
-    # Critical fix: if the socket is already connected, do NOT wait for the
-    # receive loop timeout. Subscribe immediately from the socket's own
-    # asyncio event loop, matching DhanHQ-py's subscribe_symbols behavior.
-    if connected and new_ids:
-        if _ws_request_subscribe(new_ids):
-            print("[WS] immediate subscription requested:", new_ids, flush=True)
 
 
 def get_live_feed_prices(security_ids, wait_seconds=4.0):
@@ -724,8 +627,7 @@ def get_live_feed_prices(security_ids, wait_seconds=4.0):
 def live_feed_status():
     with _ws_lock:
         return {
-            "websocket_package": websockets is not None,
-            "websocket_library": "websockets (asyncio)",
+            "websocket_package": websocket is not None,
             "connected": bool(_ws_connected),
             "desired_instruments": len(_ws_desired_ids),
             "subscribed_instruments": len(_ws_subscribed_ids),
@@ -735,12 +637,6 @@ def live_feed_status():
                 else round(max(0.0, time.time() - _ws_last_packet_time), 2)
             ),
             "last_error": _ws_last_error,
-            "thread_alive": bool(_ws_thread is not None and _ws_thread.is_alive()),
-            "socket_ready": bool(_ws_socket is not None),
-            "event_loop_running": bool(_ws_loop is not None and _ws_loop.is_running()),
-            "started_seconds_ago": (
-                None if not _ws_started_at else round(max(0.0, time.time() - _ws_started_at), 2)
-            ),
         }
 
 
@@ -1143,7 +1039,7 @@ def home():
     return jsonify({
         "status": "OK",
         "message": "Shahnawaz Mansuri Dhan Live + Technical Backend",
-        "version": "dhan-auto-token-v3",
+        "version": "dhan-manual-token-v1",
     })
 
 
@@ -1528,16 +1424,6 @@ def tcs_hard_test():
 # ============================================================
 # START LIVE FEED THREAD
 # ============================================================
-
-@app.before_request
-def _ensure_live_feed_worker():
-    # Gunicorn imports this module inside its worker process. Ensure the
-    # background feed is started from an actual request as well, so a worker
-    # restart/cold start cannot leave the feed thread absent.
-    try:
-        start_live_feed()
-    except Exception as exc:
-        print("[WS] ensure worker error:", repr(exc), flush=True)
 
 start_live_feed()
 
