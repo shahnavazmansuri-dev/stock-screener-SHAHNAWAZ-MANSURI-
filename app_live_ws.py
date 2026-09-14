@@ -89,6 +89,11 @@ _ws_connected = False
 _ws_last_error = ""
 _ws_last_packet_time = 0.0
 _ws_started_at = None
+# The live socket and its asyncio loop are kept globally so an HTTP request
+# can subscribe a new instrument immediately, exactly like DhanHQ-py's
+# official subscribe_symbols() flow.
+_ws_socket = None
+_ws_loop = None
 
 
 # ============================================================
@@ -429,9 +434,9 @@ def dhan_quote_request(security_ids):
 # ============================================================
 
 def _ws_subscription_message(security_ids):
-    ids = list(security_ids)
+    ids = list(dict.fromkeys(int(x) for x in security_ids))
     return {
-        "RequestCode": 15,
+        "RequestCode": 15,  # Dhan Ticker subscription
         "InstrumentCount": len(ids),
         "InstrumentList": [
             {"ExchangeSegment": "NSE_EQ", "SecurityId": str(x)}
@@ -440,15 +445,61 @@ def _ws_subscription_message(security_ids):
     }
 
 
-def _ws_send_subscriptions(ws, security_ids):
+async def _ws_send_subscription_async(ws, security_ids):
     ids = list(dict.fromkeys(int(x) for x in security_ids))
     for start in range(0, len(ids), 100):
         batch = ids[start:start + 100]
         if not batch:
             continue
-        ws.send(json.dumps(_ws_subscription_message(batch)))
+        message = _ws_subscription_message(batch)
+        await ws.send(json.dumps(message))
         with _ws_lock:
             _ws_subscribed_ids.update(batch)
+        print(
+            "[WS] subscription sent: RequestCode=15 count="
+            + str(len(batch))
+            + " ids="
+            + ",".join(str(x) for x in batch[:10]),
+            flush=True,
+        )
+
+
+def _ws_send_subscriptions(ws, security_ids):
+    """Compatibility helper for synchronous callers."""
+    ids = list(dict.fromkeys(int(x) for x in security_ids))
+    if not ids:
+        return
+    with _ws_lock:
+        loop = _ws_loop
+    if loop is not None and loop.is_running():
+        future = asyncio.run_coroutine_threadsafe(
+            _ws_send_subscription_async(ws, ids), loop
+        )
+        # Do not block the Flask request for long. The worker's event loop
+        # owns the actual WebSocket send.
+        try:
+            future.result(timeout=3)
+        except Exception as exc:
+            with _ws_lock:
+                global _ws_last_error
+                _ws_last_error = "subscription send: " + str(exc)
+            print("[WS] subscription send error:", repr(exc), flush=True)
+    else:
+        print("[WS] subscription skipped: feed loop not running", flush=True)
+
+
+def _ws_request_subscribe(security_ids):
+    """Immediately subscribe new IDs on the already-open Dhan socket."""
+    ids = list(dict.fromkeys(int(x) for x in security_ids if x is not None))
+    if not ids:
+        return False
+    with _ws_lock:
+        ws = _ws_socket
+        connected = _ws_connected
+    if not connected or ws is None:
+        return False
+    _ws_send_subscriptions(ws, ids)
+    return True
 
 
 def _ws_parse_packet(packet):
@@ -492,8 +543,9 @@ def _ws_parse_packet(packet):
 
 
 async def _ws_async_worker():
-    """Official-Dhan-style asyncio WebSocket worker with reconnects."""
-    global _ws_connected, _ws_last_error
+    """Dhan live feed worker using the official v2 subscription protocol."""
+    global _ws_connected, _ws_last_error, _ws_socket, _ws_loop
+    _ws_loop = asyncio.get_running_loop()
 
     while not _ws_stop.is_set():
         ws = None
@@ -528,30 +580,23 @@ async def _ws_async_worker():
                 _ws_connected = True
                 _ws_last_error = ""
                 _ws_subscribed_ids.clear()
+                _ws_socket = ws
                 desired = list(_ws_desired_ids)
 
+            # Official DhanHQ v2 behavior: subscribe immediately after the
+            # WebSocket opens, using RequestCode 15 and NSE_EQ SecurityId.
             if desired:
-                for start in range(0, len(desired), 100):
-                    batch = [int(x) for x in desired[start:start + 100]]
-                    if not batch:
-                        continue
-                    await ws.send(json.dumps(_ws_subscription_message(batch)))
-                    with _ws_lock:
-                        _ws_subscribed_ids.update(batch)
-                print("[WS] subscribed instruments:", len(desired), flush=True)
+                await _ws_send_subscription_async(ws, desired)
+                print("[WS] subscribed instruments:", len(_ws_subscribed_ids), flush=True)
 
             while not _ws_stop.is_set():
                 with _ws_lock:
                     pending = list(_ws_desired_ids - _ws_subscribed_ids)
 
                 if pending:
-                    for start in range(0, len(pending), 100):
-                        batch = [int(x) for x in pending[start:start + 100]]
-                        if not batch:
-                            continue
-                        await ws.send(json.dumps(_ws_subscription_message(batch)))
-                        with _ws_lock:
-                            _ws_subscribed_ids.update(batch)
+                    # Keep the official SDK behavior for instruments added
+                    # after connection: send the subscription immediately.
+                    await _ws_send_subscription_async(ws, pending)
 
                 try:
                     packet = await asyncio.wait_for(ws.recv(), timeout=5)
@@ -571,6 +616,7 @@ async def _ws_async_worker():
                 _ws_connected = False
                 _ws_last_error = str(exc)
                 _ws_subscribed_ids.clear()
+                _ws_socket = None
 
             if not _ws_stop.is_set():
                 # Refresh only after a failed connection; normal operation
@@ -584,6 +630,7 @@ async def _ws_async_worker():
         finally:
             with _ws_lock:
                 _ws_connected = False
+                _ws_socket = None
             try:
                 if ws is not None:
                     await ws.close()
@@ -628,12 +675,23 @@ def start_live_feed():
 
 
 def ensure_live_feed_symbols(security_ids):
-    ids = [int(x) for x in security_ids if x is not None]
+    ids = list(dict.fromkeys(int(x) for x in security_ids if x is not None))
     if not ids:
         return
+
     with _ws_lock:
+        new_ids = [x for x in ids if x not in _ws_desired_ids]
         _ws_desired_ids.update(ids)
+        connected = _ws_connected
+
     start_live_feed()
+
+    # Critical fix: if the socket is already connected, do NOT wait for the
+    # receive loop timeout. Subscribe immediately from the socket's own
+    # asyncio event loop, matching DhanHQ-py's subscribe_symbols behavior.
+    if connected and new_ids:
+        if _ws_request_subscribe(new_ids):
+            print("[WS] immediate subscription requested:", new_ids, flush=True)
 
 
 def get_live_feed_prices(security_ids, wait_seconds=4.0):
@@ -678,6 +736,8 @@ def live_feed_status():
             ),
             "last_error": _ws_last_error,
             "thread_alive": bool(_ws_thread is not None and _ws_thread.is_alive()),
+            "socket_ready": bool(_ws_socket is not None),
+            "event_loop_running": bool(_ws_loop is not None and _ws_loop.is_running()),
             "started_seconds_ago": (
                 None if not _ws_started_at else round(max(0.0, time.time() - _ws_started_at), 2)
             ),
