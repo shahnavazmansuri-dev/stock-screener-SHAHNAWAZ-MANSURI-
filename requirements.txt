@@ -3,4 +3,4 @@ flask-cors
 requests
 pyotp
 gunicorn
-websocket-client
+dhanhq==2.2.0
