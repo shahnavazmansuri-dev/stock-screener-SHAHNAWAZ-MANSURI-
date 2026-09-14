@@ -13,9 +13,10 @@ import requests
 import pyotp
 
 try:
-    import websocket
+    from dhanhq import DhanContext, MarketFeed
 except ImportError:
-    websocket = None
+    DhanContext = None
+    MarketFeed = None
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -337,22 +338,28 @@ def generate_access_token():
 
 
 def get_access_token(force_refresh=False):
-    """Return the manually supplied 24-hour Dhan token.
-
-    Manual-token mode is intentionally preferred so the backend never tries
-    the TOTP endpoint unless this function is explicitly changed later.
-    The token is supplied through Render environment variables and is never
-    printed or returned by any diagnostic endpoint.
-    """
     global _token, _token_expiry
 
     with _token_lock:
+        token_valid = (
+            _token
+            and _token_expiry
+            and utc_now() < _token_expiry - timedelta(minutes=5)
+        )
+
+        if token_valid and not force_refresh:
+            return _token
+
+        if DHAN_CLIENT_ID and DHAN_PIN and DHAN_TOTP_SECRET:
+            _token, _token_expiry = generate_access_token()
+            return _token
+
         if DHAN_ACCESS_TOKEN:
             return DHAN_ACCESS_TOKEN
 
         raise RuntimeError(
             "Dhan authentication is not configured. "
-            "Set DHAN_CLIENT_ID and DHAN_ACCESS_TOKEN in Render."
+            "Set DHAN_CLIENT_ID, DHAN_PIN and DHAN_TOTP_SECRET in Render."
         )
 
 
@@ -419,182 +426,158 @@ def dhan_quote_request(security_ids):
 
 
 # ============================================================
-# DHAN LIVE MARKET FEED WEBSOCKET
+# DHAN LIVE MARKET FEED - OFFICIAL DHANHQ PYTHON CLIENT
 # ============================================================
 
-def _ws_subscription_message(security_ids):
-    ids = list(security_ids)
-    return {
-        "RequestCode": 15,
-        "InstrumentCount": len(ids),
-        "InstrumentList": [
-            {"ExchangeSegment": "NSE_EQ", "SecurityId": str(x)}
-            for x in ids
-        ],
-    }
+_official_feed = None
 
 
-def _ws_send_subscriptions(ws, security_ids):
-    ids = list(dict.fromkeys(int(x) for x in security_ids))
-    for start in range(0, len(ids), 100):
-        batch = ids[start:start + 100]
-        if not batch:
-            continue
-        ws.send(json.dumps(_ws_subscription_message(batch)))
-        with _ws_lock:
-            _ws_subscribed_ids.update(batch)
+def _official_on_connect(feed):
+    global _ws_connected, _ws_last_error
+    with _ws_lock:
+        _ws_connected = True
+        _ws_last_error = ""
+        # MarketFeed subscribes the instruments supplied at construction.
+        _ws_subscribed_ids.update(_ws_desired_ids)
+    print("[WS] DhanHQ MarketFeed connected")
 
 
-def _ws_parse_packet(packet):
+def _official_on_message(feed, data):
     global _ws_last_packet_time
-
-    if not isinstance(packet, (bytes, bytearray)) or len(packet) < 8:
+    if not isinstance(data, dict):
         return
+
+    security_id = data.get("security_id")
+    ltp = data.get("LTP")
 
     try:
-        response_code = packet[0]
-        security_id = int.from_bytes(packet[4:8], byteorder="little", signed=False)
-
-        # Ticker packet: header (8 bytes) + LTP float32 + LTT int32.
-        if response_code == 2 and len(packet) >= 17:
-            ltp = struct.unpack_from("<f", packet, 8)[0]
-            if math.isfinite(ltp) and ltp > 0:
-                with _ws_lock:
-                    _ws_prices[security_id] = {
-                        "security_id": security_id,
-                        "ltp": float(ltp),
-                        "source": "Dhan Live Market Feed WebSocket",
-                        "updated_at": time.time(),
-                    }
-                    _ws_last_packet_time = time.time()
-
-        # Quote packet also has LTP at bytes 9-12 (offset 8).
-        elif response_code == 4 and len(packet) >= 51:
-            ltp = struct.unpack_from("<f", packet, 8)[0]
-            if math.isfinite(ltp) and ltp > 0:
-                with _ws_lock:
-                    _ws_prices[security_id] = {
-                        "security_id": security_id,
-                        "ltp": float(ltp),
-                        "source": "Dhan Live Market Feed WebSocket",
-                        "updated_at": time.time(),
-                    }
-                    _ws_last_packet_time = time.time()
-    except Exception as exc:
-        with _ws_lock:
-            _ws_last_error = "packet parse: " + str(exc)
-
-
-def _ws_worker():
-    global _ws_connected, _ws_last_error, _ws_thread, _ws_started_at
-
-    if websocket is None:
-        with _ws_lock:
-            _ws_last_error = "websocket-client package is not installed"
+        security_id = int(security_id)
+        ltp = float(ltp)
+    except (TypeError, ValueError):
         return
 
-    _ws_started_at = time.time()
+    if not math.isfinite(ltp) or ltp <= 0:
+        return
 
-    while not _ws_stop.is_set():
-        ws = None
-        try:
-            token = get_access_token()
-            ws_url = (
-                "wss://api-feed.dhan.co/?version=2&token="
-                + urlquote(str(token), safe="")
-                + "&clientId="
-                + urlquote(DHAN_CLIENT_ID, safe="")
-                + "&authType=2"
-            )
+    with _ws_lock:
+        _ws_prices[security_id] = {
+            "security_id": security_id,
+            "ltp": ltp,
+            "source": "DhanHQ Python MarketFeed",
+            "updated_at": time.time(),
+        }
+        _ws_last_packet_time = time.time()
 
-            ws = websocket.create_connection(
-                ws_url,
-                timeout=20,
-                enable_multithread=True,
-            )
-            ws.settimeout(5)
 
-            with _ws_lock:
-                _ws_connected = True
-                _ws_last_error = ""
-                _ws_subscribed_ids.clear()
-                desired = list(_ws_desired_ids)
+def _official_on_close(feed):
+    global _ws_connected
+    with _ws_lock:
+        _ws_connected = False
+        _ws_subscribed_ids.clear()
+    print("[WS] DhanHQ MarketFeed closed")
 
-            if desired:
-                _ws_send_subscriptions(ws, desired)
 
-            while not _ws_stop.is_set():
-                with _ws_lock:
-                    pending = list(_ws_desired_ids - _ws_subscribed_ids)
-                if pending:
-                    _ws_send_subscriptions(ws, pending)
+def _official_on_error(feed, error):
+    global _ws_connected, _ws_last_error
+    with _ws_lock:
+        _ws_connected = False
+        _ws_last_error = str(error)
+    print("[WS] DhanHQ MarketFeed error:", str(error))
 
-                try:
-                    packet = ws.recv()
-                except Exception as recv_exc:
-                    # websocket-client raises a timeout exception for an idle
-                    # socket; simply continue so new subscriptions can be checked.
-                    if websocket is not None and isinstance(
-                        recv_exc, websocket.WebSocketTimeoutException
-                    ):
-                        continue
-                    raise
 
-                if packet is None:
-                    raise RuntimeError("Dhan WebSocket closed the connection")
+def _build_official_feed(initial_ids):
+    if DhanContext is None or MarketFeed is None:
+        raise RuntimeError("dhanhq package is not installed")
 
-                if isinstance(packet, (bytes, bytearray)):
-                    _ws_parse_packet(packet)
+    if not DHAN_CLIENT_ID or not DHAN_ACCESS_TOKEN:
+        raise RuntimeError(
+            "Dhan authentication is not configured. "
+            "Set DHAN_CLIENT_ID and DHAN_ACCESS_TOKEN in Render."
+        )
 
-        except Exception as exc:
-            with _ws_lock:
-                _ws_connected = False
-                _ws_last_error = str(exc)
-                _ws_subscribed_ids.clear()
+    context = DhanContext(DHAN_CLIENT_ID, DHAN_ACCESS_TOKEN)
+    instruments = [
+        (MarketFeed.NSE, str(int(sid)), MarketFeed.Ticker)
+        for sid in sorted(set(initial_ids))
+    ]
 
-            if not _ws_stop.is_set():
-                # Refresh only after a failed connection; normal operation
-                # keeps the existing token and does not hit the token endpoint.
-                try:
-                    get_access_token(force_refresh=True)
-                except Exception as token_exc:
-                    with _ws_lock:
-                        _ws_last_error = str(token_exc)
-                time.sleep(3)
-        finally:
-            with _ws_lock:
-                _ws_connected = False
-            try:
-                if ws is not None:
-                    ws.close()
-            except Exception:
-                pass
+    return MarketFeed(
+        context,
+        instruments,
+        "v2",
+        on_connect=_official_on_connect,
+        on_message=_official_on_message,
+        on_close=_official_on_close,
+        on_error=_official_on_error,
+    )
 
 
 def start_live_feed():
-    global _ws_thread
-    if websocket is None:
+    global _ws_thread, _official_feed, _ws_started_at
+
+    if DhanContext is None or MarketFeed is None:
+        with _ws_lock:
+            _ws_last_error = "dhanhq package is not installed"
         return False
+
     with _ws_lock:
         if _ws_thread is not None and _ws_thread.is_alive():
             return True
-        _ws_stop.clear()
-        _ws_thread = threading.Thread(
-            target=_ws_worker,
-            name="dhan-live-feed",
-            daemon=True,
-        )
-        _ws_thread.start()
-    return True
+        initial_ids = list(_ws_desired_ids)
+
+    if not initial_ids:
+        return False
+
+    try:
+        _official_feed = _build_official_feed(initial_ids)
+        _ws_started_at = time.time()
+
+        # Official DhanHQ client manages the asyncio WebSocket and reconnect loop.
+        _ws_thread = _official_feed.start()
+
+        print("[WS] Official DhanHQ MarketFeed started")
+        return True
+
+    except Exception as exc:
+        with _ws_lock:
+            _ws_connected = False
+            _ws_last_error = str(exc)
+        print("[WS] Failed to start DhanHQ MarketFeed:", str(exc))
+        return False
 
 
 def ensure_live_feed_symbols(security_ids):
     ids = [int(x) for x in security_ids if x is not None]
     if not ids:
         return
+
+    new_ids = []
     with _ws_lock:
-        _ws_desired_ids.update(ids)
-    start_live_feed()
+        for sid in ids:
+            if sid not in _ws_desired_ids:
+                _ws_desired_ids.add(sid)
+                new_ids.append(sid)
+
+    if _official_feed is None:
+        start_live_feed()
+        return
+
+    with _ws_lock:
+        connected = bool(_ws_connected)
+
+    if connected and new_ids:
+        try:
+            symbols = [
+                (MarketFeed.NSE, str(sid), MarketFeed.Ticker)
+                for sid in new_ids
+            ]
+            _official_feed.subscribe_symbols(symbols)
+            with _ws_lock:
+                _ws_subscribed_ids.update(new_ids)
+        except Exception as exc:
+            with _ws_lock:
+                _ws_last_error = str(exc)
+            print("[WS] Dynamic subscription error:", str(exc))
 
 
 def get_live_feed_prices(security_ids, wait_seconds=4.0):
@@ -627,7 +610,8 @@ def get_live_feed_prices(security_ids, wait_seconds=4.0):
 def live_feed_status():
     with _ws_lock:
         return {
-            "websocket_package": websocket is not None,
+            "websocket_package": DhanContext is not None and MarketFeed is not None,
+            "library": "dhanhq",
             "connected": bool(_ws_connected),
             "desired_instruments": len(_ws_desired_ids),
             "subscribed_instruments": len(_ws_subscribed_ids),
@@ -641,396 +625,6 @@ def live_feed_status():
 
 
 # ============================================================
-# DHAN DAILY HISTORICAL DATA
-# ============================================================
-
-def dhan_historical_request(security_id, from_date, to_date):
-    global _last_historical_time
-
-    with _historical_lock:
-        elapsed = time.time() - _last_historical_time
-        # Stay below Dhan's current 5 requests/sec data limit.
-        if elapsed < 0.22:
-            time.sleep(0.22 - elapsed)
-
-        token = get_access_token()
-
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "access-token": token,
-        }
-
-        body = {
-            "securityId": str(security_id),
-            "exchangeSegment": "NSE_EQ",
-            "instrument": "EQUITY",
-            "expiryCode": 0,
-            "oi": False,
-            "fromDate": from_date,
-            "toDate": to_date,
-        }
-
-        response = requests.post(
-            DHAN_HISTORICAL_URL,
-            headers=headers,
-            json=body,
-            timeout=30,
-        )
-        _last_historical_time = time.time()
-
-        if response.status_code in (401, 403):
-            print("Dhan historical token rejected. Refreshing...")
-            token = get_access_token(force_refresh=True)
-            headers["access-token"] = token
-
-            response = requests.post(
-                DHAN_HISTORICAL_URL,
-                headers=headers,
-                json=body,
-                timeout=30,
-            )
-            _last_historical_time = time.time()
-
-        if response.status_code >= 400:
-            try:
-                error_data = response.json()
-            except ValueError:
-                error_data = response.text[:1000]
-            raise RuntimeError(
-                "Dhan historical error "
-                + str(response.status_code)
-                + ": "
-                + str(error_data)
-            )
-
-        return response.json()
-
-
-def get_daily_history(symbol, days=450):
-    symbol = clean_symbol(symbol)
-    security_id = instrument_map.get(symbol)
-
-    if security_id is None:
-        return None
-
-    cache_key = symbol
-    now = time.time()
-
-    with _historical_cache_lock:
-        cached = _historical_cache.get(cache_key)
-        if cached and now - cached["time"] < HIST_CACHE_SECONDS:
-            return cached["data"]
-
-    # 450 calendar days gives enough trading sessions for 200 EMA
-    # plus RSI/MACD/BB/CCI and weekly/monthly RSI.
-    end = datetime.now(timezone.utc).date()
-    start = end - timedelta(days=days)
-
-    data = dhan_historical_request(
-        security_id,
-        start.isoformat(),
-        end.isoformat(),
-    )
-
-    closes = data.get("close") or []
-    highs = data.get("high") or []
-    lows = data.get("low") or []
-    opens = data.get("open") or []
-    volumes = data.get("volume") or []
-    timestamps = data.get("timestamp") or []
-
-    n = min(
-        len(closes),
-        len(highs),
-        len(lows),
-        len(opens),
-        len(volumes),
-        len(timestamps),
-    )
-
-    history = {
-        "timestamp": timestamps[-n:] if n else [],
-        "open": opens[-n:] if n else [],
-        "high": highs[-n:] if n else [],
-        "low": lows[-n:] if n else [],
-        "close": closes[-n:] if n else [],
-        "volume": volumes[-n:] if n else [],
-    }
-
-    with _historical_cache_lock:
-        _historical_cache[cache_key] = {
-            "time": now,
-            "data": history,
-        }
-
-    return history
-
-
-# ============================================================
-# TECHNICAL SCAN
-# ============================================================
-
-def build_technical_row(symbol, history, live_price=None):
-    if not history:
-        return None
-
-    timestamps = history["timestamp"]
-    opens = [safe_float(x) for x in history["open"]]
-    highs = [safe_float(x) for x in history["high"]]
-    lows = [safe_float(x) for x in history["low"]]
-    closes = [safe_float(x) for x in history["close"]]
-    volumes = [safe_float(x) for x in history["volume"]]
-
-    valid = [
-        i for i in range(
-            min(len(timestamps), len(opens), len(highs), len(lows), len(closes), len(volumes))
-        )
-        if all(v is not None for v in (opens[i], highs[i], lows[i], closes[i], volumes[i]))
-    ]
-
-    if len(valid) < 210:
-        return None
-
-    timestamps = [timestamps[i] for i in valid]
-    opens = [opens[i] for i in valid]
-    highs = [highs[i] for i in valid]
-    lows = [lows[i] for i in valid]
-    closes = [closes[i] for i in valid]
-    volumes = [volumes[i] for i in valid]
-
-    # Historical values as-of latest completed daily candle.
-    # Then replace the latest close with Dhan live LTP so the
-    # current technical values react to the live market price.
-    base_close = closes[-1]
-    live = safe_float(live_price)
-    live_close = live if live and live > 0 else base_close
-    live_closes = list(closes)
-    live_closes[-1] = live_close
-
-    e9 = ema_last(live_closes, 9)
-    e20 = ema_last(live_closes, 20)
-    e50 = ema_last(live_closes, 50)
-    e100 = ema_last(live_closes, 100)
-    e200 = ema_last(live_closes, 200)
-
-    daily_rsi = rsi_last(live_closes, 14)
-
-    weekly_closes = aggregate_closes_by_week(timestamps, live_closes)
-    monthly_closes = aggregate_closes_by_month(timestamps, live_closes)
-    weekly_rsi = rsi_last(weekly_closes, 14)
-    monthly_rsi = rsi_last(monthly_closes, 14)
-
-    bb_upper, bb_middle, bb_lower = bb_last(live_closes, 20, 2.0)
-    band_width = (
-        ((bb_upper - bb_lower) / bb_middle) * 100.0
-        if bb_upper is not None and bb_lower is not None and bb_middle
-        else None
-    )
-
-    macd_line, macd_signal, macd_hist = macd_last(live_closes, 12, 26, 9)
-    cci = cci_last(highs, lows, live_closes, 20)
-
-    volume = volumes[-1]
-    avg20_volume = (
-        sum(volumes[-20:]) / 20.0
-        if len(volumes) >= 20
-        else None
-    )
-    volume_ratio = (
-        volume / avg20_volume
-        if avg20_volume and avg20_volume > 0
-        else None
-    )
-
-    # ATH uses historical highs. Include the live price in the
-    # current ATH check so a live new high is immediately visible.
-    historical_ath = max(highs) if highs else None
-    ath = max(historical_ath or 0, live_close)
-
-    distance_to_ath = (
-        ((ath - live_close) / ath) * 100.0
-        if ath
-        else None
-    )
-
-    # Recent resistance / breakout level.
-    lookback_highs = highs[-20:-1] if len(highs) > 20 else highs[:-1]
-    breakout_level = max(lookback_highs) if lookback_highs else None
-
-    breakout = (
-        live_close > breakout_level
-        if breakout_level is not None
-        else False
-    )
-
-    near_ath = (
-        distance_to_ath is not None
-        and distance_to_ath <= 3.0
-    )
-
-    ath_breakout = (
-        historical_ath is not None
-        and live_close > historical_ath
-    )
-
-    # Consolidation proxy:
-    # recent 20-day range is relatively tight versus the 60-day range.
-    recent20_high = max(highs[-20:]) if len(highs) >= 20 else None
-    recent20_low = min(lows[-20:]) if len(lows) >= 20 else None
-    recent60_high = max(highs[-60:]) if len(highs) >= 60 else None
-    recent60_low = min(lows[-60:]) if len(lows) >= 60 else None
-
-    consolidation_pct = None
-    if recent20_high and recent20_low and recent20_low > 0:
-        consolidation_pct = (recent20_high - recent20_low) / recent20_low * 100.0
-
-    range60_pct = None
-    if recent60_high and recent60_low and recent60_low > 0:
-        range60_pct = (recent60_high - recent60_low) / recent60_low * 100.0
-
-    consolidation = (
-        consolidation_pct is not None
-        and range60_pct is not None
-        and consolidation_pct <= 12.0
-        and consolidation_pct <= range60_pct * 0.55
-    )
-
-    consolidation_breakout = consolidation and breakout
-
-    # Bollinger squeeze / expansion
-    prior_widths = []
-    for end_idx in range(max(20, len(live_closes) - 25), len(live_closes) - 1):
-        w_u, w_m, w_l = bb_last(live_closes[:end_idx + 1], 20, 2.0)
-        if w_u is not None and w_l is not None and w_m:
-            prior_widths.append((w_u - w_l) / w_m * 100.0)
-
-    avg_prior_width = (
-        sum(prior_widths) / len(prior_widths)
-        if prior_widths
-        else None
-    )
-
-    squeeze = (
-        band_width is not None
-        and avg_prior_width is not None
-        and band_width <= avg_prior_width * 0.75
-    )
-
-    expansion = (
-        band_width is not None
-        and avg_prior_width is not None
-        and band_width >= avg_prior_width * 1.20
-    )
-
-    bb_breakout = (
-        bb_upper is not None
-        and live_close > bb_upper
-    )
-
-    macd_bullish = (
-        macd_line is not None
-        and macd_signal is not None
-        and macd_line > macd_signal
-        and (macd_hist is None or macd_hist > 0)
-    )
-
-    cci_bullish = cci is not None and cci > 100
-    trend_bullish = (
-        e9 is not None
-        and e20 is not None
-        and e200 is not None
-        and live_close > e9
-        and live_close > e200
-        and e9 > e20
-    )
-
-    strong_breakout = (
-        breakout
-        and (volume_ratio is not None and volume_ratio >= 1.5)
-        and trend_bullish
-    )
-
-    strong_confluence = (
-        consolidation_breakout
-        and (volume_ratio is not None and volume_ratio >= 1.5)
-        and bb_breakout
-        and macd_bullish
-        and cci_bullish
-        and (near_ath or ath_breakout)
-    )
-
-    # Previous EMA values for crossover detection.
-    prev_closes = closes[:-1]
-    prev_e9 = ema_last(prev_closes, 9)
-    prev_e20 = ema_last(prev_closes, 20)
-
-    ema_cross = (
-        prev_e9 is not None
-        and prev_e20 is not None
-        and e9 is not None
-        and e20 is not None
-        and prev_e9 <= prev_e20
-        and e9 > e20
-    )
-
-    return {
-        "symbol": symbol,
-        "live_price": live_close,
-        "last_close": base_close,
-        "ema9": e9,
-        "ema20": e20,
-        "ema50": e50,
-        "ema100": e100,
-        "ema200": e200,
-        "daily_rsi": daily_rsi,
-        "weekly_rsi": weekly_rsi,
-        "monthly_rsi": monthly_rsi,
-        "bb_upper": bb_upper,
-        "bb_middle": bb_middle,
-        "bb_lower": bb_lower,
-        "bb_band_width": band_width,
-        "bb_squeeze": squeeze,
-        "bb_expansion": expansion,
-        "macd_line": macd_line,
-        "macd_signal": macd_signal,
-        "macd_hist": macd_hist,
-        "cci": cci,
-        "volume": volume,
-        "volume_avg20": avg20_volume,
-        "volume_ratio": volume_ratio,
-        "ath": ath,
-        "distance_to_ath": distance_to_ath,
-        "near_ath": near_ath,
-        "ath_breakout": ath_breakout,
-        "breakout_level": breakout_level,
-        "breakout": breakout,
-        "consolidation": consolidation,
-        "consolidation_breakout": consolidation_breakout,
-        "ema_cross": ema_cross,
-        "macd_bullish": macd_bullish,
-        "cci_bullish": cci_bullish,
-        "trend_bullish": trend_bullish,
-        "strong_breakout": strong_breakout,
-        "strong_confluence": strong_confluence,
-        "signal": (
-            "STRONG CONFLUENCE"
-            if strong_confluence
-            else "STRONG BREAKOUT"
-            if strong_breakout
-            else "ATH BREAKOUT"
-            if ath_breakout
-            else "BREAKOUT"
-            if breakout
-            else "BULLISH"
-            if trend_bullish
-            else "WATCH"
-        ),
-        "source": "Dhan Daily Historical + Dhan Live LTP",
-    }
-
-
-# ============================================================
 # ROUTES
 # ============================================================
 
@@ -1039,7 +633,7 @@ def home():
     return jsonify({
         "status": "OK",
         "message": "Shahnawaz Mansuri Dhan Live + Technical Backend",
-        "version": "dhan-manual-token-v1",
+        "version": "dhan-auto-token-v3",
     })
 
 
