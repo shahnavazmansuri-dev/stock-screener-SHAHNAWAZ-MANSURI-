@@ -3,4 +3,4 @@ flask-cors
 requests
 pyotp
 gunicorn
-websockets==14.1
+websocket-client
