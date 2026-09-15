@@ -67,9 +67,11 @@ def scan_stock(stock):
 
         crossed_up = float(ema9.iloc[prev]) <= float(ema20.iloc[prev]) and e9 > e20
         bullish = e9 > e20 and price > e200
-        if not bullish:
-            return None
 
+        # IMPORTANT:
+        # Keep every stock with valid EMA values in the data file.
+        # The browser needs stocks that are currently below 20 EMA too,
+        # because a fresh live-price crossover can happen during the day.
         return {
             "symbol": symbol,
             "stock": stock.get("stock") or stock.get("name") or symbol,
@@ -108,9 +110,9 @@ def main():
         "generated_at": pd.Timestamp.utcnow().isoformat(),
         "strategy": "9 EMA + 20 EMA + 200 EMA",
         "rules": [
-            "9 EMA above 20 EMA",
-            "Price above 200 EMA",
-            "BUY CROSS when 9 EMA crosses above 20 EMA"
+            "EMA data is published for every stock with valid history",
+            "9 EMA + 20 EMA + 200 EMA BUY: 9 EMA above 20 EMA and price above 200 EMA",
+            "9/20 EMA Crossover BUY: previous 9 EMA <= previous 20 EMA, current/live 9 EMA > current/live 20 EMA, and price above 200 EMA"
         ],
         "stocks": results,
         "count": len(results)
