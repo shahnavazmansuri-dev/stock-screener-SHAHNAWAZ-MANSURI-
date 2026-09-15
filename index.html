@@ -112,7 +112,8 @@ Stocks and zone data load separately. If zone data is slow, the normal stock tab
 <div class="info">
 <strong>BUY trigger:</strong> 9 EMA crosses above 20 EMA.<br>
 <strong>Trend filter:</strong> Price must be above 200 EMA.<br>
-<strong>Preferred structure:</strong> 9 EMA &gt; 20 EMA and Price &gt; 200 EMA.
+<strong>Preferred structure:</strong> 9 EMA &gt; 20 EMA and Price &gt; 200 EMA.<br>
+<strong>Live crossover:</strong> Latest Dhan LTP recalculates the current EMA values.
 </div>
 </div>
 
@@ -187,11 +188,6 @@ let emaFileLoaded = false;
 let emaData = [];
 let confluenceFileLoaded = false;
 let confluenceData = [];
-let technicalData = [];
-let technicalFileLoaded = false;
-let technicalLoading = false;
-let technicalRefreshTimer = null;
-let lastTechnicalLoad = 0;
 let lastRenderedMode = "stocks";
 let watchlist = JSON.parse(localStorage.getItem("sm_watchlist") || "[]");
 
@@ -238,50 +234,6 @@ async function loadAllData(){
     loadZonesOnly();
     loadEmaOnly();
     loadConfluenceOnly();
-    loadTechnicalScan(true);
-}
-
-async function loadTechnicalScan(force=false){
-    if(technicalLoading) return;
-    if(!force && technicalFileLoaded && (Date.now()-lastTechnicalLoad)<(15*60*1000)) return;
-    if(!stockData.length){
-        setTimeout(()=>loadTechnicalScan(force),1500);
-        return;
-    }
-    technicalLoading=true;
-    try{
-        const symbols=[...new Set(stockData.map(getSymbol).filter(Boolean))];
-        const url=DHAN_BACKEND_URL + "/api/technical-scan?symbols=" + symbols.map(s=>encodeURIComponent(s)).join(",");
-        if(lastRenderedMode==="ema" || lastRenderedMode==="bollinger" || lastRenderedMode==="breakout" || lastRenderedMode==="macdcci" || lastRenderedMode==="confluence")
-            setStatus("Loading Dhan technical data... Please wait.");
-        const data=await fetchJson(url,120000);
-        technicalData=Array.isArray(data?.rows)?data.rows:[];
-        technicalData.forEach(r=>{ const stock=getStockBySymbol(r?.symbol); if(stock) r.category=getCategory(stock); });
-        technicalFileLoaded=technicalData.length>0;
-        lastTechnicalLoad=Date.now();
-        if(lastRenderedMode==="ema" || lastRenderedMode==="bollinger" || lastRenderedMode==="breakout" || lastRenderedMode==="macdcci") applyFilters();
-    }catch(error){
-        console.error("Technical scan load error:",error);
-        technicalData=[];
-        technicalFileLoaded=false;
-        if(lastRenderedMode==="ema" || lastRenderedMode==="bollinger" || lastRenderedMode==="breakout" || lastRenderedMode==="macdcci")
-            renderEmpty("Dhan technical data is unavailable. Please try Refresh Data.");
-    }finally{
-        technicalLoading=false;
-    }
-}
-
-function getTechnicalRow(symbol){
-    const target=String(symbol||"").trim().toUpperCase();
-    return technicalData.find(r=>String(r?.symbol||"").trim().toUpperCase()===target) || null;
-}
-
-function syncLivePriceToTechnical(symbol,price){
-    const row=getTechnicalRow(symbol);
-    const px=Number(price);
-    if(!row || !Number.isFinite(px) || px<=0) return;
-    row.live_price=px;
-    row.ltp=px;
 }
 
 async function loadConfluenceOnly(){
@@ -470,7 +422,6 @@ function setTableMode(mode){
         head.innerHTML=`
             <th>Stock</th><th>Category</th><th>Price</th>
             <th>9 EMA</th><th>20 EMA</th><th>200 EMA</th>
-            <th>Daily RSI</th><th>Weekly RSI</th><th>Monthly RSI</th>
             <th>Trend</th><th>Signal</th><th>Chart</th><th>Action</th>
         `;
     }else if(mode==="bollinger"){
@@ -682,82 +633,82 @@ function renderConfluenceScanner(){
 function renderEMAScanner(){
     const tbody=document.querySelector("#stockTable tbody");
     tbody.innerHTML="";
-
-    /*
-       EMA scanner intentionally uses ema_scanner_data.json as its base dataset.
-       This keeps EMA scanning independent from the slower technical-scan API.
-       Dhan LIVE prices are merged into emaData by syncLivePriceToEMA().
-    */
-    if(!emaFileLoaded){
-        renderEmpty("Loading EMA scanner data... Please wait.");
-        return;
-    }
+    if(!emaFileLoaded){ renderEmpty("Loading EMA scanner data..."); return; }
 
     const search=document.getElementById("searchInput").value.trim().toUpperCase();
     const category=document.getElementById("categorySelect").value;
-    const strategy=document.getElementById("strategySelect").value;
 
-    const results=emaData.map(row=>{
-        const symbol=emaSymbol(row);
-        const stock=getStockBySymbol(symbol);
-        const cat=stock ? getCategory(stock) : emaCategory(row);
-        const price=Number.isFinite(Number(row?.live_price)) ? Number(row.live_price) : emaPrice(row);
+    const results=emaData.filter(row=>{
+        const symbol=emaSymbol(row), cat=emaCategory(row), price=emaPrice(row);
         const live=getLiveEMAValues(row,price);
-        const e9=Number.isFinite(live.e9) ? live.e9 : emaValue(row,["ema9","EMA9","ema_9","EMA_9","9EMA","ema_9_value"]);
-        const e20=Number.isFinite(live.e20) ? live.e20 : emaValue(row,["ema20","EMA20","ema_20","EMA_20","20EMA","ema_20_value"]);
-        const e200=Number.isFinite(live.e200) ? live.e200 : emaValue(row,["ema200","EMA200","ema_200","EMA_200","200EMA","ema_200_value"]);
-        const cross=Boolean(row?.live_ema_crossover) || row?.crossed_up===true || String(row?.crossed_up).toLowerCase()==="true";
-        return {row,symbol,cat,price,e9,e20,e200,cross};
-    }).filter(x=>{
-        if(!x.symbol) return false;
-        if(search && !x.symbol.includes(search)) return false;
-        if(category!=="ALL" && x.cat!==category) return false;
-        if(![x.price,x.e9,x.e20,x.e200].every(Number.isFinite)) return false;
+        const e9=Number.isFinite(live.e9)?live.e9:emaValue(row,["ema9","EMA9","ema_9","EMA_9","9EMA","ema_9_value"]);
+        const e20=Number.isFinite(live.e20)?live.e20:emaValue(row,["ema20","EMA20","ema_20","EMA_20","20EMA","ema_20_value"]);
+        const e200=Number.isFinite(live.e200)?live.e200:emaValue(row,["ema200","EMA200","ema_200","EMA_200","200EMA","ema_200_value"]);
+        if(search && !symbol.includes(search)) return false;
+        if(category!=="ALL" && cat!==category) return false;
+        const strategy=document.getElementById("strategySelect").value;
+        const valid=Number.isFinite(e9)&&Number.isFinite(e20)&&Number.isFinite(e200)&&Number.isFinite(price);
+        if(!valid) return false;
 
-        // Strategy 1: fresh/current 9 EMA crossover + price above 200 EMA.
-        if(strategy==="EMA_CROSS") return x.cross && x.price>x.e200;
+        // EMA_CROSS = actual fresh crossover, not every bullish stock.
+        // Previous EMA relationship comes from the last completed candle;
+        // current EMA values are recalculated from the latest Dhan LTP.
+        if(strategy==="EMA_CROSS"){
+            return Number.isFinite(live.prev9) &&
+                   Number.isFinite(live.prev20) &&
+                   live.prev9 <= live.prev20 &&
+                   e9 > e20 &&
+                   price > e200;
+        }
 
-        // Strategy 2: 9 EMA > 20 EMA + price above 200 EMA.
-        return x.e9>x.e20 && x.price>x.e200;
+        // EMA_200 = preferred bullish structure.
+        return e9 > e20 && price > e200;
     });
 
     results.sort((a,b)=>{
-        if(strategy==="EMA_CROSS") return Number(b.cross)-Number(a.cross);
-        const ad=(a.price-a.e200)/a.e200;
-        const bd=(b.price-b.e200)/b.e200;
-        return bd-ad;
+        const ap=emaPrice(a), bp=emaPrice(b);
+        const al=getLiveEMAValues(a,ap), bl=getLiveEMAValues(b,bp);
+        const as=emaSignal(a,al.e9,al.e20,al.e200,ap,al);
+        const bs=emaSignal(b,bl.e9,bl.e20,bl.e200,bp,bl);
+        return (as==="BUY"?0:1)-(bs==="BUY"?0:1);
     });
 
-    if(!results.length){
-        renderEmpty(
+    if(!results.length){ renderEmpty(
             strategy==="EMA_CROSS"
-            ? "No fresh 9/20 EMA crossover above 200 EMA found right now."
-            : "No stocks currently match 9 EMA > 20 EMA and Price > 200 EMA."
-        );
-        return;
-    }
+                ? "No fresh 9/20 EMA bullish crossover above 200 EMA right now."
+                : "No stocks currently match 9 EMA + 20 EMA + 200 EMA conditions."
+        ); return; }
 
-    results.forEach(x=>{
-        const {row,symbol,cat,price,e9,e20,e200,cross}=x;
-        const signal=(cross && price>e200)?"BUY":"BULLISH";
+    results.forEach(row=>{
+        const symbol=emaSymbol(row), cat=emaCategory(row), price=emaPrice(row);
+        const live=getLiveEMAValues(row,price);
+        const e9=Number.isFinite(live.e9)?live.e9:emaValue(row,["ema9","EMA9","ema_9","EMA_9","9EMA","ema_9_value"]);
+        const e20=Number.isFinite(live.e20)?live.e20:emaValue(row,["ema20","EMA20","ema_20","EMA_20","20EMA","ema_20_value"]);
+        const e200=Number.isFinite(live.e200)?live.e200:emaValue(row,["ema200","EMA200","ema_200","EMA_200","200EMA","ema_200_value"]);
+        const signal=emaSignal(row,e9,e20,e200,price,live);
         const dailyRsi=emaValue(row,["daily_rsi","rsi_daily","RSI_DAILY","rsi14"]);
         const weeklyRsi=emaValue(row,["weekly_rsi","rsi_weekly","RSI_WEEKLY"]);
         const monthlyRsi=emaValue(row,["monthly_rsi","rsi_monthly","RSI_MONTHLY"]);
-        const trend=price>e200?"BULLISH":"NOT ABOVE 200";
+        const trend=(Number.isFinite(price)&&Number.isFinite(e200)&&price>e200)?"BULLISH":"NOT ABOVE 200";
         const watched=watchlist.includes(symbol);
         const tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(symbol);
-        const near60=v=>Number.isFinite(v)&&v>=55&&v<=65;
+        const signalClass=signal==="BUY"?"good":"orange";
         const tr=document.createElement("tr");
         tr.innerHTML=`
-            <td><strong>${escapeHtml(symbol)}</strong></td><td>${escapeHtml(cat)}</td>
-            <td class="good">₹${price.toFixed(2)}</td><td>${formatNumber(e9)}</td><td>${formatNumber(e20)}</td><td>${formatNumber(e200)}</td>
-            <td class="${near60(dailyRsi)?"good":"orange"}">${formatNumber(dailyRsi)}</td>
-            <td class="${near60(weeklyRsi)?"good":"orange"}">${formatNumber(weeklyRsi)}</td>
-            <td class="${near60(monthlyRsi)?"good":"orange"}">${formatNumber(monthlyRsi)}</td>
+            <td><strong>${escapeHtml(symbol)}</strong></td>
+            <td>${escapeHtml(cat)}</td>
+            <td class="good">${Number.isFinite(price)?"₹"+price.toFixed(2):"-"}</td>
+            <td>${formatNumber(e9)}</td>
+            <td>${formatNumber(e20)}</td>
+            <td>${formatNumber(e200)}</td>
+            <td class="${Number.isFinite(dailyRsi)&&dailyRsi>=55&&dailyRsi<=65?"good":"orange"}">${formatNumber(dailyRsi)}</td>
+            <td class="${Number.isFinite(weeklyRsi)&&weeklyRsi>=55&&weeklyRsi<=65?"good":"orange"}">${formatNumber(weeklyRsi)}</td>
+            <td class="${Number.isFinite(monthlyRsi)&&monthlyRsi>=55&&monthlyRsi<=65?"good":"orange"}">${formatNumber(monthlyRsi)}</td>
             <td class="${trend==="BULLISH"?"good":"bad"}">${trend}</td>
-            <td class="${signal==="BUY"?"good":"orange"}"><strong>${signal}</strong></td>
+            <td class="${signalClass}"><strong>${signal}</strong></td>
             <td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td>
-            <td><button onclick="toggleWatchlist('${escapeAttr(symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+            <td><button onclick="toggleWatchlist('${escapeAttr(symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>
+        `;
         tbody.appendChild(tr);
     });
 }
@@ -773,13 +724,7 @@ function techBool(row,names){
 function techRows(){
     const search=document.getElementById("searchInput").value.trim().toUpperCase();
     const category=document.getElementById("categorySelect").value;
-    if(!technicalFileLoaded) return [];
-    return technicalData.filter(r=>{
-        const s=String(r?.symbol||"").toUpperCase();
-        const stock=getStockBySymbol(s);
-        const c=stock ? getCategory(stock) : "-";
-        return (!search||s.includes(search))&&(category==="ALL"||c===category);
-    });
+    return stockData.filter(r=>{const s=getSymbol(r),c=getCategory(r); return (!search||s.includes(search))&&(category==="ALL"||c===category);});
 }
 function renderBollingerScanner(){
     const tbody=document.querySelector("#stockTable tbody"); tbody.innerHTML="";
@@ -1185,7 +1130,6 @@ async function fetchAllLivePrices(manual=false){
                 stock.ltp=price;
                 stock.price=price;
                 syncLivePriceToEMA(symbol,price);
-                syncLivePriceToTechnical(symbol,price);
                 updated++;
             }
         }
@@ -1217,7 +1161,6 @@ function startDhanAutoRefresh(){
     dhanRefreshTimer = setInterval(() => {
         if(document.visibilityState === "visible" && stockData.length){
             fetchAllLivePrices(false);
-            if(Date.now()-lastTechnicalLoad >= (15*60*1000)) loadTechnicalScan(true);
         }
     }, DHAN_REFRESH_MS);
 }
