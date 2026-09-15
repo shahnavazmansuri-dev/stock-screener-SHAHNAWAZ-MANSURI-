@@ -30,21 +30,25 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas requests pyarrow
+          pip install requests yfinance pytz
+
+      - name: Update repository before scanner
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
 
       - name: Run EMA scanner
-        run: python ema_scanner.py
+        run: |
+          python ema_scanner.py
 
       - name: Commit EMA scanner data
         shell: bash
         run: |
           set -e
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git fetch origin main
-          git rebase origin/main
 
           git add ema_scanner_data.json
 
@@ -61,9 +65,20 @@ jobs:
               exit 0
             fi
 
-            echo "Push rejected. Updating from origin/main and retrying..."
+            echo "Push rejected. Syncing with origin/main..."
+
             git fetch origin main
-            git rebase origin/main
+
+            git reset --soft origin/main
+
+            git add ema_scanner_data.json
+
+            if git diff --cached --quiet; then
+              echo "No EMA scanner changes after sync."
+              exit 0
+            fi
+
+            git commit -m "Update EMA scanner data [skip ci]"
           done
 
           echo "Failed to push EMA scanner data after 3 attempts."
