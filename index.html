@@ -690,8 +690,8 @@ function renderEMAScanner(){
         const weeklyRsi=emaValue(row,["weekly_rsi","rsi_weekly","RSI_WEEKLY"]);
         const monthlyRsi=emaValue(row,["monthly_rsi","rsi_monthly","RSI_MONTHLY"]);
         const trend=(Number.isFinite(price)&&Number.isFinite(e200)&&price>e200)?"BULLISH":"NOT ABOVE 200";
-        const watched=watchlist.includes(symbol);
-        const tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(symbol);
+        const watched=watchlist.includes(symbol
+        const tvUrl="https://tv.dhan.co/";
         const signalClass=signal==="BUY"?"good":"orange";
         const tr=document.createElement("tr");
         tr.innerHTML=`
@@ -706,7 +706,7 @@ function renderEMAScanner(){
             <td class="${Number.isFinite(monthlyRsi)&&monthlyRsi>=55&&monthlyRsi<=65?"good":"orange"}">${formatNumber(monthlyRsi)}</td>
             <td class="${trend==="BULLISH"?"good":"bad"}">${trend}</td>
             <td class="${signalClass}"><strong>${signal}</strong></td>
-            <td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td>
+            <td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">Dhan Chart </a></td>
             <td><button onclick="toggleWatchlist('${escapeAttr(symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>
         `;
         tbody.appendChild(tr);
