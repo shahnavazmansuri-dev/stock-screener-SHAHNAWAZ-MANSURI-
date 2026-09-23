@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shahnawaz Mansuri Stock Screener</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:15px;background:#101010;color:#fff;font-family:Arial,sans-serif}
+h1{text-align:center;color:#00ffcc;margin:10px 0 20px;font-size:28px}
+h2{color:#00ffcc;font-size:20px}
+.container{width:100%;max-width:1500px;margin:auto}
+.box{background:#181818;border:1px solid #333;border-radius:14px;padding:20px;margin-bottom:15px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+input,select,button{background:#222;color:#fff;border:1px solid #444;border-radius:8px;padding:12px;font-size:15px}
+input{min-width:180px}
+button{cursor:pointer}
+button:hover{background:#333;color:#00ffcc}
+.primary{background:#005555;color:#00ffcc}
+.status{color:#ffcc00;font-size:14px;margin-top:10px;line-height:1.5}
+.good{color:#00ff66;font-weight:bold}
+.bad{color:#ff5555;font-weight:bold}
+.blue{color:#00bfff;font-weight:bold}
+.orange{color:#ffaa00;font-weight:bold}
+.small{font-size:12px;color:#aaa}
+.zone-title{color:#00ffcc;margin-bottom:10px}
+.calc-result{color:#00ff66;font-weight:bold;margin-top:10px;line-height:1.8}
+.badge{display:inline-block;padding:4px 7px;border-radius:5px;font-size:11px;font-weight:bold}
+.badge-demand{background:#063;color:#00ff88}
+.badge-supply{background:#500;color:#ff7777}
+.badge-score{background:#444;color:#ffd000}
+.badge-fresh{background:#004466;color:#66ddff}
+.table-wrap{overflow:auto;max-height:75vh;border-radius:8px}
+table{width:100%;min-width:1050px;border-collapse:collapse;background:#181818;margin-top:10px}
+th{background:#292929;color:#00ffcc;position:sticky;top:0;z-index:2}
+th,td{padding:9px;border-bottom:1px solid #333;text-align:left;white-space:nowrap;font-size:13px}
+tr:hover{background:#222}
+.tv-link{color:#00bfff;text-decoration:none;font-weight:bold}
+.tv-link:hover{text-decoration:underline}
+.info{background:#102020;border:1px solid #155;color:#9ff;padding:10px;border-radius:8px;margin-top:10px}
+.hidden{display:none}
+@media(max-width:700px){
+ body{padding:8px}
+ h1{font-size:21px}
+ h2{font-size:20px}
+ input,select,button{width:100%;font-size:15px}
+ .box{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Shahnawaz Mansuri Stock Screener</h1>
+
+<div class="box">
+<h2>Risk-Reward & Target Calculator</h2>
+<div class="controls">
+<input type="number" id="calcEntry" placeholder="Entry Price ₹" step="0.01">
+<input type="number" id="calcSL" placeholder="Stop Loss ₹" step="0.01">
+<button onclick="calculateLevels()">Calculate Targets</button>
+</div>
+<div id="calcResult" class="calc-result"></div>
+</div>
+
+<div class="box">
+<div class="controls">
+<input type="file" id="jsonFile" accept=".json,.csv" onchange="handleFileUpload(event)">
+<button onclick="downloadCSV()">Download CSV</button>
+<button onclick="showWatchlist()">⭐ View Watchlist</button>
+<button onclick="showAllStocks()">📊 All Stocks</button>
+<button class="primary" onclick="loadAllData()">🔄 Refresh Data</button>
+<button class="primary" onclick="fetchAllLivePrices(true)">💹 Dhan Live Prices</button>
+</div>
+<div class="small">Dhan current market prices load automatically. Prices refresh about every 15 seconds while this page is open. Dhan credentials stay safely on the Render backend and are never placed in this GitHub page. Demand/Supply Zone, EMA and Confluence prices use the Dhan LTP.</div>
+<div id="status" class="status">Starting...</div>
+<div class="info">
+Stocks, zones and technical data load separately. Technical scanner data comes from the Render/Dhan backend.
+</div>
+</div>
+
+<div class="box">
+<h2>Stock Filters</h2>
+<div class="controls">
+<input type="text" id="searchInput" placeholder="Search Stock..." oninput="applyFilters()">
+<select id="categorySelect" onchange="applyFilters()">
+<option value="ALL">All Categories</option>
+<option value="Large Cap">Large Cap</option>
+<option value="Mid Cap">Mid Cap</option>
+<option value="Small Cap">Small Cap</option>
+<option value="Micro Cap">Micro Cap</option>
+<option value="Shariah">Nifty Shariah</option>
+</select>
+<select id="strategySelect" onchange="applyFilters()">
+<option value="ALL">All Strategies / Zones</option>
+<option value="EMA_200">9 EMA + 20 EMA + 200 EMA BUY</option>
+<option value="CONFLUENCE">⭐ Confluence Strategy</option>
+<option value="EMA_CROSS">9/20 EMA Crossover</option>
+<option value="Demand">Demand Zone</option>
+<option value="Supply">Supply Zone</option>
+<option value="Bollinger">Bollinger Squeeze / Breakout</option>
+<option value="Breakout">Breakout</option>
+<option value="MACD_CCI">MACD / CCI Cross</option>
+<option value="Volume">Volume + Price Action + Spike</option>
+<option value="Shariah">Nifty Shariah</option>
+</select>
+</div>
+</div>
+
+<div class="box">
+<h2>2nd Strategy: 9 EMA + 20 EMA + 200 EMA</h2>
+<div class="info">
+<strong>BUY trigger:</strong> 9 EMA crosses above 20 EMA.<br>
+<strong>Trend filter:</strong> Price must be above 200 EMA.<br>
+<strong>Preferred structure:</strong> 9 EMA &gt; 20 EMA and Price &gt; 200 EMA.<br>
+<strong>Live crossover:</strong> Latest Dhan LTP recalculates the current EMA values.
+</div>
+</div>
+
+<div class="box">
+<h2>⭐ Confluence Strategy</h2>
+<div class="info">
+<strong>BUY Confluence:</strong> 9 EMA &gt; 20 EMA + 9/20 bullish crossover + Price &gt; 200 EMA + RSI &gt; 55 + MACD bullish + Volume &gt; 20-day average + Fresh Demand Zone Score ≥ 7 + Demand Zone nearby.<br>
+<strong>Price:</strong> Latest available server-published NSE price is used automatically. Confluence status is refreshed when the latest price is loaded.
+</div>
+</div>
+
+<div class="box">
+<h2 class="zone-title">Demand / Supply Zone Scanner</h2>
+<div class="controls">
+<select id="timeframeSelect" onchange="applyFilters()">
+<option value="ALL">All Timeframes</option>
+<option value="DAILY">Daily</option>
+<option value="WEEKLY">Weekly</option>
+<option value="MONTHLY">Monthly</option>
+<option value="QUARTERLY">Quarterly</option>
+<option value="HALF_YEAR">Half-Year</option>
+<option value="YEARLY">Yearly</option>
+</select>
+<select id="patternSelect" onchange="applyFilters()">
+<option value="ALL">All Patterns</option>
+<option value="RBR">RBR</option>
+<option value="DBR">DBR</option>
+<option value="RBD">RBD</option>
+<option value="DBD">DBD</option>
+</select>
+<select id="scoreSelect" onchange="applyFilters()">
+<option value="0">Score 0+</option>
+<option value="7">Score 7+</option>
+<option value="8">Score 8+</option>
+<option value="9">Score 9+</option>
+<option value="10">Score 10</option>
+</select>
+<select id="freshSelect" onchange="applyFilters()">
+<option value="FRESH">Fresh Only</option>
+<option value="ALL">Fresh + Old</option>
+</select>
+</div>
+</div>
+
+<div class="box">
+<div class="table-wrap">
+<table id="stockTable">
+<thead><tr>
+<th>Stock</th><th>Category</th><th>Price</th><th>Timeframe</th>
+<th>Zone</th><th>Pattern</th><th>Zone High</th><th>Zone Low</th>
+<th>Score</th><th>Distance</th><th>Chart</th><th>Action</th>
+</tr></thead>
+<tbody><tr><td colspan="12" style="text-align:center">Loading...</td></tr></tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<script>
+"use strict";
+
+let stockData=[];
+let zonesData={};
+let zoneFileLoaded=false;
+let stockFileLoaded=false;
+let emaFileLoaded=false;
+let emaData=[];
+let confluenceFileLoaded=false;
+let confluenceData=[];
+let technicalDataLoaded=false;
+let technicalDataLoading=false;
+let technicalRefreshTimer=null;
+let lastRenderedMode="stocks";
+let watchlist=JSON.parse(localStorage.getItem("sm_watchlist") || "[]");
+
+const DHAN_BACKEND_URL="https://stock-screener-shahnawaz-mansuri.onrender.com";
+const DHAN_BATCH_SIZE=200;
+const DHAN_REFRESH_MS=15000;
+const TECHNICAL_BATCH_SIZE=50;
+const TECHNICAL_REFRESH_MS=60000;
+let dhanRefreshTimer=null;
+let dhanRefreshRunning=false;
+
+document.addEventListener("DOMContentLoaded",()=>{
+ loadAllData();
+ startDhanAutoRefresh();
+ startTechnicalAutoRefresh();
+});
+
+function setStatus(text,bad=false){
+ const el=document.getElementById("status");
+ if(bad) el.innerHTML='<span class="bad">'+escapeHtml(text)+'</span>';
+ else el.innerHTML=escapeHtml(text);
+}
+
+function withTimeout(ms){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),ms);
+ return {controller,timer};
+}
+
+async function fetchJson(url,timeoutMs=20000){
+ const {controller,timer}=withTimeout(timeoutMs);
+ try{
+  const response=await fetch(url,{cache:"no-store",signal:controller.signal});
+  if(!response.ok) throw new Error("HTTP "+response.status);
+  return await response.json();
+ }finally{
+  clearTimeout(timer);
+ }
+}
+
+async function loadAllData(){
+ setStatus("Loading stock data...");
+ stockFileLoaded=false;
+ zoneFileLoaded=false;
+ loadStocksOnly();
+ loadZonesOnly();
+ loadEmaOnly();
+ loadConfluenceOnly();
+}
+
+async function loadConfluenceOnly(){
+ try{
+  const data=await fetchJson("confluence_scanner_data.json?ts="+Date.now(),30000);
+  confluenceData=data&&Array.isArray(data.stocks)?data.stocks:(Array.isArray(data)?data:[]);
+  confluenceFileLoaded=true;
+  if(lastRenderedMode==="confluence") applyFilters();
+ }catch(error){
+  console.error("Confluence scanner load error:",error);
+  confluenceData=[];
+  confluenceFileLoaded=false;
+  if(lastRenderedMode==="confluence") renderEmpty("Confluence scanner data is not available yet. Please tap Refresh Data.");
+ }
+}
+
+async function loadEmaOnly(){
+ try{
+  const data=await fetchJson("ema_scanner_data.json?ts="+Date.now(),30000);
+  emaData=Array.isArray(data)?data:(data&&Array.isArray(data.stocks)?data.stocks:[]);
+  emaFileLoaded=true;
+  if(lastRenderedMode==="ema") applyFilters();
+ }catch(error){
+  console.error("EMA scanner load error:",error);
+  emaData=[];
+  emaFileLoaded=false;
+  if(lastRenderedMode==="ema") renderEmpty("EMA scanner data is not available. Please tap Refresh Data.");
+ }
+}
+
+async function loadStocksOnly(){
+ try{
+  const data=await fetchJson("stocks_data.json?ts="+Date.now(),20000);
+  if(!Array.isArray(data)) throw new Error("stocks_data.json is not an array");
+  stockData=data;
+  stockFileLoaded=true;
+  setStatus("Stocks loaded: "+stockData.length+" | Loading latest server prices...");
+  applyFilters();
+  // Load technical history first, then Dhan LIVE prices.
+  // This prevents the two Dhan requests from running at the same time.
+  await fetchTechnicalData(true);
+  await fetchAllLivePrices();
+ }catch(error){
+  console.error("Stock load error:",error);
+  stockData=[];
+  setStatus("Stock data error: "+(error.name==="AbortError"?"Request timed out":error.message),true);
+  renderEmpty("Unable to load stocks_data.json");
+ }
+}
+
+async function loadZonesOnly(){
+ try{
+  const data=await fetchJson("zones_data.json?ts="+Date.now(),30000);
+  zonesData=data&&data.stocks?data.stocks:{};
+  zoneFileLoaded=true;
+  setStatus("Data loaded successfully! Stocks: "+stockData.length+" | Zone stocks: "+Object.keys(zonesData).length);
+  if(lastRenderedMode==="zone") applyFilters();
+ }catch(error){
+  console.error("Zone load error:",error);
+  zonesData={};
+  zoneFileLoaded=false;
+  if(stockFileLoaded){
+   setStatus("Stocks loaded: "+stockData.length+" | Zone data unavailable: "+(error.name==="AbortError"?"timeout":error.message),true);
+   if(lastRenderedMode==="zone") renderEmpty("Zone data is not available yet. Please tap Refresh Data.");
+  }
+ }
+}
+
+function getSymbol(stock){
+ return String(stock.symbol||stock.s||stock.ticker||stock.Stock||stock.name||"").trim().toUpperCase();
+}
+function getCategory(stock){
+ return String(stock.category||stock.c||stock.Category||stock.cap||stock.marketCap||"-");
+}
+function getPrice(stock){
+ const values=[stock.live_price,stock.currentPrice,stock.p,stock.price,stock.ltp,stock.close,stock.Price];
+ for(const value of values){
+  const n=Number(value);
+  if(Number.isFinite(n)&&n>0) return n;
+ }
+ return null;
+}
+function getStrategy(stock){
+ return String(stock.strategy||stock.strat||stock.Strategy||"");
+}
+function getStockBySymbol(symbol){
+ return stockData.find(s=>getSymbol(s)===String(symbol).toUpperCase());
+}
+
+function applyFilters(){
+ const strategy=document.getElementById("strategySelect").value;
+ if(strategy==="Demand"||strategy==="Supply"){
+  lastRenderedMode="zone"; setTableMode("zone"); renderZoneScanner(strategy);
+ }else if(strategy==="EMA_200"||strategy==="EMA_CROSS"){
+  lastRenderedMode="ema"; setTableMode("ema"); renderEMAScanner();
+ }else if(strategy==="CONFLUENCE"){
+  lastRenderedMode="confluence"; setTableMode("confluence"); renderConfluenceScanner();
+ }else if(strategy==="Bollinger"){
+  lastRenderedMode="bollinger"; setTableMode("bollinger"); renderBollingerScanner();
+ }else if(strategy==="Breakout"){
+  lastRenderedMode="breakout"; setTableMode("breakout"); renderBreakoutScanner();
+ }else if(strategy==="MACD_CCI"){
+  lastRenderedMode="macdcci"; setTableMode("macdcci"); renderMACDCCIScanner();
+ }else if(strategy==="Volume"){
+  lastRenderedMode="volume"; setTableMode("volume"); renderVolumeScanner();
+ }else{
+  lastRenderedMode="stocks"; setTableMode("stocks"); renderNormalTable(getFilteredStocks());
+ }
+}
+
+function getFilteredStocks(){
+ const search=document.getElementById("searchInput").value.trim().toUpperCase();
+ const category=document.getElementById("categorySelect").value;
+ const strategy=document.getElementById("strategySelect").value;
+ return stockData.filter(stock=>{
+  const symbol=getSymbol(stock),cat=getCategory(stock),strat=getStrategy(stock).toUpperCase();
+  if(search&&!symbol.includes(search)) return false;
+  if(category!=="ALL"&&cat!==category) return false;
+  if(strategy==="EMA_CROSS"&&!strat.includes("EMA")) return false;
+  if(strategy==="Bollinger"&&!strat.includes("BOLLINGER")) return false;
+  if(strategy==="Breakout"&&!strat.includes("BREAKOUT")) return false;
+  if(strategy==="MACD_CCI"&&!strat.includes("MACD")&&!strat.includes("CCI")) return false;
+  if(strategy==="Shariah"&&cat!=="Shariah"&&!strat.includes("SHARIAH")) return false;
+  return true;
+ });
+}
+
+function setTableMode(mode){
+ const head=document.querySelector("#stockTable thead tr");
+ if(!head) return;
+ if(mode==="confluence"){
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Price</th><th>9 EMA</th><th>20 EMA</th><th>200 EMA</th><th>RSI</th><th>MACD</th><th>Volume</th><th>Demand Zone</th><th>Score</th><th>Distance</th><th>Signal</th><th>Chart</th><th>Action</th>`;
+ }else if(mode==="ema"){
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Price</th><th>9 EMA</th><th>20 EMA</th><th>200 EMA</th><th>RSI Daily</th><th>RSI Weekly</th><th>RSI Monthly</th><th>Trend</th><th>Signal</th><th>Chart</th><th>Action</th>`;
+ }else if(mode==="bollinger"){
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Live Price</th><th>Upper Band</th><th>Middle Band</th><th>Lower Band</th><th>Band Width</th><th>Price Action</th><th>Volume</th><th>Signal</th><th>Chart</th><th>Action</th>`;
+ }else if(mode==="breakout"){
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Live Price</th><th>Breakout Level</th><th>ATH</th><th>Timeframe</th><th>Volume</th><th>Price Action</th><th>Trend</th><th>Signal</th><th>Chart</th><th>Action</th>`;
+ }else if(mode==="macdcci"){
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Live Price</th><th>MACD</th><th>Signal</th><th>Histogram</th><th>RSI</th><th>20 EMA</th><th>Price Action</th><th>Setup</th><th>Chart</th><th>Action</th>`;
+ }else if(mode==="volume"){
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Live Price</th><th>Current Volume</th><th>Avg Volume 20D</th><th>Volume Spike</th><th>Price Action</th><th>RSI</th><th>20 EMA</th><th>Signal</th><th>Chart</th><th>Action</th>`;
+ }else{
+  head.innerHTML=`<th>Stock</th><th>Category</th><th>Price</th><th>Timeframe</th><th>Zone</th><th>Pattern</th><th>Zone High</th><th>Zone Low</th><th>Score</th><th>Distance</th><th>Chart</th><th>Action</th>`;
+ }
+}
+
+/* ==================== EMA ==================== */
+function emaValue(row,names){
+ for(const name of names){const value=Number(row?.[name]);if(Number.isFinite(value))return value;}
+ return null;
+}
+function emaSymbol(row){return String(row?.symbol||row?.ticker||row?.stock||row?.Stock||row?.name||row?.s||"").trim().toUpperCase();}
+function emaCategory(row){return String(row?.category||row?.cap||row?.marketCap||row?.Category||"-");}
+function emaPrice(row){return emaValue(row,["live_price","livePrice","currentPrice","ltp","price","close","Close","entry_price"]);}
+
+function getLiveEMAValues(row,price){
+ const e9=emaValue(row,["ema9","EMA9","ema_9","EMA_9","9EMA","ema_9_value"]);
+ const e20=emaValue(row,["ema20","EMA20","ema_20","EMA_20","20EMA","ema_20_value"]);
+ const e200=emaValue(row,["ema200","EMA200","ema_200","EMA_200","200EMA","ema_200_value"]);
+ const close=emaValue(row,["last_close","lastClose","close","Close","price","currentPrice","ltp"]);
+ const px=Number(price);
+ if(!Number.isFinite(px)||px<=0||!Number.isFinite(close)||close<=0||!Number.isFinite(e9)||!Number.isFinite(e20)||!Number.isFinite(e200))
+  return {e9,e20,e200,prev9:NaN,prev20:NaN,prev200:NaN};
+ const a9=2/10,a20=2/21,a200=2/201;
+ const prev9=(e9-a9*close)/(1-a9),prev20=(e20-a20*close)/(1-a20),prev200=(e200-a200*close)/(1-a200);
+ return {e9:a9*px+(1-a9)*prev9,e20:a20*px+(1-a20)*prev20,e200:a200*px+(1-a200)*prev200,prev9,prev20,prev200};
+}
+function syncLivePriceToEMA(symbol,price){
+ if(!Array.isArray(emaData))return;
+ const target=String(symbol||"").trim().toUpperCase(),px=Number(price);
+ if(!target||!Number.isFinite(px)||px<=0)return;
+ const row=emaData.find(r=>emaSymbol(r)===target);
+ if(row){
+  row.live_price=px;row.currentPrice=px;
+  const live=getLiveEMAValues(row,px);
+  if(Number.isFinite(live.e9))row.live_ema9=live.e9;
+  if(Number.isFinite(live.e20))row.live_ema20=live.e20;
+  if(Number.isFinite(live.e200))row.live_ema200=live.e200;
+  row.live_ema_crossover=Number.isFinite(live.e9)&&Number.isFinite(live.e20)&&live.prev9<=live.prev20&&live.e9>live.e20;
+ }
+}
+function emaSignal(row,e9,e20,e200,price,live){
+ const raw=String(row?.signal||row?.Signal||row?.buy_signal||row?.buySignal||row?.status||row?.setup||"").toUpperCase();
+ if(live&&Number.isFinite(live.e9)&&Number.isFinite(live.e20)&&Number.isFinite(live.e200)){
+  if(live.prev9<=live.prev20&&live.e9>live.e20&&price>live.e200)return "BUY";
+  if(live.e9>live.e20&&price>live.e200)return "BULLISH";
+  return "WATCH";
+ }
+ if(raw.includes("BUY")||raw.includes("CROSS"))return "BUY";
+ if(raw.includes("SELL"))return "SELL";
+ if(Number.isFinite(e9)&&Number.isFinite(e20)&&Number.isFinite(e200)&&Number.isFinite(price)&&e9>e20&&price>e200)return "BULLISH";
+ return "WATCH";
+}
+function renderEMAScanner(){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ if(!emaFileLoaded){renderEmpty("Loading EMA scanner data...");return;}
+ const search=document.getElementById("searchInput").value.trim().toUpperCase();
+ const category=document.getElementById("categorySelect").value;
+ const results=emaData.filter(row=>{
+  const symbol=emaSymbol(row),cat=emaCategory(row);
+  if(search&&!symbol.includes(search))return false;
+  if(category!=="ALL"&&cat!==category)return false;
+  return true;
+ });
+ if(!results.length){renderEmpty("No EMA scanner stocks found.");return;}
+ results.forEach(row=>{
+  const symbol=emaSymbol(row),cat=emaCategory(row),price=emaPrice(row);
+  const live=getLiveEMAValues(row,price);
+  const e9=Number.isFinite(live.e9)?live.e9:emaValue(row,["ema9","EMA9","ema_9","EMA_9","200EMA"]);
+  const e20=Number.isFinite(live.e20)?live.e20:emaValue(row,["ema20","EMA20","ema_20","EMA_20","20EMA"]);
+  const e200=Number.isFinite(live.e200)?live.e200:emaValue(row,["ema200","EMA200","ema_200","EMA_200","200EMA"]);
+  const signal=emaSignal(row,e9,e20,e200,price,live);
+
+  // RSI FIX: use the technical values already merged into stockData.
+  // fetchTechnicalData() merges /api/technical-scan rows into each stock,
+  // so no separate technicalDataMap is required.
+  const tech=stockData.find(s=>getSymbol(s)===symbol) || row || {};
+  const finiteValue=(obj,names)=>{
+   for(const name of names){
+    const n=Number(obj?.[name]);
+    if(Number.isFinite(n)) return n;
+   }
+   return null;
+  };
+  const dailyRsi=finiteValue(tech,["daily_rsi","rsi_daily","RSI_DAILY","rsi14","rsi","RSI"]);
+  const weeklyRsi=finiteValue(tech,["weekly_rsi","rsi_weekly","RSI_WEEKLY"]);
+  const monthlyRsi=finiteValue(tech,["monthly_rsi","rsi_monthly","RSI_MONTHLY"]);
+  const trend=Number.isFinite(price)&&Number.isFinite(e200)&&price>e200?"BULLISH":"NOT ABOVE 200";
+  const watched=watchlist.includes(symbol);
+  const tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(symbol);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(symbol)}</strong></td><td>${escapeHtml(cat)}</td><td class="good">${Number.isFinite(price)?"₹"+price.toFixed(2):"-"}</td><td>${formatNumber(e9)}</td><td>${formatNumber(e20)}</td><td>${formatNumber(e200)}</td><td>${formatNumber(dailyRsi)}</td><td>${formatNumber(weeklyRsi)}</td><td>${formatNumber(monthlyRsi)}</td><td class="${trend==="BULLISH"?"good":"bad"}">${trend}</td><td class="${signal==="BUY"?"good":"orange"}"><strong>${signal}</strong></td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+/* ==================== CONFLUENCE ==================== */
+function confluenceValue(row,names){
+ for(const name of names){const n=Number(row?.[name]);if(Number.isFinite(n))return n;}
+ return null;
+}
+function confluenceSymbol(row){return String(row?.symbol||row?.ticker||row?.stock||row?.Stock||row?.name||row?.s||"").trim().toUpperCase();}
+function confluenceCategory(row){const stock=getStockBySymbol(confluenceSymbol(row));return String(row?.category||row?.cap||row?.marketCap||row?.Category||(stock?getCategory(stock):"-"));}
+function confluencePrice(row){const stock=getStockBySymbol(confluenceSymbol(row));const live=stock?getPrice(stock):null;if(Number.isFinite(live)&&live>0)return live;return confluenceValue(row,["price","currentPrice","live_price","ltp","close","reference_price"]);}
+
+function renderConfluenceScanner(){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ if(!confluenceFileLoaded){renderEmpty("Loading Confluence scanner data...");return;}
+ const search=document.getElementById("searchInput").value.trim().toUpperCase(),category=document.getElementById("categorySelect").value;
+ const results=confluenceData.filter(row=>{
+  const symbol=confluenceSymbol(row),cat=confluenceCategory(row);
+  return (!search||symbol.includes(search))&&(category==="ALL"||cat===category);
+ });
+ if(!results.length){renderEmpty("No stocks currently match the Confluence Strategy conditions.");return;}
+ results.sort((a,b)=>{
+  const as=String(a?.signal||"").toUpperCase(),bs=String(b?.signal||"").toUpperCase();
+  if(as!==bs)return as.includes("BUY")?-1:1;
+  const ad=confluenceValue(a,["demand.distance_percent","demand_distance_percent"]);
+  const bd=confluenceValue(b,["demand.distance_percent","demand_distance_percent"]);
+  return (ad??999)-(bd??999);
+ });
+ results.forEach(row=>{
+  const symbol=confluenceSymbol(row),cat=confluenceCategory(row),price=confluencePrice(row);
+  const e9=confluenceValue(row,["ema9","ema_9","EMA9"]),e20=confluenceValue(row,["ema20","ema_20","EMA20"]),e200=confluenceValue(row,["ema200","ema_200","EMA200"]);
+  const rsi=confluenceValue(row,["rsi14","rsi","RSI14"]),macdLine=confluenceValue(row,["macd_line","macdLine"]),macdSignal=confluenceValue(row,["macd_signal","macdSignal"]),macdHist=confluenceValue(row,["macd_hist","macdHist","macd_histogram"]);
+  const volRatio=confluenceValue(row,["volume_ratio","volumeRatio"]),volume=confluenceValue(row,["volume"]),avgVol=confluenceValue(row,["volume_avg20","volumeAvg20"]);
+  const demand=row?.demand||{},demandHigh=confluenceValue(demand,["high"]),demandLow=confluenceValue(demand,["low"]),demandScore=confluenceValue(demand,["score"]),distance=confluenceValue(demand,["distance_percent"]);
+  const signal=String(row?.signal||"CONFLUENCE").toUpperCase();
+  const macdBull=(Number.isFinite(macdLine)&&Number.isFinite(macdSignal)&&macdLine>macdSignal)||(Number.isFinite(macdHist)&&macdHist>0);
+  const volumeText=Number.isFinite(volRatio)?volRatio.toFixed(2)+"x":(Number.isFinite(volume)&&Number.isFinite(avgVol)?(volume/avgVol).toFixed(2)+"x":"-");
+  const demandText=Number.isFinite(demandHigh)&&Number.isFinite(demandLow)?"₹"+demandLow.toFixed(2)+" - ₹"+demandHigh.toFixed(2):"-";
+  const watched=watchlist.includes(symbol),tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(symbol);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(symbol)}</strong></td><td>${escapeHtml(cat)}</td><td class="good">${Number.isFinite(price)?"₹"+price.toFixed(2):"-"}</td><td>${formatNumber(e9)}</td><td>${formatNumber(e20)}</td><td>${formatNumber(e200)}</td><td class="${Number.isFinite(rsi)&&rsi>55?"good":"orange"}">${formatNumber(rsi)}</td><td class="${macdBull?"good":"orange"}">${macdBull?"BULLISH":"-"}</td><td class="${Number.isFinite(volRatio)&&volRatio>1?"good":"orange"}">${escapeHtml(volumeText)}</td><td>${escapeHtml(demandText)}</td><td><span class="badge badge-score">${Number.isFinite(demandScore)?demandScore+"/10":"-"}</span></td><td class="orange">${formatNumber(distance)}%</td><td class="${signal.includes("BUY")?"good":"orange"}"><strong>${escapeHtml(signal)}</strong></td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+/* ==================== TECHNICAL DATA ==================== */
+function techNum(row,names){
+ for(const n of names){const v=Number(row?.[n]);if(Number.isFinite(v))return v;}
+ return null;
+}
+function techBool(row,names){
+ for(const n of names){
+  if(row?.[n]===true)return true;
+  if(String(row?.[n]??"").toLowerCase()==="true")return true;
+ }
+ return false;
+}
+function techRows(){
+ const search=document.getElementById("searchInput").value.trim().toUpperCase();
+ const category=document.getElementById("categorySelect").value;
+ return stockData.filter(r=>{
+  const s=getSymbol(r),c=getCategory(r);
+  return (!search||s.includes(search))&&(category==="ALL"||c===category);
+ });
+}
+function getPriceAction(row){
+ const price=getPrice(row);
+ const open=techNum(row,["open","Open","current_open"]);
+ const close=techNum(row,["close","Close","current_close","live_price","last_close"])??price;
+ const high=techNum(row,["high","High","current_high"]);
+ const low=techNum(row,["low","Low","current_low"]);
+ const backendBull=techBool(row,["price_action_bullish","bullish_price_action"]);
+ const backendStrong=techBool(row,["strong_close"]);
+ const backendBreakout=techBool(row,["breakout","daily_breakout","weekly_breakout","monthly_breakout","ath_breakout","breakout_any"]);
+ const bullish=backendBull||(Number.isFinite(open)&&Number.isFinite(close)&&close>open);
+ const strongClose=backendStrong||(Number.isFinite(high)&&Number.isFinite(low)&&Number.isFinite(close)&&high>low&&((close-low)/(high-low))>=0.65);
+ return {bullish,strongClose,breakout:backendBreakout,close};
+}
+function calcBollinger(row){
+ const upper=techNum(row,["bb_upper","BB_UPPER","upper_band","bbUpper","bollinger_upper"]);
+ const middle=techNum(row,["bb_middle","BB_MIDDLE","middle_band","bbMiddle","bollinger_middle","sma20","SMA20"]);
+ const lower=techNum(row,["bb_lower","BB_LOWER","lower_band","bbLower","bollinger_lower"]);
+ const width=techNum(row,["bb_band_width","band_width"]);
+ const squeeze=techBool(row,["bb_squeeze","bollinger_squeeze","squeeze"]);
+ return {upper,middle,lower,width,squeeze};
+}
+function getVolumeConfirmation(row){
+ const volume=techNum(row,["volume","Volume","current_volume","currentVolume","volume_today"]);
+ const avg20=techNum(row,["volume_avg20","volumeAvg20","avg_volume20","average_volume_20","avgVol20","volume_20d_avg"]);
+ const ratio=Number.isFinite(volume)&&Number.isFinite(avg20)&&avg20>0?volume/avg20:techNum(row,["volume_ratio","volumeRatio","vol_ratio"]);
+ return {volume,avg20,ratio,spike:Number.isFinite(ratio)&&ratio>=2};
+}
+
+function renderBollingerScanner(){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ const rows=techRows().map(r=>{
+  const symbol=getSymbol(r),price=getPrice(r),bb=calcBollinger(r),pa=getPriceAction(r),vol=getVolumeConfirmation(r),rsi=techNum(r,["rsi","RSI","rsi14","daily_rsi"]);
+  let signal="WATCH";
+  if(bb.squeeze&&pa.bullish&&Number.isFinite(bb.upper)&&Number.isFinite(pa.close)&&pa.close>bb.upper&&vol.spike&&Number.isFinite(rsi)&&rsi>55)signal="BOLLINGER BUYER";
+  else if(bb.squeeze)signal="SQUEEZE / WATCH";
+  else if(Number.isFinite(bb.upper)&&Number.isFinite(pa.close)&&pa.close>bb.upper)signal="BREAKOUT — NO BUYER";
+  return {r,symbol,price,bb,pa,vol,rsi,signal};
+ });
+ if(!rows.length){renderEmpty("No stocks found.");return;}
+ rows.sort((a,b)=>{const rank=x=>x.signal==="BOLLINGER BUYER"?0:x.signal==="BREAKOUT — NO BUYER"?1:x.signal.includes("SQUEEZE")?2:3;return rank(a)-rank(b);});
+ rows.forEach(x=>{
+  const watched=watchlist.includes(x.symbol),tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(x.symbol);
+  const paText=x.pa.bullish&&x.pa.strongClose?"BULLISH":"-",volText=Number.isFinite(x.vol.ratio)?x.vol.ratio.toFixed(2)+"x":"-";
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(x.symbol)}</strong></td><td>${escapeHtml(getCategory(x.r))}</td><td class="good">${Number.isFinite(x.price)?"₹"+x.price.toFixed(2):"-"}</td><td>${formatNumber(x.bb.upper)}</td><td>${formatNumber(x.bb.middle)}</td><td>${formatNumber(x.bb.lower)}</td><td>${Number.isFinite(x.bb.width)?x.bb.width.toFixed(2)+"%":"-"}</td><td>${escapeHtml(paText)}</td><td>${escapeHtml(volText)}</td><td class="${x.signal.includes("BUYER")?"good":"orange"}"><strong>${escapeHtml(x.signal)}</strong></td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(x.symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+function renderBreakoutScanner(){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ const rows=techRows().flatMap(r=>{
+  const symbol=getSymbol(r),price=getPrice(r);
+  const daily=techNum(r,["daily_breakout_level"]),weekly=techNum(r,["weekly_breakout_level"]),monthly=techNum(r,["monthly_breakout_level"]),ath=techNum(r,["ath"]);
+  const volume=techNum(r,["volume","current_volume"]),avg20=techNum(r,["volume_avg20","avg_volume20"]),volumeRatio=Number.isFinite(volume)&&Number.isFinite(avg20)&&avg20>0?volume/avg20:techNum(r,["volume_ratio"]);
+  const e200=techNum(r,["ema200","EMA200","ema_200","200EMA"]),trend=Number.isFinite(price)&&Number.isFinite(e200)?(price>e200?"BULLISH":"BELOW 200 EMA"):"-";
+  const pa=getPriceAction(r),bullishPriceAction=pa.bullish&&pa.strongClose,strongVolume=techBool(r,["strong_volume"])||(Number.isFinite(volumeRatio)&&volumeRatio>=1.5);
+  const choices=[];
+  if(techBool(r,["daily_breakout"])||Number.isFinite(daily)&&Number.isFinite(price)&&price>daily)choices.push(["DAILY",daily]);
+  if(techBool(r,["weekly_breakout"])||Number.isFinite(weekly)&&Number.isFinite(price)&&price>weekly)choices.push(["WEEKLY",weekly]);
+  if(techBool(r,["monthly_breakout"])||Number.isFinite(monthly)&&Number.isFinite(price)&&price>monthly)choices.push(["MONTHLY",monthly]);
+  if(techBool(r,["ath_breakout"])||techBool(r,["near_ath"])||Number.isFinite(ath)&&Number.isFinite(price)&&price>=ath)choices.push(["NEAR ATH",ath]);
+  if(!choices.length)choices.push(["DAILY",daily]);
+  return choices.map(c=>{
+   const buyer=(techBool(r,["breakout_buyer"])||choices.length>0)&&bullishPriceAction&&strongVolume&&(
+    techBool(r,["breakout_buyer"])||techBool(r,["breakout_any"])||Number.isFinite(c[1])&&Number.isFinite(price)&&price>c[1]
+   );
+   const signal=buyer?"BREAKOUT BUYER":(bullishPriceAction&&strongVolume&&Number.isFinite(c[1])&&Number.isFinite(price)&&price>c[1])?"BREAKOUT + PRICE ACTION":"WATCH";
+   return {r,symbol,price,level:c[1],ath,timeframe:c[0],volume,volumeRatio,pa,bullishPriceAction,trend,signal};
+  });
+ });
+ if(!rows.length){renderEmpty("No breakout data found.");return;}
+ rows.sort((a,b)=>{const rank=x=>x.signal==="BREAKOUT BUYER"?0:x.signal==="BREAKOUT + PRICE ACTION"?1:2;return rank(a)-rank(b);});
+ rows.forEach(x=>{
+  const watched=watchlist.includes(x.symbol),tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(x.symbol),paText=x.bullishPriceAction?"BULLISH":"-",volText=Number.isFinite(x.volumeRatio)?x.volumeRatio.toFixed(2)+"x":"-";
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(x.symbol)}</strong></td><td>${escapeHtml(getCategory(x.r))}</td><td class="good">${Number.isFinite(x.price)?"₹"+x.price.toFixed(2):"-"}</td><td>${formatNumber(x.level)}</td><td>${formatNumber(x.ath)}</td><td>${escapeHtml(x.timeframe)}</td><td>${escapeHtml(volText)}</td><td class="${x.bullishPriceAction?"good":"orange"}">${paText}</td><td>${escapeHtml(x.trend)}</td><td class="${x.signal==="BREAKOUT BUYER"?"good":"orange"}"><strong>${escapeHtml(x.signal)}</strong></td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(x.symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+function renderMACDCCIScanner(){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ const rows=techRows().map(r=>{
+  const symbol=getSymbol(r),price=getPrice(r),macd=techNum(r,["macd_line","macdLine","MACD"]),sig=techNum(r,["macd_signal","macdSignal","Signal"]),hist=techNum(r,["macd_hist","macdHist","macd_histogram","Histogram"]),rsi=techNum(r,["rsi","RSI","rsi14","daily_rsi"]),e20=techNum(r,["ema20","EMA20","ema_20","20EMA","sma20","SMA20"]);
+  const pa=getPriceAction(r),bullishPriceAction=pa.bullish&&pa.strongClose;
+  const macdBull=(Number.isFinite(macd)&&Number.isFinite(sig)&&macd>sig)&&(Number.isFinite(hist)?hist>0:true);
+  const priceAbove20=Number.isFinite(price)&&Number.isFinite(e20)&&price>e20;
+  let setup="WATCH";
+  if(macdBull&&bullishPriceAction&&priceAbove20&&Number.isFinite(rsi)&&rsi>55)setup="MACD BUYER";
+  else if(macdBull&&bullishPriceAction)setup="MACD + PRICE ACTION";
+  else if(macdBull)setup="MACD BULLISH";
+  return {r,symbol,price,macd,sig,hist,rsi,e20,bullishPriceAction,setup};
+ });
+ if(!rows.length){renderEmpty("No stocks found.");return;}
+ rows.sort((a,b)=>{const rank=x=>x.setup==="MACD BUYER"?0:x.setup==="MACD + PRICE ACTION"?1:x.setup==="MACD BULLISH"?2:3;return rank(a)-rank(b);});
+ rows.forEach(x=>{
+  const watched=watchlist.includes(x.symbol),tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(x.symbol);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(x.symbol)}</strong></td><td>${escapeHtml(getCategory(x.r))}</td><td class="good">${Number.isFinite(x.price)?"₹"+x.price.toFixed(2):"-"}</td><td>${formatNumber(x.macd)}</td><td>${formatNumber(x.sig)}</td><td class="${Number.isFinite(x.hist)&&x.hist>0?"good":"orange"}">${formatNumber(x.hist)}</td><td>${formatNumber(x.rsi)}</td><td>${formatNumber(x.e20)}</td><td class="${x.bullishPriceAction?"good":"orange"}">${x.bullishPriceAction?"BULLISH":"-"}</td><td class="${x.setup==="MACD BUYER"?"good":"orange"}"><strong>${escapeHtml(x.setup)}</strong></td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(x.symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+function renderVolumeScanner(){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ const rows=techRows().map(r=>{
+  const symbol=getSymbol(r),price=getPrice(r),volume=techNum(r,["volume","Volume","current_volume","currentVolume","volume_today"]),avg20=techNum(r,["volume_avg20","volumeAvg20","avg_volume20","average_volume_20","avgVol20","volume_20d_avg"]),avg5=techNum(r,["volume_avg5","volumeAvg5","avg_volume5","average_volume_5","avgVol5","volume_5d_avg"]);
+  const ratio20=Number.isFinite(volume)&&Number.isFinite(avg20)&&avg20>0?volume/avg20:techNum(r,["volume_ratio","volumeRatio","vol_ratio"]);
+  const ratio5=Number.isFinite(volume)&&Number.isFinite(avg5)&&avg5>0?volume/avg5:techNum(r,["volume_5d_ratio","volumeRatio5","vol_ratio_5"]);
+  const rsi=techNum(r,["rsi","RSI","rsi14","daily_rsi"]),e20=techNum(r,["ema20","EMA20","ema_20","20EMA","sma20","SMA20"]);
+  const pa=getPriceAction(r),bullishPriceAction=pa.bullish&&pa.strongClose;
+  const spike20=Number.isFinite(ratio20)&&ratio20>=3,spike5=Number.isFinite(ratio5)&&ratio5>=1.5,volumeSpike=spike20&&(!Number.isFinite(ratio5)||spike5);
+  let signal="WATCH";
+  if(bullishPriceAction&&volumeSpike)signal="VOLUME BUYER";
+  else if(volumeSpike)signal="VOLUME SPIKE — NO BUYER";
+  else if(bullishPriceAction)signal="PRICE ACTION — NO SPIKE";
+  return {r,symbol,price,volume,avg20,ratio20,ratio5,bullishPriceAction,volumeSpike,rsi,e20,signal};
+ });
+ if(!rows.length){renderEmpty("No stocks found.");return;}
+ rows.sort((a,b)=>{const rank=x=>x.signal==="VOLUME BUYER"?0:x.signal==="VOLUME SPIKE — NO BUYER"?1:x.signal==="PRICE ACTION — NO SPIKE"?2:3;return rank(a)-rank(b);});
+ rows.forEach(x=>{
+  const watched=watchlist.includes(x.symbol),tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(x.symbol),spikeText=Number.isFinite(x.ratio20)?x.ratio20.toFixed(2)+"x":"-";
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(x.symbol)}</strong></td><td>${escapeHtml(getCategory(x.r))}</td><td class="good">${Number.isFinite(x.price)?"₹"+x.price.toFixed(2):"-"}</td><td>${Number.isFinite(x.volume)?formatNumber(x.volume):"-"}</td><td>${Number.isFinite(x.avg20)?formatNumber(x.avg20):"-"}</td><td class="${x.volumeSpike?"good":"orange"}">${escapeHtml(spikeText)}</td><td class="${x.bullishPriceAction?"good":"orange"}">${x.bullishPriceAction?"BULLISH":"-"}</td><td>${formatNumber(x.rsi)}</td><td>${formatNumber(x.e20)}</td><td class="${x.signal==="VOLUME BUYER"?"good":"orange"}"><strong>${escapeHtml(x.signal)}</strong></td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(x.symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+
+/* ==================== NORMAL + ZONES ==================== */
+function renderNormalTable(data){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ if(!data.length){renderEmpty(stockFileLoaded?"No stocks found.":"Loading stocks...");return;}
+ data.forEach(stock=>{
+  const symbol=getSymbol(stock),category=getCategory(stock),price=getPrice(stock),watched=watchlist.includes(symbol),tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(symbol);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(symbol)}</strong></td><td>${escapeHtml(category)}</td><td class="good">${Number.isFinite(price)?"₹"+price.toFixed(2):"-"}</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+function renderZoneWaitingIfNeeded(){
+ const s=document.getElementById("strategySelect").value;
+ if(s==="Demand"||s==="Supply")renderEmpty("Loading zone data...");
+}
+function renderZoneScanner(zoneType){
+ const tbody=document.querySelector("#stockTable tbody");tbody.innerHTML="";
+ if(!zoneFileLoaded){renderEmpty(stockFileLoaded?"Loading zone data... Please wait.":"Loading stock and zone data...");return;}
+ const search=document.getElementById("searchInput").value.trim().toUpperCase(),category=document.getElementById("categorySelect").value,timeframe=document.getElementById("timeframeSelect").value,pattern=document.getElementById("patternSelect").value,minScore=Number(document.getElementById("scoreSelect").value),freshMode=document.getElementById("freshSelect").value;
+ const results=[];
+ Object.keys(zonesData).forEach(symbol=>{
+  const stockZone=zonesData[symbol];if(!stockZone)return;
+  const stock=getStockBySymbol(symbol),cat=stock?getCategory(stock):"-",stockPrice=stock?getPrice(stock):null,referencePrice=Number(stockZone.reference_price),displayPrice=Number.isFinite(stockPrice)?stockPrice:referencePrice;
+  if(category!=="ALL"&&cat!==category)return;
+  if(search&&!symbol.toUpperCase().includes(search))return;
+  const timeframes=stockZone.timeframes||{};
+  Object.keys(timeframes).forEach(tf=>{
+   if(timeframe!=="ALL"&&tf!==timeframe)return;
+   const tfData=timeframes[tf]||{},key=zoneType==="Demand"?"demand":"supply",zones=Array.isArray(tfData[key])?tfData[key]:[];
+   zones.forEach(zone=>{
+    const zonePattern=String(zone.pattern||"").toUpperCase(),score=Number(zone.score||0),fresh=zone.fresh===true;
+    if(pattern!=="ALL"&&zonePattern!==pattern)return;
+    if(score<minScore)return;
+    if(freshMode==="FRESH"&&!fresh)return;
+    results.push({symbol:String(symbol).toUpperCase(),category:cat,price:displayPrice,timeframe:tf,zone,type:zoneType});
+   });
+  });
+ });
+ results.sort((a,b)=>{const da=Number(a.zone.distance_percent??999),db=Number(b.zone.distance_percent??999);if(da!==db)return da-db;return Number(b.zone.score||0)-Number(a.zone.score||0);});
+ if(!results.length){renderEmpty("No matching "+zoneType+" zones found.");return;}
+ results.forEach(item=>{
+  const z=item.zone,watched=watchlist.includes(item.symbol),zoneClass=item.type==="Demand"?"badge-demand":"badge-supply",freshHtml=z.fresh?'<span class="badge badge-fresh">FRESH</span>':"",tvUrl="https://in.tradingview.com/chart/?symbol=NSE:"+encodeURIComponent(item.symbol);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><strong>${escapeHtml(item.symbol)}</strong></td><td>${escapeHtml(item.category)}</td><td class="good">${Number.isFinite(item.price)?"₹"+item.price.toFixed(2):"-"}</td><td><strong>${escapeHtml(item.timeframe)}</strong></td><td><span class="badge ${zoneClass}">${escapeHtml(item.type)}</span></td><td><strong>${escapeHtml(z.pattern||"-")}</strong> ${freshHtml}</td><td>₹${formatNumber(z.high)}</td><td>₹${formatNumber(z.low)}</td><td><span class="badge badge-score">${Number(z.score||0)}/10</span></td><td class="orange">${formatNumber(z.distance_percent)}%</td><td><a class="tv-link" href="${tvUrl}" target="_blank" rel="noopener">TV Chart</a></td><td><button onclick="toggleWatchlist('${escapeAttr(item.symbol)}')">${watched?"★ Remove":"☆ Watch"}</button></td>`;
+  tbody.appendChild(tr);
+ });
+}
+function renderEmpty(message){
+ const tbody=document.querySelector("#stockTable tbody");
+ tbody.innerHTML=`<tr><td colspan="15" style="text-align:center;padding:20px">${escapeHtml(message)}</td></tr>`;
+}
+
+/* ==================== WATCHLIST / TOOLS ==================== */
+function showAllStocks(){
+ document.getElementById("strategySelect").value="ALL";
+ setTableMode("stocks");lastRenderedMode="stocks";applyFilters();
+ window.scrollTo({top:document.querySelector("#stockTable").offsetTop-20,behavior:"smooth"});
+}
+function toggleWatchlist(symbol){
+ symbol=String(symbol).toUpperCase();
+ if(watchlist.includes(symbol))watchlist=watchlist.filter(x=>x!==symbol);else watchlist.push(symbol);
+ localStorage.setItem("sm_watchlist",JSON.stringify(watchlist));
+ applyFilters();
+}
+function showWatchlist(){
+ const list=stockData.filter(s=>watchlist.includes(getSymbol(s)));
+ if(!list.length){renderEmpty("Watchlist is empty.");return;}
+ lastRenderedMode="stocks";setTableMode("stocks");renderNormalTable(list);
+}
+function calculateLevels(){
+ const entry=Number(document.getElementById("calcEntry").value),sl=Number(document.getElementById("calcSL").value),result=document.getElementById("calcResult");
+ if(!Number.isFinite(entry)||!Number.isFinite(sl)||entry<=0||sl<=0){result.innerHTML='<span class="bad">Please enter valid Entry and Stop Loss.</span>';return;}
+ const risk=Math.abs(entry-sl);if(risk===0){result.innerHTML='<span class="bad">Entry and Stop Loss cannot be the same.</span>';return;}
+ const isLong=entry>sl,t1=isLong?entry+risk:entry-risk,t2=isLong?entry+2*risk:entry-2*risk;
+ result.innerHTML=`Risk: ₹${risk.toFixed(2)}<br>Trade: ${isLong?"BUY / Long":"SELL / Short"}<br>Target 1:1 = ₹${t1.toFixed(2)}<br>Target 1:2 = ₹${t2.toFixed(2)}`;
+}
+function downloadCSV(){
+ if(!stockData.length){alert("Stock data is not loaded yet.");return;}
+ const headers=["Stock","Category","Price","Strategy"];
+ const rows=stockData.map(s=>[getSymbol(s),getCategory(s),getPrice(s)??"",getStrategy(s)]);
+ const csv=[headers,...rows].map(row=>row.map(csvEscape).join(",")).join("\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="shahnawaz_stock_screener.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+function csvEscape(value){const s=String(value??"");return '"'+s.replace(/"/g,'""')+'"';}
+function handleFileUpload(event){
+ const file=event.target.files&&event.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=function(e){
+  try{
+   const text=e.target.result;
+   if(file.name.toLowerCase().endsWith(".json")){const parsed=JSON.parse(text);stockData=Array.isArray(parsed)?parsed:(parsed.stocks||[]);}
+   else stockData=parseCSV(text);
+   stockFileLoaded=true;technicalDataLoaded=false;setStatus("Local file loaded: "+stockData.length+" stocks");applyFilters();
+   fetchTechnicalData(true);
+  }catch(error){console.error(error);setStatus("Could not read selected file: "+error.message,true);}
+ };
+ reader.readAsText(file);
+}
+function parseCSV(text){
+ const lines=text.trim().split(/\r?\n/);if(lines.length<2)return [];
+ const headers=lines[0].split(",").map(x=>x.trim().replace(/^"|"$/g,""));
+ return lines.slice(1).map(line=>{
+  const cols=line.match(/("([^"]|"")*"|[^,]*)/g).filter((x,i,a)=>!(i===a.length-1&&x==="")).map(x=>x.replace(/^"|"$/g,"").replace(/""/g,'"'));
+  const obj={};headers.forEach((h,i)=>obj[h]=cols[i]??"");return obj;
+ });
+}
+
+/* ==================== DHAN LIVE LTP ==================== */
+async function fetchDhanBatch(symbols){
+ if(!symbols.length)return {prices:{},not_found:[]};
+ const query=symbols.map(s=>encodeURIComponent(s)).join(","),url=DHAN_BACKEND_URL+"/api/ltp?symbols="+query;
+ const response=await fetch(url,{cache:"no-store"});let data={};
+ try{data=await response.json();}catch(e){throw new Error("Invalid response from Dhan backend");}
+ if(!response.ok)throw new Error(String(data?.details||data?.error||("HTTP "+response.status)));
+ if(data.status!=="success")throw new Error("Dhan backend did not return success");
+ return data;
+}
+
+async function fetchAllLivePrices(manual=false){
+ if(!stockData.length){if(manual)alert("Please wait until stock data is loaded.");return;}
+ if(dhanRefreshRunning)return;
+ dhanRefreshRunning=true;
+ const status=document.getElementById("status");
+ status.innerText=manual?"Connecting to Dhan Live Price Backend...":"Refreshing Dhan current market prices...";
+ try{
+  const symbols=[...new Set(stockData.map(getSymbol).filter(Boolean))],priceMap=new Map();let backendNotFound=[],batches=0;
+  for(let i=0;i<symbols.length;i+=DHAN_BATCH_SIZE){
+   const batch=symbols.slice(i,i+DHAN_BATCH_SIZE),data=await fetchDhanBatch(batch);batches++;
+   for(const [symbol,item] of Object.entries(data.prices||{})){
+    const price=Number(item?.ltp);if(Number.isFinite(price)&&price>0)priceMap.set(String(symbol).toUpperCase(),price);
+   }
+   if(Array.isArray(data.not_found))backendNotFound.push(...data.not_found);
+   if(i+DHAN_BATCH_SIZE<symbols.length)await sleep(1200);
+  }
+  let updated=0;
+  for(const stock of stockData){
+   const symbol=getSymbol(stock),price=priceMap.get(symbol);
+   if(Number.isFinite(price)&&price>0){
+    stock.live_price=price;stock.currentPrice=price;stock.ltp=price;stock.price=price;
+    syncLivePriceToEMA(symbol,price);updated++;
+   }
+  }
+  const now=new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true,timeZone:"Asia/Kolkata"});
+  status.innerHTML='<span class="good">Dhan LIVE prices connected ✅</span> — Updated: '+updated+" / "+stockData.length+" stocks | Batches: "+batches+" | Last refresh: "+now+(backendNotFound.length?" | Not found: "+backendNotFound.length:"");
+  applyFilters();
+ }catch(error){
+  console.error("Dhan live price error:",error);
+  status.innerHTML='<span class="bad">Dhan live price error:</span> '+escapeHtml(error.message||"Unknown error")+' — Existing prices were kept.';
+ }finally{dhanRefreshRunning=false;}
+}
+function startDhanAutoRefresh(){
+ if(dhanRefreshTimer)clearInterval(dhanRefreshTimer);
+ dhanRefreshTimer=setInterval(()=>{if(document.visibilityState==="visible"&&stockData.length)fetchAllLivePrices(false);},DHAN_REFRESH_MS);
+}
+
+/* ==================== TECHNICAL BACKEND CONNECTION ==================== */
+async function fetchTechnicalPage(symbols,offset){
+ const query=symbols.map(s=>encodeURIComponent(s)).join(",");
+ const url=DHAN_BACKEND_URL+"/api/technical-scan?symbols="+query+"&offset="+offset+"&limit="+TECHNICAL_BATCH_SIZE;
+ const response=await fetch(url,{cache:"no-store"});
+ let data={};
+ try{data=await response.json();}catch(e){throw new Error("Invalid technical API response");}
+ if(!response.ok)throw new Error(String(data?.message||data?.error||("Technical HTTP "+response.status)));
+ if(data.status!=="success")throw new Error(String(data?.message||"Technical API did not return success"));
+ return data;
+}
+
+async function fetchTechnicalData(showStatus=false){
+ if(!stockData.length||technicalDataLoading)return;
+ technicalDataLoading=true;
+ const originalMode=lastRenderedMode;
+ try{
+  const symbols=[...new Set(stockData.map(getSymbol).filter(Boolean))];
+  const technicalMap=new Map();
+  let pages=0;
+  if(showStatus)setStatus("Loading technical data from Dhan history... 0 / "+symbols.length);
+  for(let offset=0;offset<symbols.length;offset+=TECHNICAL_BATCH_SIZE){
+   const batch=symbols.slice(offset,offset+TECHNICAL_BATCH_SIZE);
+   const data=await fetchTechnicalPage(batch,0);
+   pages++;
+   for(const row of (data.rows||[])){
+    if(row&&row.symbol)technicalMap.set(String(row.symbol).toUpperCase(),row);
+   }
+   if(showStatus)setStatus("Loading technical data from Dhan history... "+Math.min(offset+batch.length,symbols.length)+" / "+symbols.length);
+  }
+
+  let merged=0;
+  for(const stock of stockData){
+   const symbol=getSymbol(stock),tech=technicalMap.get(symbol);
+   if(!tech)continue;
+   const currentPrice=getPrice(stock);
+   Object.assign(stock,tech);
+   if(Number.isFinite(currentPrice)&&currentPrice>0){
+    stock.live_price=currentPrice;
+    stock.currentPrice=currentPrice;
+    stock.ltp=currentPrice;
+    stock.price=currentPrice;
+   }
+   merged++;
+  }
+  technicalDataLoaded=merged>0;
+  if(showStatus)setStatus("Technical data connected ✅ — Updated: "+merged+" / "+symbols.length+" stocks | Dhan LTP remains live.");
+  if(lastRenderedMode===originalMode)applyFilters();
+ }catch(error){
+  console.error("Technical scanner error:",error);
+  technicalDataLoaded=false;
+  if(showStatus)setStatus("Dhan LTP connected. Technical history is still loading: "+(error.message||"Unknown error"),true);
+ }finally{technicalDataLoading=false;}
+}
+
+function startTechnicalAutoRefresh(){
+ if(technicalRefreshTimer)clearInterval(technicalRefreshTimer);
+ technicalRefreshTimer=setInterval(()=>{
+  if(document.visibilityState==="visible"&&stockData.length)fetchTechnicalData(false);
+ },TECHNICAL_REFRESH_MS);
+}
+
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+function formatNumber(value){const n=Number(value);return Number.isFinite(n)?n.toFixed(2):"-";}
+function escapeHtml(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function escapeAttr(value){return escapeHtml(value).replace(/`/g,"&#096;");}
+</script>
+</body>
+</html>
