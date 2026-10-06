@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T11:35:42.987099+00:00",
+  "generated_at": "2026-10-06T11:19:51.493688+00:00",
   "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand",
   "rules": [
     "9 EMA above 20 EMA",
@@ -99,35 +99,6 @@
       "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand"
     },
     {
-      "symbol": "AZAD",
-      "stock": "AZAD",
-      "name": "AZAD",
-      "category": "Mid Cap",
-      "price": 2853.0,
-      "ema9": 2814.47,
-      "ema20": 2780.3,
-      "ema200": 2199.59,
-      "rsi14": 55.65,
-      "macd": 39.058,
-      "macd_signal": 29.2977,
-      "macd_hist": 9.7604,
-      "volume": 1334603.0,
-      "volume_avg20": 912263.75,
-      "volume_ratio": 1.46,
-      "ema_cross": false,
-      "demand": {
-        "timeframe": "MONTHLY",
-        "pattern": "RBR",
-        "high": 2530.0,
-        "low": 2027.0,
-        "score": 9,
-        "distance_percent": 8.9
-      },
-      "signal": "CONFLUENCE",
-      "date": "2026-10-01",
-      "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand"
-    },
-    {
       "symbol": "BHAGERIA",
       "stock": "BHAGERIA",
       "name": "BHAGERIA",
@@ -215,5 +186,5 @@
       "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand"
     }
   ],
-  "count": 7
+  "count": 6
 }
