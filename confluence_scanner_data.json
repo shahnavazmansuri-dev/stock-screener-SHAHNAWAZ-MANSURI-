@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T12:04:31.523888+00:00",
+  "generated_at": "2026-10-13T11:52:02.115453+00:00",
   "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand",
   "rules": [
     "9 EMA above 20 EMA",
