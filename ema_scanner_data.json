@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T11:25:26.248204+00:00",
+  "generated_at": "2026-10-13T11:10:46.738162+00:00",
   "strategy": "9 EMA + 20 EMA + 200 EMA + RSI",
   "rsi_period": 14,
   "rsi_threshold": 60,
@@ -3895,27 +3895,6 @@
       "strategy": "9 EMA + 20 EMA + 200 EMA + RSI"
     },
     {
-      "symbol": "ARTEMISMED",
-      "stock": "ARTEMISMED",
-      "name": "ARTEMISMED",
-      "category": "Small Cap",
-      "price": 313.2,
-      "ema9": 325.44,
-      "ema20": 330.95,
-      "ema200": 284.35,
-      "rsi": 40.96,
-      "previous_rsi": 38.06,
-      "distance200": 10.14,
-      "signal": "WATCH",
-      "crossed_up": false,
-      "price_above_200": true,
-      "ema_bullish": false,
-      "rsi_bullish": false,
-      "rsi_threshold": 60,
-      "date": "2026-10-09",
-      "strategy": "9 EMA + 20 EMA + 200 EMA + RSI"
-    },
-    {
       "symbol": "ALBERTDAVD",
       "stock": "ALBERTDAVD",
       "name": "ALBERTDAVD",
@@ -4018,6 +3997,27 @@
       "rsi_bullish": false,
       "rsi_threshold": 60,
       "date": "2026-10-09",
+      "strategy": "9 EMA + 20 EMA + 200 EMA + RSI"
+    },
+    {
+      "symbol": "ARTEMISMED",
+      "stock": "ARTEMISMED",
+      "name": "ARTEMISMED",
+      "category": "Small Cap",
+      "price": 311.45,
+      "ema9": 322.64,
+      "ema20": 329.09,
+      "ema200": 284.62,
+      "rsi": 40.21,
+      "previous_rsi": 40.96,
+      "distance200": 9.43,
+      "signal": "WATCH",
+      "crossed_up": false,
+      "price_above_200": true,
+      "ema_bullish": false,
+      "rsi_bullish": false,
+      "rsi_threshold": 60,
+      "date": "2026-10-12",
       "strategy": "9 EMA + 20 EMA + 200 EMA + RSI"
     },
     {
