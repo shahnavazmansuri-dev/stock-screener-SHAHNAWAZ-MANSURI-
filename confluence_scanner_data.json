@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T10:14:19.295400+00:00",
+  "generated_at": "2026-10-27T09:52:01.009606+00:00",
   "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand",
   "rules": [
     "9 EMA above 20 EMA",
@@ -11,35 +11,6 @@
     "BUY CONFLUENCE when 9 EMA crosses above 20 EMA while all conditions pass"
   ],
   "stocks": [
-    {
-      "symbol": "BHARTIARTL",
-      "stock": "BHARTIARTL",
-      "name": "BHARTIARTL",
-      "category": "Large Cap",
-      "price": 1892.1,
-      "ema9": 1864.11,
-      "ema20": 1841.5,
-      "ema200": 1880.09,
-      "rsi14": 59.39,
-      "macd": 14.7986,
-      "macd_signal": 0.1752,
-      "macd_hist": 14.6234,
-      "volume": 9870617.0,
-      "volume_avg20": 8102951.05,
-      "volume_ratio": 1.22,
-      "ema_cross": false,
-      "demand": {
-        "timeframe": "DAILY",
-        "pattern": "DBR",
-        "high": 1796.0,
-        "low": 1768.6,
-        "score": 8,
-        "distance_percent": 2.39
-      },
-      "signal": "CONFLUENCE",
-      "date": "2026-10-23",
-      "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand"
-    },
     {
       "symbol": "21STCENMGM",
       "stock": "21STCENMGM",
@@ -67,6 +38,35 @@
       },
       "signal": "CONFLUENCE",
       "date": "2026-10-23",
+      "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand"
+    },
+    {
+      "symbol": "63MOONS",
+      "stock": "63MOONS",
+      "name": "63MOONS",
+      "category": "Small Cap",
+      "price": 906.5,
+      "ema9": 870.77,
+      "ema20": 853.79,
+      "ema200": 754.86,
+      "rsi14": 59.59,
+      "macd": 15.6139,
+      "macd_signal": 8.1599,
+      "macd_hist": 7.4539,
+      "volume": 839886.0,
+      "volume_avg20": 496232.85,
+      "volume_ratio": 1.69,
+      "ema_cross": false,
+      "demand": {
+        "timeframe": "WEEKLY",
+        "pattern": "RBR",
+        "high": 822.0,
+        "low": 739.1,
+        "score": 9,
+        "distance_percent": 6.22
+      },
+      "signal": "CONFLUENCE",
+      "date": "2026-10-26",
       "strategy": "Confluence: EMA + RSI + MACD + Volume + Demand"
     },
     {
