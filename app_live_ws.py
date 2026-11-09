@@ -489,13 +489,14 @@ def _build_official_feed(initial_ids):
     if DhanContext is None or MarketFeed is None:
         raise RuntimeError("dhanhq package is not installed")
 
-    if not DHAN_CLIENT_ID or not DHAN_ACCESS_TOKEN:
-        raise RuntimeError(
-            "Dhan authentication is not configured. "
-            "Set DHAN_CLIENT_ID and DHAN_ACCESS_TOKEN in Render."
-        )
+    if not DHAN_CLIENT_ID:
+        raise RuntimeError("DHAN_CLIENT_ID is missing")
 
-    context = DhanContext(DHAN_CLIENT_ID, DHAN_ACCESS_TOKEN)
+    # Get the automatically generated Dhan access token
+    token = get_access_token()
+
+    context = DhanContext(DHAN_CLIENT_ID, token)
+
     instruments = [
         (MarketFeed.NSE, str(int(sid)), MarketFeed.Ticker)
         for sid in sorted(set(initial_ids))
@@ -510,7 +511,6 @@ def _build_official_feed(initial_ids):
         on_close=_official_on_close,
         on_error=_official_on_error,
     )
-
 
 def start_live_feed():
     global _ws_thread, _official_feed, _ws_started_at
